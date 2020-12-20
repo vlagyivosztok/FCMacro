@@ -1,0 +1,11 @@
+#from PySide import QtCore	
+from PySide import QtGui
+
+reply = QtGui.QMessageBox.question(None, "", "This is your chance to answer, what do you think?",
+         QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No)
+if reply == QtGui.QMessageBox.Yes:
+         # this is where the code relevant to a 'Yes' answer goes
+         pass
+if reply == QtGui.QMessageBox.No:
+         # this is where the code relevant to a 'No' answer goes
+         pass

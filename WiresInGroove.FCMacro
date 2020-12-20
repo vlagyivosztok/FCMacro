@@ -10,6 +10,8 @@ függvények:
 -kör adatai Fc-nek, majd kör kontúrpontjait vissza.
 
 """
+
+
 #endregion
 #  
 def wire_condition(x,y):
@@ -36,13 +38,13 @@ def getGrooveContour():
     #elsőre egy kész kontúrt dolgozunk fel, ami már meg van nyitva
 	#később átadunk adatokat
 	#listben, az első a fajtát határozza meg, a többi a hozzá tartozó adatok
-	
+	pass
 
 
 #region main
 #globals
 #wire d
-Dh = 0.8
+#Dh = 0.8
 #insul thkn
 Hsz = 0.1
 #outer d

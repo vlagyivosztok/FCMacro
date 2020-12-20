@@ -1,3 +1,0 @@
-obj1 = App.ActiveDocument.getObject("GrooveV1")
-GroovePoints = obj1.Shape.discretize(int(obj1.Shape.Length)*2)
-print(GroovePoints)

@@ -40,11 +40,15 @@ def getGrooveContour():
 	#listben, az első a fajtát határozza meg, a többi a hozzá tartozó adatok
 	pass
 
+def PlaceWireCs():
+    
+
+	pass
 
 #region main
 #globals
 #wire d
-#Dh = 0.8
+Dh = 0.8
 #insul thkn
 Hsz = 0.1
 #outer d

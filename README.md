@@ -1,3 +1,6 @@
 # FCMacro
-content of ...\AppData\Roaming\FreeCAD\Macro
+relevant content of ...\AppData\Roaming\FreeCAD\Macro
+
+Staged Python code files
+necessary FreeCAD files
 

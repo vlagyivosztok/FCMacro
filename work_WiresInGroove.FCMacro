@@ -12,34 +12,34 @@ from PySide import QtGui
 
 #region description
 """ 
-eljaras a szigetelovel megnovelt atmroju huzalok elhelyezesere a horonyban
+eljaras a szigetelovel megnovelt atmeroju huzalok elhelyezesere a horonyban
 
 horonygeometria V1 egy sketchben kesz, parametrikusan mukodik
 bemeno parameterek az eljarashoz
 
-Forgórész:
-CoreDinn        belső átm
+Alloresz:
+CoreDinn        belso atm
 CoreThk            Valvastags.
 
 Referencia
-CoreDout REF!!        külső átm
+CoreDout REF!!        kulso atm
 
 Horony V1
-R1 alsó rádiusz
-H1 teljes horonymagasság
-B1 felső horonyszélesség
-L1 felső érintési pont távolság
+R1 also radiusz
+H1 teljes horonymagassag
+B1 felso horonyszelesseg
+L1 felso erintesi pont tavolsag
 
-Referenciaméretek:
-V1P1 REF!!    alsó körív középpontja
-V1P2 REF!!    felső szakasz középpontja
+Referenciameretek:
+V1P1 REF!!    also koriv kozeppontja
+V1P2 REF!!    felso szakasz kozeppontja
 
 """
 #endregion
 
 #region functions
 
-def wloc_in_groove(): # huzal pozíciók szamlaloja a horonyban 
+def wloc_in_groove(): # huzal poziciok szamlaloja a horonyban 
     x=0
     y=0
     # y basic incr
@@ -78,11 +78,11 @@ def dim_settings(groove): #bemeno parameterek beallitasa a modellben
 
 def def_quaternion(v1,v2): #ket vektor kozotti elmozdulas quaternion eloallitasa
     """quaternion eloallitasa ket vektorbol
-    két nem normalizált vektorbol eloallitja a normalizalt quaterniont
+    ket nem normalizalt vektorbol eloallitja a normalizalt quaterniont
     """
 
     if(abs(v1.normalize().dot(v2.normalize())-1) < 0.0001):
-        #párhuzamos, irany marad
+        #parhuzamos, irany marad
         return_tuple = (0,0,0,1)
         return return_tuple
 
@@ -98,14 +98,14 @@ def def_quaternion(v1,v2): #ket vektor kozotti elmozdulas quaternion eloallitasa
         return_tuple = (round(new_q[1],6),round(new_q[2],6),round(new_q[3],0),round(new_q[0],0))
         return return_tuple
 
-def wire_condition(x,y): # huzal vizsgálata, hogy a hornyon belul helyezkedik-e el
+def wire_condition(x,y): # huzal vizsgalata, hogy a hornyon belul helyezkedik-e el
     global A, y_incr, gr_cont_pts, Dk, wire_collection
     pnts = []
-    if y%2: # páratlan
+    if y%2: # paratlan
     #centers of circles
         x_circ = (x + 0.5)*A
         y_circ = y*y_incr
-    else: #páros
+    else: #paros
         x_circ = x*A
         y_circ = y*y_incr
 
@@ -144,14 +144,14 @@ def circ_contour(x,y,r): # a kordinatakkal es sugarral kort rajzol, berakja a wi
 
 #region variables
 #core dimensions
-CoreDinn = 180
-CoreThk = 30
+CoreDinn = 120
+CoreThk = 25
 CoreName = 'StatCore'
 #groove dimensions
-R1 = 5
-H1 = 18
-B1 = 8
-L1 = 4
+R1 = 4
+H1 = 13
+B1 = 6
+L1 = 2
 #wire d
 Dh = 0.5
 #insul thkn

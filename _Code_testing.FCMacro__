@@ -1,0 +1,26 @@
+import sys
+from PyQt5.QtWidgets import QMessageBox
+
+msg = QMessageBox()
+
+msg.setText("This is a message box")
+msg.setInformativeText("This is additional information")
+msg.setWindowTitle("MessageBox demo")
+msg.setDetailedText("The details are as follows:")
+msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+#msg.buttonClicked.connect(msgbtn)
+msgBox.setWindowModality(Qt::NonModal)
+msgBox.open()
+msgBox.close()
+
+
+#retval = msg.exec_()
+print("value of pressed message box button:", retval)
+
+"""
+msgBox.setWindowModality(Qt::NonModal);
+//msgBox.open();
+msgBox.show();
+// Run Stuff
+msgBox.close();
+"""

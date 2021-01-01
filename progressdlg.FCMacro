@@ -1,0 +1,21 @@
+import PySide
+
+def myProc():
+	n = 4000000
+	pd = PySide.QtGui.QProgressDialog(u"message text", u"Abort",0,n)
+	pd.setModal(True)
+	pd.show()
+	
+	for i in range(0,n):
+		#s1 = Part.makeBox(1,2,3)
+		#s2 = Part.makeBox(6,5,4)
+		#s3 = s1.fuse(s2)
+		pd.setValue(i)
+		if pd.wasCanceled():
+			raise Exception
+			#raise StandardError("Canceled by user")
+			
+	pd.setValue(n)
+	print ("finished")
+
+myProc()

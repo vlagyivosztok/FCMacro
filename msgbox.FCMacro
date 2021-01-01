@@ -1,0 +1,45 @@
+from PySide import QtGui, QtCore
+import sys
+
+class ExampleModalGuiClass(QtGui.QDialog):
+
+	def __init__(self):
+		super(ExampleModalGuiClass, self).__init__()
+		self.initUI()
+	def initUI(self):
+		#print("asdf")		
+		self.result = userCancelled
+		self.setGeometry(500,300,400,100)
+		self.setWindowTitle("minimal msg")
+		self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+		
+		cancelButton = QtGui.QPushButton('Cancel', self)
+		cancelButton.clicked.connect(self.onCancel)
+		cancelButton.setAutoDefault(True)
+		cancelButton.move(60, 70)
+
+		okButton = QtGui.QPushButton('OK', self)
+		okButton.clicked.connect(self.onOk)
+		okButton.move(140, 70)
+
+		self.show()
+
+	def onCancel(self):
+		self.result			= userCancelled
+		self.close()
+	def onOk(self):
+		self.result			= userOK
+		self.close()
+
+userCancelled		= "Cancelled"
+userOK			= "OK"
+
+		
+form = ExampleModalGuiClass()
+form.exec_()
+
+if form.result==userCancelled:
+	sys.exit()
+if form.result==userOK:
+	pass
+print("after")

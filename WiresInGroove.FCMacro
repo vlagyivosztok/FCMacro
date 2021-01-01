@@ -14,25 +14,7 @@ függvények:
 
 #endregion
 #  
-def wire_condition(x,y):
-	global A, y_incr
-	if y%2: # páratlan
-	#centers of circles
-		x_circ = (x + 0.5)*A
-		y_circ = y*y_incr*A
-	else: #páros
-		x_circ = x*A
-		y_circ = y*y_incr*A
-	#itt jön a valódi ellenőrzés a horony kontúrpontjaival
-	#és a létrehozott kör pontjaival
-	#ha belül van, eredmények hozzáadása a tároló adatszerkezetekhez
-	print('x,y,x_circ,y_circ: ',x,y,x_circ,y_circ)
-	if x > 2 or abs(y) > 2:
-		print (False)
-		return False
-	else:
-		print(True)
-		return True
+
 
 def getGrooveContour():
     #elsőre egy kész kontúrt dolgozunk fel, ami már meg van nyitva
@@ -70,7 +52,6 @@ y_sign = 1
 condition1 = True
 condition2 = True
 
-#os.system("pause")
 while condition1:	#level1: first pos. y, then neg. y
 	condition1 = (y>=0)
 	while condition2:#level 2 counting y

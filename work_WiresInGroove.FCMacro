@@ -2,9 +2,8 @@
 import sys
 sys.path.append('D:\\PRG\\Python36\\lib\\site-packages')
 import os
-import Draft    #FreeCAD modul
+import FreeCAD, Part, PartDesign, Draft    #FreeCAD modulok
 from PySide import QtGui, QtCore
-from varname import nameof
 from math import sqrt
 from pyquaternion import Quaternion
 from shapely.geometry import Point, Polygon
@@ -49,37 +48,33 @@ def wloc_in_groove(): # huzal pozíciók szamlaloja a horonyban
     condition2 = True
     
     while condition1:    #level1: first pos. y, then neg. y
-        #print("cond1")
         condition1 = (y>=0)
         while condition2:#level 2 counting y
-            #őőő("cond2")
             condition2 = False
             while wire_condition(x,y): #level 3 counting x
-                #őőő("cond3")
                 condition2 = True
                 x += 1
             x=0
             y+=(1*y_sign)
-
         y_sign = -1
         y = y_sign
         condition2 = True
 
 def groove_contour(): # a horony geometria bekerese
-    obj = App.ActiveDocument.getObject("GrooveV1")
-    #őőő(obj.Name)
-    return obj.Shape.discretize(int(obj.Shape.Length/0.6))
+    Shp = App.ActiveDocument.getObject("GrooveV1").Shape
+    App.ActiveDocument.recompute()
+    return Shp.discretize(int(Shp.Length/0.6))
 
 def dim_settings(groove): #bemeno parameterek beallitasa a modellben
     global CoreDinn, CoreThk, R1, H1, B1, L1
-    
-    App.ActiveDocument.getObject("StatCore").setDatum(nameof(CoreDinn),CoreDinn)
-    App.ActiveDocument.getObject("StatCore").setDatum(nameof(CoreThk),CoreThk)
-    
-    App.ActiveDocument.getObject(groove).setDatum(nameof(R1),R1)
-    App.ActiveDocument.getObject(groove).setDatum(nameof(H1),H1)
-    App.ActiveDocument.getObject(groove).setDatum(nameof(B1),B1)
-    App.ActiveDocument.getObject(groove).setDatum(nameof(L1),L1)
+
+    App.ActiveDocument.getObject("StatCore").setDatum('CoreDinn',CoreDinn)
+    App.ActiveDocument.getObject("StatCore").setDatum('CoreThk',CoreThk)
+    App.ActiveDocument.getObject(groove).setDatum('R1',R1)
+    App.ActiveDocument.getObject(groove).setDatum('H1',H1)
+    App.ActiveDocument.getObject(groove).setDatum('B1',B1)
+    App.ActiveDocument.getObject(groove).setDatum('L1',L1)
+    App.ActiveDocument.recompute()
 
 def def_quaternion(v1,v2): #ket vektor kozotti elmozdulas quaternion eloallitasa
     """quaternion eloallitasa ket vektorbol
@@ -109,10 +104,10 @@ def wire_condition(x,y): # huzal vizsgálata, hogy a hornyon belul helyezkedik-e
     if y%2: # páratlan
     #centers of circles
         x_circ = (x + 0.5)*A
-        y_circ = y*y_incr*A
+        y_circ = y*y_incr
     else: #páros
         x_circ = x*A
-        y_circ = y*y_incr*A
+        y_circ = y*y_incr
 
     circ_cont = circ_contour(x_circ,y_circ,Dk/2)    #a kor konturpontjait adja vissza
 
@@ -135,44 +130,30 @@ def wire_condition(x,y): # huzal vizsgálata, hogy a hornyon belul helyezkedik-e
  
     return True
 
-def inputbox():
-    form.exec_()
-    #form.show()
-    if form.result==userCancelled:
-        raise Exception
-    if form.result==userOK:
-        pass
-
-
 def circ_contour(x,y,r): # a kordinatakkal es sugarral kort rajzol, berakja a wire bodyba, es visszaadja a konturpontjait (lokalis??)
 
     global wire_collection
-    #őőő("circ_contour")
     pl = App.Placement()
     pl.Rotation.Q=(0,0,0,1)
     pl.Base=App.Vector(x,y,0)
-    #print(pl,r)
     wire_collection.append(Draft.makeCircle(radius=r,placement=pl,face=False,support=None))
     
-    #obj = App.ActiveDocument.getObject("GrooveV1")
-    #for elem in wire_collection:
-    #    print(elem.Placement)
     return wire_collection[-1].Shape.discretize(int(wire_collection[-1].Shape.Length/0.1))
 
 #endregion functions
 
 #region variables
 #core dimensions
-CoreDinn = 80
+CoreDinn = 180
 CoreThk = 30
 CoreName = 'StatCore'
 #groove dimensions
 R1 = 5
-H1 = 15
-B1 = 5
-L1 = 2
+H1 = 18
+B1 = 8
+L1 = 4
 #wire d
-Dh = 0.8
+Dh = 0.5
 #insul thkn
 Hsz = 0.1
 #outer d
@@ -180,7 +161,7 @@ Dk = Dh + 2*Hsz
 #gap 
 Lr =0.05
 #basic dist
-A = Dk + Lr
+A  = Dk + Lr
 
 y_incr = A*sqrt(3)/2
 
@@ -205,8 +186,10 @@ if App.ActiveDocument is not None and App.ActiveDocument.Name == "Workfile":
 else:
     App.open(u"D:/_EGYETEMI/DIPLOMA/OpenCASCADE/exercs/Workfile.FCStd")
     App.setActiveDocument("Workfile")
-#1 
+#1
+print("DK, A, y_incr: ",Dk, A,y_incr)
 dim_settings('GrooveV1')
+
 #2
 v_gr_base = App.Vector(0,App.ActiveDocument.getObject("GrooveV1").getDatum("V1P1"),0)
 v_gr_dir = App.Vector(0,App.ActiveDocument.getObject("GrooveV1").getDatum("V1P2"),0)
@@ -214,6 +197,7 @@ v_dir = v_gr_dir.sub(v_gr_base).normalize()
 base_dir = App.Vector(0,1,0)
 App.ActiveDocument.getObject("C_BdWires").Placement.Base = v_gr_base
 App.ActiveDocument.getObject("C_BdWires").Placement.Rotation = def_quaternion(base_dir,v_dir)
+App.ActiveDocument.recompute()
 #3
 gr_cont_pts_ = groove_contour()
 

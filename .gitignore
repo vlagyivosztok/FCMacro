@@ -1,14 +1,3 @@
-_Code_testing.FCMacro
-.vscode
-__pycache__
-1st.FCMacro
-Inputbox.FCMacro
-ModalGuiClass.FCMacro
-more_buttons.FCMacro
-msgbox_yes_no.FCMacro
-multiple_controls.FCMacro
-nonmodal_window.FCMacro
-ParamRectangle.py
-PyQt5_Test1.FCMacro
-PySide_Adv1.FCMacro
-WiresInGroove.FCMacro
+*.*
+!work*.*
+!rel*.*

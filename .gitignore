@@ -1,0 +1,6 @@
+*.*
+!work*.*
+!rel*.*
+!README.md
+!*.FCStd
+!.gitignore

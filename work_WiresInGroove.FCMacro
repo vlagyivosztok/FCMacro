@@ -172,7 +172,8 @@ wire_collection = []
 gr_cont_pts = [] 
 gr_cont_pts_v = []
 pnts = [] 
-macropath = "C:\\Users\\papa\\AppData\\Roaming\\FreeCAD\\Macro\\"
+#macropath = "C:\\Users\\papa\\AppData\\Roaming\\FreeCAD\\Macro\\"
+macropath = App.getUserMacroDir() #'C:\\Users\\papa\\AppData\\Roaming\\FreeCAD\\Macro/' """
 
 #endregion variables
 

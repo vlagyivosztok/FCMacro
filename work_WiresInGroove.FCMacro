@@ -1,6 +1,9 @@
 #region imports
 import sys
-sys.path.append('D:\\PRG\\Python36\\lib\\site-packages')
+pkg_path = 'D:\\PRG\\Python36\\lib\\site-packages'
+path_list_set = set(sys.path)
+if pkg_path not in path_list_set:
+    sys.path.append(pkg_path)
 import os
 import FreeCAD, Part, PartDesign, Draft    #FreeCAD modulok
 from PySide import QtGui, QtCore
@@ -169,6 +172,7 @@ wire_collection = []
 gr_cont_pts = [] 
 gr_cont_pts_v = []
 pnts = [] 
+macropath = "C:\\Users\\papa\\AppData\\Roaming\\FreeCAD\\Macro\\"
 
 #endregion variables
 
@@ -184,10 +188,9 @@ vizsgalat
 if App.ActiveDocument is not None and App.ActiveDocument.Name == "Workfile":
     pass
 else:
-    App.open(u"D:/_EGYETEMI/DIPLOMA/OpenCASCADE/exercs/Workfile.FCStd")
+    App.open(macropath+"Workfile.FCStd")
     App.setActiveDocument("Workfile")
 #1
-print("DK, A, y_incr: ",Dk, A,y_incr)
 dim_settings('GrooveV1')
 
 #2

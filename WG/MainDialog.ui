@@ -231,6 +231,9 @@
         <property name="text">
          <string>Inner diameter (Di)</string>
         </property>
+        <property name="textFormat">
+         <enum>Qt::PlainText</enum>
+        </property>
        </widget>
       </item>
       <item row="1" column="0">
@@ -255,6 +258,18 @@
       </item>
       <item row="0" column="1">
        <widget class="QDoubleSpinBox" name="Sp_1_Di">
+        <property name="minimumSize">
+         <size>
+          <width>136</width>
+          <height>22</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>136</width>
+          <height>22</height>
+         </size>
+        </property>
         <property name="decimals">
          <number>5</number>
         </property>
@@ -267,7 +282,7 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QDoubleSpinBox" name="Sp_1_H">
+       <widget class="QDoubleSpinBox" name="Sp_1_T">
         <property name="decimals">
          <number>5</number>
         </property>
@@ -283,6 +298,18 @@
        <widget class="QDoubleSpinBox" name="Sp_1_Do">
         <property name="enabled">
          <bool>true</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>136</width>
+          <height>22</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>136</width>
+          <height>22</height>
+         </size>
         </property>
         <property name="decimals">
          <number>5</number>

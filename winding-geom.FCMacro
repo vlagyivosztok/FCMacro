@@ -1,6 +1,21 @@
 #region globals
 g_UserMacroDir = (App.getUserMacroDir()).replace('\\','/')
-g_WG_dir = g_UserMacroDir+"WG"
+g_WG_dir = g_UserMacroDir+"wg"
+g_dim_selected =    {'Sp_1_T':0.0,
+                    'Sp_1_H':0.0,
+                    'Sp_1_Di':0.0,
+                    'Sp_1_De':0.0,
+                    'Gr':0,
+                    'Sp_2_D1':0.0,
+                    'Sp_2_D2':0.0,
+                    'Sp_2_D3':0.0,
+                    'Sp_2_D4':0.0,
+                    'Sp_2_D5':0.0,
+                    'Sp_2_D6':0.0,
+                    'Sp_2_D7':0.0,
+                    'Sp_2_D8':0.0,
+                    'Sp_2_D9':0.0
+                    }
 #endregion globals
 
 
@@ -8,23 +23,28 @@ g_WG_dir = g_UserMacroDir+"WG"
 import os
 try:
     import sys
-    import site
-    import inspect
-    from importlib import import_module
+    #import site
+    #import inspect
+    #from importlib import import_module
     from math import sqrt
-    from distutils.sysconfig import get_python_lib
+    #from distutils.sysconfig import get_python_lib
     from shapely.geometry import Point, Polygon
     from pyquaternion import Quaternion #inspect.isclass(Quaternion)
     from PySide import QtGui #QWidget
     from PySide import QtUiTools #QUiLoader
     from PySide import QtCore #QFile
+    from wg.interfaces import MainWidget, BackToMain
+    
+    #from wg.controls import Controls
     #import Draft
 except:
+    print('main import')    
     os.system(g_WG_dir+'\import-error.vbs')
     raise Exception("Quit macro")
 #endregion imports
 
-
+#print(dir(WG.interfaces))
+#raise Exception("Macro success")
 
 """ try:
     g_sitepackages = site.getsitepackages() # sitepackages könyvtárak hozzáfűzése sys.path-hoz
@@ -77,247 +97,50 @@ True """
 
 
 #endregion imports with ckeck
-
-
-
-
-
 #region snippets
 
 
 #endregion snippets
 
 
-#region def main
-def main():
-    pass
-"""     print(g_UserMacroDir)
-    print(g_ui_dir) """
 
+ 
 
+''' class Main(Controls):
 
-
-#endregion def main
-
-#region main widget
-class main_widget():
     def __init__(self):
-        pass
-        """ Az init resze a kepek elhelyezese a helyukon """
-
-#endregion main-widget
-
-class BackToMain():
-    def __init__(self):
-        #super(BackToMain, self).__init__()
-        self.loader = QtUiTools.QUiLoader()
-        self.file = QtCore.QFile(g_WG_dir+"/BackToMain.ui")
-        self.file.open(QtCore.QFile.ReadOnly)
-        self.Widget = self.loader.load(self.file)
-        self.file.close()
-        self.Widget.CB_Back.clicked.connect(self.onClick)
-        #self.Widget.show()
-        		#non modal	
-        #self.exec_()	#modal
-        #print(self.Widget.CB_Back.Name)   
-
-    def onClick(self):
-        self.Widget.hide()
-        MyMainWidget.Show_()
-
-    def Show_(self):
-        self.Widget.show() 
-
-class MainWidget():
-    def __init__(self):
-        #super(BackToMain, self).__init__()
-        self.loader = QtUiTools.QUiLoader()
-        self.file = QtCore.QFile(g_WG_dir+"/MainDialog.ui")
-        self.file.open(QtCore.QFile.ReadOnly)
-        self.Widget = self.loader.load(self.file)
-        self.file.close()
-
-        self.dim_values = {'Gr':0,'Sp_2_D1':0,'Sp_2_D2':0,'Sp_2_D3':0,'Sp_2_D4':0,'Sp_2_D5':0,'Sp_2_D6':0,'Sp_2_D7':0,'Sp_2_D8':0,'Sp_2_D9':0}
-
-        self.Widget.Cb_1_GtFc.clicked.connect(self.Cb_GtFc_onClick)
-        self.Widget.Cb_2_GtFc.clicked.connect(self.Cb_GtFc_onClick)
-        self.Widget.Cb_3_GtFc.clicked.connect(self.Cb_GtFc_onClick)
-
-        self.pixmap = QtGui.QPixmap(g_WG_dir+"/1st-step-q.jpg")
-        self.Widget.S1_L1.setPixmap(self.pixmap)
-
-        self.pixmap = QtGui.QPixmap(g_WG_dir+"/groove-1_prev.jpg")
-        self.Widget.L_Groove1.setPixmap(self.pixmap)
-
-        self.pixmap = QtGui.QPixmap(g_WG_dir+"/groove-2_prev.jpg")
-        self.Widget.L_Groove2.setPixmap(self.pixmap)
-
-        self.pixmap = QtGui.QPixmap(g_WG_dir+"/groove-2_prev.jpg")
-        self.Widget.L_Groove3.setPixmap(self.pixmap)                
-
-        self.Widget.Rb_Groove1.clicked.connect(self.Rb_Groove1_onClick)
-        self.Widget.Rb_Groove2.clicked.connect(self.Rb_Groove2_onClick)
-        self.Widget.Rb_Groove3.clicked.connect(self.Rb_Groove3_onClick)
-
-        self.Widget.Sp_2_D1.valueChanged.connect(lambda: self.Test("Sp_2_D1"))
-        self.Widget.Sp_2_D2.valueChanged.connect(lambda: self.Test("Sp_2_D2"))
-        self.Widget.Sp_2_D3.valueChanged.connect(lambda: self.Test("Sp_2_D3"))
-        self.Widget.Sp_2_D4.valueChanged.connect(lambda: self.Test("Sp_2_D4"))
-        self.Widget.Sp_2_D5.valueChanged.connect(lambda: self.Test("Sp_2_D5"))
-        self.Widget.Sp_2_D6.valueChanged.connect(lambda: self.Test("Sp_2_D6"))
-        self.Widget.Sp_2_D7.valueChanged.connect(lambda: self.Test("Sp_2_D7"))
-        self.Widget.Sp_2_D8.valueChanged.connect(lambda: self.Test("Sp_2_D8"))
-        self.Widget.Sp_2_D9.valueChanged.connect(lambda: self.Test("Sp_2_D9"))
-
-        self.Widget.L_2_D1.setHidden(True)
-        self.Widget.L_2_D2.setHidden(True)
-        self.Widget.L_2_D3.setHidden(True)
-        self.Widget.L_2_D4.setHidden(True)
-        self.Widget.L_2_D5.setHidden(True)
-        self.Widget.L_2_D6.setHidden(True)
-        self.Widget.L_2_D7.setHidden(True)
-        self.Widget.L_2_D8.setHidden(True)
-        self.Widget.L_2_D9.setHidden(True)
-
-        self.Widget.Sp_2_D1.setHidden(True)
-        self.Widget.Sp_2_D2.setHidden(True)
-        self.Widget.Sp_2_D3.setHidden(True)
-        self.Widget.Sp_2_D4.setHidden(True)
-        self.Widget.Sp_2_D5.setHidden(True)
-        self.Widget.Sp_2_D6.setHidden(True)
-        self.Widget.Sp_2_D7.setHidden(True)
-        self.Widget.Sp_2_D8.setHidden(True)
-        self.Widget.Sp_2_D9.setHidden(True)
+        print('Main init')
+        #self.MyMainWidget.get_globals(g_dim_selected) '''
 
 
-        self.Widget.show()
-        		#non modal	
-        #self.exec_()	#modal
-        #print(self.Widget.CB_Back.Name)   
+#controls = Controls()
+#main = Main()
+#print('controls:  ',dir(controls))
 
-    def Cb_GtFc_onClick(self):
-        self.Widget.hide()
-        #print(dir(self.Widget))
-        MyBackToMain.Show_()
+MyMainWidget = MainWidget()
+#print(dir(MyMainWidget))
+MyBackToMain =  BackToMain()
 
-    def Show_(self):
-        self.Widget.show()
-    
-    def Rb_Groove1_onClick(self):
-        self.Widget.Rb_Groove1.setChecked(True)
-        self.Widget.Rb_Groove2.setChecked(False)
-        self.Widget.Rb_Groove3.setChecked(False)
-        self.pixmap = QtGui.QPixmap(g_WG_dir+"/groove1.jpg")
-        self.Widget.S2_L1.setPixmap(self.pixmap)
+MyMainWidget.get_BackToMain(MyBackToMain)
+MyBackToMain.get_MainWidget(MyMainWidget)
 
-        self.Widget.L_2_D1.setText("H1")
-        self.Widget.L_2_D2.setText("H2")
-        self.Widget.L_2_D3.setText("H3")
-        self.Widget.L_2_D4.setText("H4")
-        self.Widget.L_2_D6.setText("B1")
-        self.Widget.L_2_D7.setText("B2")
-        self.Widget.L_2_D8.setText("R")
-        self.Widget.L_2_D9.setText("D")
+MyMainWidget.get_globals(g_dim_selected)
 
-        self.Widget.L_2_D1.setHidden(False)
-        self.Widget.L_2_D2.setHidden(False)
-        self.Widget.L_2_D3.setHidden(False)
-        self.Widget.L_2_D4.setHidden(False)
-        self.Widget.L_2_D5.setHidden(True)
-        self.Widget.L_2_D6.setHidden(False)
-        self.Widget.L_2_D7.setHidden(False)
-        self.Widget.L_2_D8.setHidden(False)
-        self.Widget.L_2_D9.setHidden(False)        
-
-        self.Widget.Sp_2_D1.setHidden(False)
-        self.Widget.Sp_2_D2.setHidden(False)
-        self.Widget.Sp_2_D3.setHidden(False)
-        self.Widget.Sp_2_D4.setHidden(False)
-        self.Widget.Sp_2_D5.setHidden(True)
-        self.Widget.Sp_2_D6.setHidden(False)
-        self.Widget.Sp_2_D7.setHidden(False)
-        self.Widget.Sp_2_D8.setHidden(False)
-        self.Widget.Sp_2_D9.setHidden(False)        
-
-    def Rb_Groove2_onClick(self):
-        self.Widget.Rb_Groove1.setChecked(False)
-        self.Widget.Rb_Groove2.setChecked(True)
-        self.Widget.Rb_Groove3.setChecked(False)
-        self.pixmap = QtGui.QPixmap(g_WG_dir+"/groove2.jpg")
-        self.Widget.S2_L1.setPixmap(self.pixmap)
-
-        self.Widget.L_2_D1.setText("H1")
-        self.Widget.L_2_D2.setText("H2")
-        self.Widget.L_2_D3.setText("H3")
-        self.Widget.L_2_D4.setText("H4")
-        self.Widget.L_2_D5.setText("B1")
-        self.Widget.L_2_D6.setText("B2")
-        self.Widget.L_2_D7.setText("B3")
-        self.Widget.L_2_D8.setText("B4")
-        self.Widget.L_2_D9.setText("R")
-
-        self.Widget.L_2_D1.setHidden(False)
-        self.Widget.L_2_D2.setHidden(False)
-        self.Widget.L_2_D3.setHidden(False)
-        self.Widget.L_2_D4.setHidden(False)
-        self.Widget.L_2_D5.setHidden(False)
-        self.Widget.L_2_D6.setHidden(False)
-        self.Widget.L_2_D7.setHidden(False)
-        self.Widget.L_2_D8.setHidden(False)
-        self.Widget.L_2_D9.setHidden(False)        
-
-        self.Widget.Sp_2_D1.setHidden(False)
-        self.Widget.Sp_2_D2.setHidden(False)
-        self.Widget.Sp_2_D3.setHidden(False)
-        self.Widget.Sp_2_D4.setHidden(False)
-        self.Widget.Sp_2_D5.setHidden(False)
-        self.Widget.Sp_2_D6.setHidden(False)
-        self.Widget.Sp_2_D7.setHidden(False)
-        self.Widget.Sp_2_D8.setHidden(False)
-        self.Widget.Sp_2_D9.setHidden(False)                
-
-    def Rb_Groove3_onClick(self):
-        self.Widget.Rb_Groove1.setChecked(False)
-        self.Widget.Rb_Groove2.setChecked(False)
-        self.Widget.Rb_Groove3.setChecked(True)
-        self.pixmap = QtGui.QPixmap(g_WG_dir+"/1st-step-q.jpg")
-        self.Widget.S2_L1.setPixmap(None)
-
-        self.Widget.L_2_D1.setHidden(True)
-        self.Widget.L_2_D2.setHidden(True)
-        self.Widget.L_2_D3.setHidden(True)
-        self.Widget.L_2_D4.setHidden(True)
-        self.Widget.L_2_D5.setHidden(True)
-        self.Widget.L_2_D6.setHidden(True)
-        self.Widget.L_2_D7.setHidden(True)
-        self.Widget.L_2_D8.setHidden(True)
-        self.Widget.L_2_D9.setHidden(True)
-
-        self.Widget.Sp_2_D1.setHidden(True)
-        self.Widget.Sp_2_D2.setHidden(True)
-        self.Widget.Sp_2_D3.setHidden(True)
-        self.Widget.Sp_2_D4.setHidden(True)
-        self.Widget.Sp_2_D5.setHidden(True)
-        self.Widget.Sp_2_D6.setHidden(True)
-        self.Widget.Sp_2_D7.setHidden(True)
-        self.Widget.Sp_2_D8.setHidden(True)
-        self.Widget.Sp_2_D9.setHidden(True)
-
-    def Test(self, a):
-        #print(getattr(self.Widget,a).value())
-        self.dim_values [a] = getattr(self.Widget,a).value()
-        print(self.dim_values)
-        #print(dim_values [a])
-        #print(self.Widget.__name__())
-        #print(type(self))
-        #print(type(self.Widget))
-        #print (dir(self.Widget))
+MyMainWidget.Show_()
+#Show_()
 
 
-        
+#print('MyMainWidget:  ',dir(MyMainWidget))
+#controls.get_object(MyMainWidget)
+#print('main:  ',dir(main))
+
+#
 
 
-#main()
+
+ 
+
+
 """ loader = QtUiTools.QUiLoader()
 file = QtCore.QFile(g_WG_dir+"/BackToMain.ui")
 QtCore.QFile(g_WG_dir+"/BackToMain.ui")
@@ -327,6 +150,5 @@ file.close()
 Widget.CB_Back.clicked.connect(onClick)
 Widget.show() """
 
-MyMainWidget = MainWidget()
-MyBackToMain =  BackToMain()
+
 #print('siker')

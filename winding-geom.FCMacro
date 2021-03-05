@@ -28,10 +28,10 @@ try:
     #import site
     #import inspect
     #from importlib import import_module
-    from math import sqrt
+    #from math import sqrt
     #from distutils.sysconfig import get_python_lib
-    from shapely.geometry import Point, Polygon
-    from pyquaternion import Quaternion #inspect.isclass(Quaternion)
+    #from shapely.geometry import Point, Polygon
+    #from pyquaternion import Quaternion #inspect.isclass(Quaternion)
     from PySide import QtGui #QWidget
     from PySide import QtUiTools #QUiLoader
     from PySide import QtCore #QFile

@@ -13,7 +13,7 @@
     <x>0</x>
     <y>0</y>
     <width>300</width>
-    <height>60</height>
+    <height>80</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -31,26 +31,16 @@
   <property name="maximumSize">
    <size>
     <width>300</width>
-    <height>60</height>
+    <height>150</height>
    </size>
   </property>
   <property name="windowTitle">
-   <string>Back to main window</string>
+   <string>Winding Geom</string>
   </property>
   <property name="modal">
    <bool>false</bool>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="1">
-    <widget class="QPushButton" name="CB_Back">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="text">
-      <string>Back to main window</string>
-     </property>
-    </widget>
-   </item>
    <item row="0" column="2">
     <spacer name="horizontalSpacer">
      <property name="orientation">
@@ -64,6 +54,23 @@
      </property>
     </spacer>
    </item>
+   <item row="0" column="1">
+    <widget class="QPushButton" name="CB_Back">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Back to main window</string>
+     </property>
+    </widget>
+   </item>
    <item row="0" column="0">
     <spacer name="horizontalSpacer_2">
      <property name="orientation">
@@ -76,6 +83,32 @@
       </size>
      </property>
     </spacer>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLabel" name="label">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>20</height>
+      </size>
+     </property>
+     <property name="sizeIncrement">
+      <size>
+       <width>0</width>
+       <height>20</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Operating FreeCAD is now possible</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

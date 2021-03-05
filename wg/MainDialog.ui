@@ -226,30 +226,19 @@
       </rect>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
-       <widget class="QLabel" name="L_1_Di">
-        <property name="text">
-         <string>Inner diameter (Di)</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="L_1_T">
-        <property name="text">
-         <string>Core thickness (T)</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="L_1_Do">
-        <property name="text">
-         <string>Outer Diameter (Do), reference dimension</string>
-        </property>
-        <property name="textFormat">
-         <enum>Qt::PlainText</enum>
-        </property>
-        <property name="wordWrap">
+      <item row="2" column="1">
+       <widget class="QDoubleSpinBox" name="Sp_1_Do">
+        <property name="enabled">
          <bool>true</bool>
+        </property>
+        <property name="decimals">
+         <number>5</number>
+        </property>
+        <property name="maximum">
+         <double>9999.989999999999782</double>
+        </property>
+        <property name="singleStep">
+         <double>0.100000000000000</double>
         </property>
        </widget>
       </item>
@@ -267,7 +256,7 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QDoubleSpinBox" name="Sp_1_H">
+       <widget class="QDoubleSpinBox" name="Sp_1_T">
         <property name="decimals">
          <number>5</number>
         </property>
@@ -279,8 +268,48 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
-       <widget class="QDoubleSpinBox" name="Sp_1_Do">
+      <item row="1" column="0">
+       <widget class="QLabel" name="L_1_T">
+        <property name="text">
+         <string>Core thickness (T)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="L_1_Do">
+        <property name="text">
+         <string>Outer Diameter (Do)</string>
+        </property>
+        <property name="textFormat">
+         <enum>Qt::PlainText</enum>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="L_1_Di">
+        <property name="text">
+         <string>Inner diameter (Di)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="L_1_Do_2">
+        <property name="text">
+         <string>Core length (L)</string>
+        </property>
+        <property name="textFormat">
+         <enum>Qt::PlainText</enum>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QDoubleSpinBox" name="Sp_1_L">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -330,14 +359,14 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_2">
+        <widget class="QPushButton" name="cb_1_exitWg">
          <property name="text">
           <string>Exit WindGeom</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_3">
+        <widget class="QPushButton" name="Cb_1_AccNext">
          <property name="text">
           <string>Accept / Next</string>
          </property>
@@ -406,14 +435,14 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_5">
+        <widget class="QPushButton" name="cb_2_exitWg">
          <property name="text">
           <string>Exit WindGeom</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_6">
+        <widget class="QPushButton" name="Cb_2_AccNext">
          <property name="text">
           <string>Accept / Next</string>
          </property>
@@ -1161,14 +1190,14 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_7">
+        <widget class="QPushButton" name="Cb_3_exitWg">
          <property name="text">
           <string>Exit WindGeom</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_8">
+        <widget class="QPushButton" name="Cb_3_AccNext">
          <property name="text">
           <string>Accept / Next</string>
          </property>

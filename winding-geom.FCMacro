@@ -24,6 +24,7 @@ except:
 
 MyMainWidget = MainWidget()
 
+MyMainWidget.installEventFilter(MyMainWidget)
 
 MyBackToMain = BackToMain()
 MyMainWidget.obj_BackToMain =  MyBackToMain

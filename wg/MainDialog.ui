@@ -64,6 +64,9 @@
      <kerning>true</kerning>
     </font>
    </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
+   </property>
    <property name="tabPosition">
     <enum>QTabWidget::South</enum>
    </property>

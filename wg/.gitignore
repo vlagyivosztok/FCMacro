@@ -1,4 +1,5 @@
 *.*
+/state1_save/*.*
 !__pycache__
 !.gitignore
 !1st-step-q.jpg

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form1</class>
- <widget class="QDialog" name="Form1">
+ <class>MainWindow</class>
+ <widget class="QDialog" name="MainWindow">
   <property name="windowModality">
-   <enum>Qt::ApplicationModal</enum>
+   <enum>Qt::NonModal</enum>
   </property>
   <property name="geometry">
    <rect>
@@ -32,7 +32,7 @@
    <string/>
   </property>
   <property name="modal">
-   <bool>true</bool>
+   <bool>false</bool>
   </property>
   <widget class="QTabWidget" name="tabWidget">
    <property name="geometry">
@@ -359,7 +359,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="cb_1_exitWg">
+        <widget class="QPushButton" name="Cb_1_exitWg">
          <property name="text">
           <string>Exit WindGeom</string>
          </property>
@@ -435,7 +435,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="cb_2_exitWg">
+        <widget class="QPushButton" name="Cb_2_exitWg">
          <property name="text">
           <string>Exit WindGeom</string>
          </property>
@@ -642,7 +642,7 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_6">
               <item>
-               <widget class="QRadioButton" name="Rb_Groove1">
+               <widget class="QRadioButton" name="Gr1">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                   <horstretch>0</horstretch>
@@ -743,7 +743,7 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_7">
               <item>
-               <widget class="QRadioButton" name="Rb_Groove2">
+               <widget class="QRadioButton" name="Gr2">
                 <property name="minimumSize">
                  <size>
                   <width>110</width>
@@ -838,7 +838,7 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_9">
               <item>
-               <widget class="QRadioButton" name="Rb_Groove3">
+               <widget class="QRadioButton" name="Gr3">
                 <property name="minimumSize">
                  <size>
                   <width>110</width>
@@ -1153,7 +1153,7 @@
      </layout>
     </widget>
    </widget>
-   <widget class="QWidget" name="tab">
+   <widget class="QWidget" name="tab3">
     <attribute name="title">
      <string>Wire / pin geometry and arrangement</string>
     </attribute>
@@ -1207,13 +1207,41 @@
      </widget>
     </widget>
    </widget>
-   <widget class="QWidget" name="tab_2">
+   <widget class="QWidget" name="tab4">
     <attribute name="title">
      <string>Model data export</string>
     </attribute>
    </widget>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>Sp_1_Di</tabstop>
+  <tabstop>Sp_1_T</tabstop>
+  <tabstop>Sp_1_Do</tabstop>
+  <tabstop>Sp_1_L</tabstop>
+  <tabstop>Cb_1_GtFc</tabstop>
+  <tabstop>Cb_1_exitWg</tabstop>
+  <tabstop>Cb_1_AccNext</tabstop>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>Gr1</tabstop>
+  <tabstop>Gr2</tabstop>
+  <tabstop>Gr3</tabstop>
+  <tabstop>Sp_2_D1</tabstop>
+  <tabstop>Sp_2_D2</tabstop>
+  <tabstop>Sp_2_D3</tabstop>
+  <tabstop>Sp_2_D4</tabstop>
+  <tabstop>Sp_2_D5</tabstop>
+  <tabstop>Sp_2_D6</tabstop>
+  <tabstop>Sp_2_D7</tabstop>
+  <tabstop>Sp_2_D8</tabstop>
+  <tabstop>Sp_2_D9</tabstop>
+  <tabstop>Cb_2_GtFc</tabstop>
+  <tabstop>Cb_2_exitWg</tabstop>
+  <tabstop>Cb_2_AccNext</tabstop>
+  <tabstop>Cb_3_GtFc</tabstop>
+  <tabstop>Cb_3_exitWg</tabstop>
+  <tabstop>Cb_3_AccNext</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

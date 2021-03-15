@@ -1,19 +1,19 @@
 *.*
 /state1_save/*.*
-!__pycache__
+__pycache__
 !.gitignore
 !1st-step-q.jpg
 !BackToMain.ui
 !controls.py
 !groove-1_prev.jpg
-!groove-1_prev_proc.jpg
+groove-1_prev_proc.jpg
 !groove-2_prev.jpg
 !groove1.jpg
 !groove2.jpg
 !import-basic-error.vbs
 !import-error.vbs
 !interfaces copy.py
-interfaces.py
+!interfaces.py
 interfaces_.py
 MainDialog - Kopie.ui
 MainDialog - Kopie.ui.autosave

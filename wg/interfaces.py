@@ -54,13 +54,62 @@ class CheckResults(QtGui.QWidget):
         self.Widget = self.loader.load(self.file)
         self.file.close()
         self.Widget.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowStaysOnTopHint)
+        self.GeomInput =  {}
         self.obj_MainWidget = None
+        self.Tab = ''
+
+        #region checktests
+        self.GeomInput = {}
+        self.checkOutput = []
+        #self.checktext = ''
+        self.checktexts = {}
+        self.checklist = {}
+
+        self.checktexts[1] ="if ((self.GeomInput['tab1'])['values'])['Di'] < ((self.GeomInput['tab1'])['values'])['T']*2: " \
+            "self.checkOutput.append('Check the relation between Di and T!')"
+        self.checktexts[2] ="if ((self.GeomInput['tab1'])['values'])['L'] < ((self.GeomInput['tab1'])['values'])['Di']: " \
+            'self.checkOutput.append("Check the relation between L and Di!")'
+        
+        ''' self.checktexts[2] ='if self.ui.Sp_1_L.value() < self.ui.Sp_1_Di.value():' \
+            'self.MyDataTabs.checkOutput.append("The Core seems to be too short")' '''
+
+        """ self.checktexts[1] ='self.MyDataTabs.checkOutput.append("Check the relation between Di and T!")'
+        self.checktexts[2] ='self.MyDataTabs.checkOutput.append("The Core seems to be too short")' """                
+
+        
+        self.checktexts[3] ='if self.ui.Sp_2_D1.value() > self.ui.Sp_1_D4.value()/5:' \
+            'self.errtext += "Check the relation between H1 and H4!"'
+        self.checktexts[4] ='if self.ui.Sp_2_T.value() > self.ui.Sp_1_D4.value()*2:' \
+            'self.errtext += "Check the relation between T and H4!"'
+        self.checktexts[5] ='if self.ui.Sp_2_D7.value() > self.ui.Sp_1_D9.value()*2 or if self.ui.Sp_2_D9.value() > self.ui.Sp_1_D7.value()*2:' \
+            'self.errtext += "Check the relation between B2 and D / R!"'
+
+        #endregion checktests
+
+        #region checklists
+        self.checklist['tab1Gr0']=[1,2]
+        # endregion checklists           
 
         self.Widget.Cb_AccAnyway.clicked.connect(self.dummy)
         self.Widget.Cb_BackToValues.clicked.connect(self.dummy)
 
     def dummy(self):
         print('dummy')
+    
+    def Init(self):
+        self.checkOutput = []
+        self.GeomInput = self.obj_MainWidget.GeomInput
+        self.Tab = self.obj_MainWidget.MyDataTabs.CurrTab
+        Gr = self.obj_MainWidget.MyDataTabs.CurrGr
+        TabGr =   self.Tab+Gr        
+
+        #print('GeomInput',self.GeomInput)
+        print(self.checktexts[1])
+        print(self.checktexts[2])
+        exec(self.checktexts[1])
+        exec(self.checktexts[2])        
+        #print(((self.GeomInput['tab1'])['values'])['Di'])
+        print(self.checkOutput)
                
         #TB_Chktext
         #CB_AccAnyway
@@ -86,9 +135,7 @@ class MainWidget(QtGui.QMainWindow):
             
             self.parent = None
             self.datatabs =  {}
-            self.checktexts={}
-            self.checklist = {}
-            self.checkOutput = []
+
             self.dict = {}
             self.CurrTab = ''
             self.CurrGr = ''
@@ -107,29 +154,7 @@ class MainWidget(QtGui.QMainWindow):
             print('WidgetLabel', type(self.datatabs['WidgetLabel']))
             print('WidgetName', type(self.datatabs['WidgetName'])) """
             
-            #region checktests
-            self.checkOutput = []
-            self.checktexts[1] ='if self.ui.Sp_1_Di.value() < self.ui.Sp_1_T.value()*2:' \
-                'self.MyDataTabs.checkOutput.append("Check the relation between Di and T!")'
-            self.checktexts[2] ='if self.ui.Sp_1_L.value() < self.ui.Sp_1_Di.value():' \
-                'self.MyDataTabs.checkOutput.append("The Core seems to be too short")'
 
-            """ self.checktexts[1] ='self.MyDataTabs.checkOutput.append("Check the relation between Di and T!")'
-            self.checktexts[2] ='self.MyDataTabs.checkOutput.append("The Core seems to be too short")' """                
-
-            
-            self.checktexts[3] ='if self.ui.Sp_2_D1.value() > self.ui.Sp_1_D4.value()/5:' \
-                'self.errtext += "Check the relation between H1 and H4!"'
-            self.checktexts[4] ='if self.ui.Sp_2_T.value() > self.ui.Sp_1_D4.value()*2:' \
-                'self.errtext += "Check the relation between T and H4!"'
-            self.checktexts[5] ='if self.ui.Sp_2_D7.value() > self.ui.Sp_1_D9.value()*2 or if self.ui.Sp_2_D9.value() > self.ui.Sp_1_D7.value()*2:' \
-                'self.errtext += "Check the relation between B2 and D / R!"'
-
-            #endregion checktests
-
-            #region checklists
-            self.checklist['tab1Gr0']=[1,2]
-            # endregion checklists   
       
         def getTab(self,name,widgets,labels): #string, dict
             self.datatabs[name]= {'ObjNames' : widgets, 
@@ -322,6 +347,10 @@ class MainWidget(QtGui.QMainWindow):
         self.currWidget = None 
         #self.tag = ''   #2. mezo, WLabel vagy WName
         self.GeomInput = {}
+        for key in ['tab1','tab2','tab3','tab4']:
+            self.GeomInput[key] = {}
+            self.GeomInput[key] = {'values':{}}
+
         #region static images
         self.pixmap = QtGui.QPixmap(g_wg_dir+"/tab1.jpg")
         self.ui.S1_L1.setPixmap(self.pixmap)
@@ -537,13 +566,14 @@ class MainWidget(QtGui.QMainWindow):
         self.MyDataTabs.setCurrTabGr(self.sender().currentWidget(),'')
 
     def AccNext_Clicked(self):
-        for item  in self.MyDataTabs.checklist['tab1Gr0']:
-            print(self.MyDataTabs.checktexts[item])
-            exec(self.MyDataTabs.checktexts[item])
-            print(self.MyDataTabs.checkOutput)
-        #ertekeket is kiirni, majd a szovegeket egyesevel, nem listkent
-        self.obj_CheckResults.Widget.TB_Chktext.setText(str(self.MyDataTabs.checkOutput))
-        self.obj_CheckResults.Widget.show()
+        #self.GeomInput
+        #self.MyDataTabs.CurrTab
+        #self.MyDataTabs.CurrGr
+        Tab = self.MyDataTabs.CurrTab
+        Gr = self.MyDataTabs.CurrGr
+        TabGr =   Tab+Gr
+        for key in (self.MyDataTabs.datatabs[TabGr])['ObjLabels']:
+            ((self.GeomInput[Tab])['values'])[key] = (((self.MyDataTabs.datatabs[TabGr])['ObjLabels'])[key]).value()
+        #print(self.GeomInput)
 
-        #self.checklist['tab1Gr0']=[1,2] self.checktexts[1]
-        
+        self.obj_CheckResults.Init()

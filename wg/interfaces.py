@@ -69,30 +69,34 @@ class CheckResults(QtGui.QWidget):
             "self.checkOutput.append('Check the relation between Di and T!')"
         self.checktexts[2] ="if ((self.GeomInput['tab1'])['values'])['L'] < ((self.GeomInput['tab1'])['values'])['Di']: " \
             'self.checkOutput.append("Check the relation between L and Di!")'
-        
-        ''' self.checktexts[2] ='if self.ui.Sp_1_L.value() < self.ui.Sp_1_Di.value():' \
-            'self.MyDataTabs.checkOutput.append("The Core seems to be too short")' '''
+         
+        self.checktexts[11] ="if ((self.GeomInput['tab2'])['values'])['B2'] < ((self.GeomInput['tab2'])['values'])['B1']: " \
+            "self.checkOutput.append('Check the relation between B1 and B2!')"
+        self.checktexts[12] ="if ((self.GeomInput['tab2'])['values'])['D'] < ((self.GeomInput['tab2'])['values'])['B2']: " \
+            "self.checkOutput.append('Check the relation between B2 and D!')"
+        self.checktexts[13] ="if (((self.GeomInput['tab2'])['values'])['H1']+((self.GeomInput['tab2'])['values'])['H2']) > ((self.GeomInput['tab2'])['values'])['H3']: " \
+            "self.checkOutput.append('Check the relation between H1, H2 and H3!')"
+        self.checktexts[14] ="if ((self.GeomInput['tab1'])['values'])['T'] < ((self.GeomInput['tab2'])['values'])['H4']: " \
+            "self.checkOutput.append('Check the relation between T (prev. tab) and H4!')"            
 
-        """ self.checktexts[1] ='self.MyDataTabs.checkOutput.append("Check the relation between Di and T!")'
-        self.checktexts[2] ='self.MyDataTabs.checkOutput.append("The Core seems to be too short")' """                
-
-        
-        self.checktexts[3] ='if self.ui.Sp_2_D1.value() > self.ui.Sp_1_D4.value()/5:' \
-            'self.errtext += "Check the relation between H1 and H4!"'
-        self.checktexts[4] ='if self.ui.Sp_2_T.value() > self.ui.Sp_1_D4.value()*2:' \
-            'self.errtext += "Check the relation between T and H4!"'
-        self.checktexts[5] ='if self.ui.Sp_2_D7.value() > self.ui.Sp_1_D9.value()*2 or if self.ui.Sp_2_D9.value() > self.ui.Sp_1_D7.value()*2:' \
-            'self.errtext += "Check the relation between B2 and D / R!"'
+        self.checktexts[21] ="if ((self.GeomInput['tab2'])['values'])['Di'] < ((self.GeomInput['tab2'])['values'])['T']*2: " \
+            "self.checkOutput.append('Check the relation between Di and T!')"
+        self.checktexts[22] ="if ((self.GeomInput['tab2'])['values'])['B4'] < ((self.GeomInput['tab1'])['values'])['B2']: " \
+            "self.checkOutput.append('Check the relation between B2 and B4!')" 
+                                              
 
         #endregion checktests
 
         #region checklists
         self.checklist['tab1Gr0']=[1,2]
+        self.checklist['tab2Gr1']=[11,12,13,14]
+        self.checklist['tab2Gr2']=[13,14,21,22]
+        self.checklist['tab2Gr3']=[13]
         # endregion checklists           
 
-        self.Widget.Cb_AccAnyway.clicked.connect(self.dummy)
-        self.Widget.Cb_BackToValues.clicked.connect(self.dummy)
-
+        self.Widget.Cb_AccAnyway.clicked.connect(self.Accept)
+        self.Widget.Cb_BackToValues.clicked.connect(self.Hide_)
+        
     def dummy(self):
         print('dummy')
     
@@ -100,27 +104,42 @@ class CheckResults(QtGui.QWidget):
         self.checkOutput = []
         self.GeomInput = self.obj_MainWidget.GeomInput
         self.Tab = self.obj_MainWidget.MyDataTabs.CurrTab
-        Gr = self.obj_MainWidget.MyDataTabs.CurrGr
-        TabGr =   self.Tab+Gr        
+        self.Gr = self.obj_MainWidget.MyDataTabs.CurrGr
+        TabGr =   self.Tab+self.Gr        
 
         #print('GeomInput',self.GeomInput)
-        print(self.checktexts[1])
-        print(self.checktexts[2])
-        exec(self.checktexts[1])
-        exec(self.checktexts[2])        
-        #print(((self.GeomInput['tab1'])['values'])['Di'])
-        print(self.checkOutput)
-               
-        #TB_Chktext
-        #CB_AccAnyway
-        #CB_BackToValues
-        #self.Widget.setWindowFlags(QtCore.Qt.WindowTitleHint)
-        #self.Widget.setWindowFlags(self.Widget.windowFlags() & ~QtCore.Qt.WindowStaysOnTopHint)
-        #self.Widget.show()
+        #self.checklist['tab1Gr0'] list
+        #self.checktexts dict
+        for index in self.checklist[TabGr]:
+            print(index)
+            exec(self.checktexts[index])
 
-    def Show_(self):
+        #print(((self.GeomInput['tab1'])['values'])['Di'])
+        #print(self.checkOutput)
+        self.Widget.TB_Chktext.setText('')
+        if not len(self.checkOutput):
+            self.checkOutput.append ("The values seem to be OK.")
+        else:
+            self.checkOutput.insert(0,"")
+            self.checkOutput.insert(0,"(There are no strict rules. You can accept anyway)")
+            self.checkOutput.insert(0,"Please consider the following comments!")
+        for text in self.checkOutput:
+            self.Widget.TB_Chktext.append(text)
+        print(self.checkOutput)
+        self.Widget.show() 
+
+    def Hide_(self):
     
-        self.Widget.show()        
+        self.Widget.hide() 
+
+    def Accept(self):   #self.GeomInput)
+        self.GeomInput = self.obj_MainWidget.GeomInput
+        self.Tab = self.obj_MainWidget.MyDataTabs.CurrTab
+        (self.obj_MainWidget.GeomInput[self.Tab])['accepted'] = True
+        print('accepted:True')
+        self.Widget.hide()
+        self.obj_MainWidget.valuesAccepted()
+        #print(self.obj_MainWidget.GeomInput)
 
 class MainWidget(QtGui.QMainWindow):
     class DataTabs:    #minden tab es az adatai, adatfeldolgozasa, lathatosagok
@@ -257,7 +276,7 @@ class MainWidget(QtGui.QMainWindow):
                 if self.ObjLabels[_obj] == 'Do'and self.LabelObjs['Do'].value() > 0:
                     if self.LabelObjs['T'].value() > 0 and self.LabelObjs['Do'].value() > self.LabelObjs['T'].value():
                         self.LabelObjs['Di'].setValue(self.LabelObjs['Do'].value()-2*self.LabelObjs['T'].value())
-                if self.ObjLabels[_obj] == 'T'and self.LabelObjs['T'].value() > 0:
+                if self.ObjLabels[_obj] == 'T'and self.LabelObjs['T'].value() > 0:                    
                     if self.LabelObjs['Di'].value() > 0:
                         self.LabelObjs['Do'].setValue(self.LabelObjs['Di'].value()+2*self.LabelObjs['T'].value())                
                     elif self.LabelObjs['Do'].value() > 0 and self.LabelObjs['Do'].value() > self.LabelObjs['T'].value():
@@ -527,13 +546,23 @@ class MainWidget(QtGui.QMainWindow):
         if event.type() == 6:
             if event.key() == 16777220 or event.key() == 16777221:   #2 fele enter
                 #print('enter')
-                self.MyDataTabs.corr_tabs(obj)
-                self.MyDataTabs.AccNextEnable(obj)
+                self.valueEntered(obj)
         if event.type() == 9:
             #print('exit widget')
-            self.MyDataTabs.corr_tabs(obj)
-            self.MyDataTabs.AccNextEnable(obj)
+            self.valueEntered(obj)
         return False
+
+    def valueEntered(self, obj):
+        print('entered')
+        if 'accepted' in self.GeomInput[self.MyDataTabs.CurrTab]:
+            #print('van accepted')
+            if (self.GeomInput[self.MyDataTabs.CurrTab])['accepted']:
+                #print('accepted:True')
+                (self.GeomInput[self.MyDataTabs.CurrTab])['accepted'] = False
+                print('accepted:false')
+        self.MyDataTabs.corr_tabs(obj)
+        self.MyDataTabs.AccNextEnable(obj)
+
 
     def Show_(self):
         if self.obj_BackToMain.Widget.isVisible():
@@ -543,6 +572,16 @@ class MainWidget(QtGui.QMainWindow):
         self.ui.Sp_1_T.setValue(10)
         self.ui.Sp_1_Do.setValue(10)
         self.ui.Sp_1_L.setValue(10)
+
+        self.ui.Sp_2_D1.setValue(10)
+        self.ui.Sp_2_D2.setValue(10)
+        self.ui.Sp_2_D3.setValue(10)
+        self.ui.Sp_2_D4.setValue(10)
+        self.ui.Sp_2_D5.setValue(10)
+        self.ui.Sp_2_D6.setValue(10)
+        self.ui.Sp_2_D7.setValue(10)
+        self.ui.Sp_2_D8.setValue(10)
+        self.ui.Sp_2_D9.setValue(10)
 
         self.show()
 
@@ -569,11 +608,21 @@ class MainWidget(QtGui.QMainWindow):
         #self.GeomInput
         #self.MyDataTabs.CurrTab
         #self.MyDataTabs.CurrGr
+        #self.valuesAccepted()
         Tab = self.MyDataTabs.CurrTab
         Gr = self.MyDataTabs.CurrGr
         TabGr =   Tab+Gr
+        #print(TabGr)
         for key in (self.MyDataTabs.datatabs[TabGr])['ObjLabels']:
             ((self.GeomInput[Tab])['values'])[key] = (((self.MyDataTabs.datatabs[TabGr])['ObjLabels'])[key]).value()
-        #print(self.GeomInput)
+        print(self.GeomInput)
 
         self.obj_CheckResults.Init()
+    
+    def valuesAccepted(self):
+        #rgb(153, 204, 255)
+        #self.MyDataTabs.CurrTab+self.MyDataTabs.CurrGr
+        #print(self.MyDataTabs.datatabs[self.MyDataTabs.CurrTab+self.MyDataTabs.CurrGr])['ObjNames']
+        #print((self.MyDataTabs.datatabs[self.MyDataTabs.CurrTab+self.MyDataTabs.CurrGr])['ObjNames'])
+        for Widget in (self.MyDataTabs.datatabs[self.MyDataTabs.CurrTab+self.MyDataTabs.CurrGr])['ObjNames']:
+            (((self.MyDataTabs.datatabs[self.MyDataTabs.CurrTab+self.MyDataTabs.CurrGr])['ObjNames'])[Widget]).setStyleSheet("background:rgb(153, 204, 255);font: bold 12px")

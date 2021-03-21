@@ -94,7 +94,7 @@ def def_quaternion(v1,v2): #ket vektor kozotti elmozdulas quaternion eloallitasa
         return_tuple = (round(new_q[1],6),round(new_q[2],6),round(new_q[3],0),round(new_q[0],0))
         return return_tuple
 
-    else:
+    else: #altalanos helyzetu vektorok
         x_vect = v1.cross(v2)
         q_w = sqrt((pow(v1.Length,2)) * (pow(v2.Length,2))) + v1.dot(v2)
         new_q = Quaternion(q_w, x_vect[0], x_vect[1], x_vect[2])

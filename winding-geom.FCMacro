@@ -12,6 +12,7 @@ try:
     #from PySide import QtUiTools #QUiLoader
     #from PySide import QtCore #QFile
     from wg.interfaces import MainWidget, BackToMain, CheckResults
+    from wg.creategeom import WiresInGroove
 except:
     print('main import')    
     os.system(g_WG_dir+'\import-error.vbs')
@@ -31,7 +32,12 @@ MyBackToMain.obj_MainWidget = MyMainWidget
 MyCheckResults = CheckResults()
 MyMainWidget.obj_CheckResults = MyCheckResults
 MyCheckResults.obj_MainWidget = MyMainWidget
+MyCheckResults.init_checktexts()
 
+MyWiresInGroove = WiresInGroove()
+MyWiresInGroove.obj_MainWidget = MyMainWidget
+
+#print(MyWiresInGroove.obj_MainWidget.GeomInput)
 
 MyMainWidget.Show_()
 

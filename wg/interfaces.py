@@ -102,7 +102,7 @@ class CheckResults(QtGui.QWidget):
                 "self.checkOutput.append('Check the relation between T (prev. tab) and H4!')\n" \
                 "else:\n\tself.checkOutput.append('Previous tab/tabs are not filled! <T>')\n\t" \
                 "self.checkOutput.append('Checking is limited only on given input!')"
-        self.checktexts[22] ="if ((self.GeomInput['tab2'])['values'])['B4'] < ((self.GeomInput['tab1'])['values'])['B2']: " \
+        self.checktexts[22] ="if ((self.GeomInput['tab2'])['values'])['B4'] < ((self.GeomInput['tab2'])['values'])['B2']: " \
             "self.checkOutput.append('Check the relation between B2 and B4!')"
 
         self.checktexts[31] ="if ((self.GeomInput['tab3'])['values'])['It'] > (((self.GeomInput['tab3'])['values'])['Wd'])/2: " \

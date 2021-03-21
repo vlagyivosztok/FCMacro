@@ -127,7 +127,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Back to values</string>
+        <string>Back to inputs</string>
        </property>
       </widget>
      </item>

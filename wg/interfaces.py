@@ -155,7 +155,7 @@ class CheckResults(QtGui.QWidget):
             self.checkOutput.append ("The values seem to be OK.")
         else:
             self.checkOutput.insert(0,"")
-            self.checkOutput.insert(0,"(There are no strict rules. You can accept anyway)")
+            self.checkOutput.insert(0,"(There are no strict rules. You can accept anyway.)")
             self.checkOutput.insert(0,"Please consider the following comments!")
         for text in self.checkOutput:
             self.Widget.TB_Chktext.append(text)

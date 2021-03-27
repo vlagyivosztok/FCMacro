@@ -15,14 +15,14 @@ try:
     from PySide import QtUiTools #QUiLoader
     from PySide import QtCore #QFile, Qt
 except:
-    print('interfaces import')
+   #rint('dbg','interfaces import')
     os.system(g_wg_dir+'\import-error.vbs')
     raise Exception("Quit macro / interfaces.py")
 #endregion imports
 
 class BackToMain(QtGui.QWidget):
     def __init__(self):
-        print('BackToMain init')
+       #rint('dbg','BackToMain init')
         super(BackToMain, self).__init__()
         self.loader = QtUiTools.QUiLoader()
         self.file = QtCore.QFile(g_wg_dir+"/BackToMain.ui")
@@ -38,18 +38,18 @@ class BackToMain(QtGui.QWidget):
 
         #self.Widget.show()
     def BackOnClick(self):
-        print('BackOnClick')
+       #rint('dbg','BackOnClick')
         self.obj_MainWidget.Show_()
 
     def Show_(self):
-        print('BackToMain Show_')
+       #rint('dbg','BackToMain Show_')
         if self.obj_MainWidget.isVisible():
             self.obj_MainWidget.hide()    
         self.Widget.show()
 
 class CheckResults(QtGui.QWidget):
     def __init__(self):
-        print("CheckResults init")
+       #rint('dbg',"CheckResults init")
         #super(CheckResults, self).__init__()
         self.loader = QtUiTools.QUiLoader()
         self.file = QtCore.QFile(g_wg_dir+"/chktext.ui")
@@ -57,7 +57,6 @@ class CheckResults(QtGui.QWidget):
         self.Widget = self.loader.load(self.file)
         self.file.close()
         self.Widget.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowStaysOnTopHint)
-        #self.GeomInput =  {}
         self.obj_MainWidget = None
         self.Tab = ''
 
@@ -127,32 +126,24 @@ class CheckResults(QtGui.QWidget):
         self.Widget.Cb_AccAnyway.clicked.connect(self.Accept)
         self.Widget.Cb_BackToValues.clicked.connect(self.Hide_)
 
-    def init_checktexts(self):
-        self.GeomInput = self.obj_MainWidget.GeomInput      ############# ez miert van itt? mert pillanatnyilag nincs jobb otletem...
-        
-
-    def dummy(self):
-        print('dummy')
-    
+    ''' def init_checktexts(self):
+        self.GeomInput = self.obj_MainWidget.GeomInput      ############# ez miert van itt? mert pillanatnyilag nincs jobb otletem... '''
+     
     def Init(self):
-        print('CheckResults Init')
+       #rint('dbg','CheckResults Init')
         self.checkOutput = []
-        #
+
         self.Tab = self.obj_MainWidget.MyDataTabs.CurrTab
         self.Gr = self.obj_MainWidget.MyDataTabs.CurrGr
         TabGr =   self.Tab+self.Gr        
 
-        #print('GeomInput',self.GeomInput)
-        #self.checklist['tab1Gr0'] list
-        #self.checktexts dict
-        #print(self.checkOutput)
         for index in self.checklist[TabGr]:
             if index in self.checktexts:
                 exec(self.checktexts[index])
 
 
-        #print(((self.GeomInput['tab1'])['values'])['Di'])
-        #print(self.checkOutput)
+        ###rint('dbg',((self.GeomInput['tab1'])['values'])['Di'])
+        ###rint('dbg',self.checkOutput)
         self.Widget.TB_Chktext.setText('')
         if not len(self.checkOutput):
             self.checkOutput.append ("The values seem to be OK.")
@@ -162,47 +153,46 @@ class CheckResults(QtGui.QWidget):
             self.checkOutput.insert(0,"Please consider the following comments!")
         for text in self.checkOutput:
             self.Widget.TB_Chktext.append(text)
-        #print(self.checkOutput)
+        ###rint('dbg',self.checkOutput)
         self.Widget.show() 
 
     def Hide_(self):
-        print('CheckResults Hide_')
+       #rint('dbg','CheckResults Hide_')
         self.Widget.hide() 
 
-    def Accept(self):   #self.GeomInput)
-        print('CheckResults Accept')
-        #self.GeomInput = self.obj_MainWidget.GeomInput
-        self.Tab = self.obj_MainWidget.MyDataTabs.CurrTab
-        (self.obj_MainWidget.GeomInput[self.Tab])['accepted'] = True
-        #print('accepted:True')
+    def Accept(self):
+        #rint('dbg','CheckResults Accept')
+        #rint('dbg',self.obj_MainWidget.GeomInput)
+        Tab = self.obj_MainWidget.MyDataTabs.CurrTab
+        (self.obj_MainWidget.GeomInput[Tab])['accepted'] = True
         self.Widget.hide()
         self.obj_MainWidget.valuesAccepted()
-        #print(self.obj_MainWidget.GeomInput)
+        #rint('dbg',self.obj_MainWidget.GeomInput)
 
 class MainWidget(QtGui.QMainWindow):
     class DataTabs:    #minden tab es az adatai, adatfeldolgozasa, lathatosagok
 
         def __init__(self):
-            print('DataTabs init')
-            self.actStep = ''
-            self.stepNr = {}
-            self.stepobj = {}
-            self.controltext = []
-            self.filled = True
+           #rint('dbg','DataTabs init')
+            self.actStep = ''       #nem biztos, hogy kell
+            #self.stepNr = {}
+            #self.stepobj = {}
+            #self.controltext = []
+            #self.filled = True
             
             self.parent = None
             self.datatabs =  {}
             for key in ['tab1Gr0','tab2Gr0','tab2Gr1','tab2Gr2','tab2Gr3','tab3Gr0','tab3Gr1','tab3Gr2','tab3Gr3','tab4Gr0']:
                 self.datatabs[key]= {}
-            print(self.datatabs)
-            self.dict = {}
-            self.CurrTab = ''
+            ###rint('dbg',self.datatabs)               #debug #rint
+            #self.dict = {}
+            self.CurrTab = ''   
             self.allTab = ['tab1','tab2','tab3','tab4']
             self.CurrGr = ''
-            self._sender =''
-            #print(self, 'DataTabs')
-            #print(self.CurrTab,self.CurrGr)
-            #print(type(self.datatabs))
+            #self._sender =''
+            ###rint('dbg',self, 'DataTabs')
+            ###rint('dbg',self.CurrTab,self.CurrGr)
+            ###rint('dbg',type(self.datatabs))
 
             """ self.dict
             
@@ -210,30 +200,32 @@ class MainWidget(QtGui.QMainWindow):
             self.datatabs['WidgetName']= {} """
             
             #self.datatabs['tab1gr0'] = [{}]
-            """ print('datatabs', type(self.datatabs))
-            print('WidgetLabel', type(self.datatabs['WidgetLabel']))
-            print('WidgetName', type(self.datatabs['WidgetName'])) """
-            
-
+            """#rint('dbg','datatabs', type(self.datatabs))
+           #rint('dbg','WidgetLabel', type(self.datatabs['WidgetLabel']))
+           #rint('dbg','WidgetName', type(self.datatabs['WidgetName'])) """
       
-        def getTab(self,name,widgets,labels): #string, dict, labels lehet None
-            print('DataTabs getTab') #, name, widgets,labels)
-            #print(name,widgets,labels)
-            (self.datatabs[name])['ObjNames']= widgets
-            if labels != None:
-                (self.datatabs[name])['ObjLabels']= dict(zip(labels,widgets.values())) 
-                #'ObjLabels': (dict(zip(labels,widgets.values())))}
-
-            #print(name, self.datatabs[name])
-
-        def getTabControl(self,tabname,dictname,widgets):
-            print('DataTabs getTabControl')
-            #print(tabname,dictname,widgets)
-            (self.datatabs[tabname])[dictname]= widgets
-            #print(tabname, self.datatabs[tabname])
+        def getTabWidgets(self,tabname,dictname,widgets,labels = None): #string, dict, labels lehet None
+            '''Ha van labels, akkor csinal egy ObjLabels Dict-t is'''      
+            ###rint('dbg','DataTabs getTabWidgets') #, name, widgets,labels)
+            #if dictname != '':
+            ###rint('dbg',type(tabname),type(dictname),type(widgets))
+            if type(widgets) is not dict:
+                (self.datatabs[tabname])[dictname]= widgets
+            else:
+                (self.datatabs[tabname])[dictname]= widgets
+                if labels != None:      #
+                    (self.datatabs[tabname])['ObjLabels']= dict(zip(labels,widgets.values())) 
+            ''' else:                      #ez a korabbi getTabControl
+                (self.datatabs[tabname])[dictname]= widgets '''            
 
         def setCurrTabGr(self,Tab,Gr):     #isChecked()
-            print('DataTabs setCurrTabGr')
+            ''' Tab: object, Gr: string
+            CurrTab es CurrGr beallitasa, hogy mindig az aktualis allapotot mutassak.
+            Tab2-n es Tab3-n a Tab2 Gr Radiobutton szerinti allapotot allitja be CurrTab es CurrGr-be
+            hivja: Rb_Groove_onClick, Gr kivalasztasa utan
+            tabChange: kezi tab valtas utan
+            AccNext_Clicked: AccNext / Next eseten tabot valt, meghivja ezt'''            
+           #rint('dbg','DataTabs setCurrTabGr')
             if Gr == '':
                 self.CurrTab = Tab.objectName()
                 if self.CurrTab == 'tab2' or self.CurrTab == 'tab3':      # and (TabOrGr.objectName()).find('Gr')>=0:
@@ -252,103 +244,99 @@ class MainWidget(QtGui.QMainWindow):
                 self.WidgetVisib()
 
         def WidgetVisib(self):  #CurrTab es CurrGr allapotabol beallitja a lathatosagokat
-            print('DataTabs VidgetVisib')
+            '''CurrTab es CurrGr allapotabol beallitja az akt. lathatosagokat   '''
+           #rint('dbg','DataTabs VidgetVisib')
             for key in ((self.datatabs[self.CurrTab+self.CurrGr])['ObjNames']):
-                #print('own: ',widget, 'parent: ',self.parent )
+                ###rint('dbg','own: ',widget, 'parent: ',self.parent )
                 #self.parent.ui.findChild(QtGui.QDoubleSpinBox, widget).setHidden(False)
                 (self.datatabs[self.CurrTab+self.CurrGr])['ObjNames'][key].setHidden(False)
             for key in ((self.datatabs[self.CurrTab+self.CurrGr])['ObjLabels']):
                 widgetL = ((((self.datatabs[self.CurrTab+self.CurrGr])['ObjLabels'])[key]).objectName()).replace('Sp','L')
                 self.parent.ui.findChild(QtGui.QLabel, widgetL).setText(key)
                 self.parent.ui.findChild(QtGui.QLabel, widgetL).setHidden(False)
-                #print((((self.datatabs[self.CurrTab+self.CurrGr])['ObjNames'][widget]).objectName()).replace('Sp','L'))
+                ###rint('dbg',(((self.datatabs[self.CurrTab+self.CurrGr])['ObjNames'][widget]).objectName()).replace('Sp','L'))
             if 'ObjHide' in (self.datatabs[self.CurrTab+self.CurrGr]):
                 for key in ((self.datatabs[self.CurrTab+self.CurrGr])['ObjHide']):
-                    #print('hide: ',widget, 'parent: ',self.parent)
+                    ###rint('dbg','hide: ',widget, 'parent: ',self.parent)
                     self.parent.ui.findChild(QtGui.QDoubleSpinBox, key).setHidden(True)
                     widgetL = ((((self.datatabs[self.CurrTab+self.CurrGr])['ObjHide'])[key]).objectName()).replace('Sp','L')
                     self.parent.ui.findChild(QtGui.QLabel, widgetL).setHidden(True)
 
+        def resetEnabled(self):
+            #rint('dbg','DataTabs resetEnabled')
+            #rint('dbg',self.parent.GeomInput)
+            ''' egy DblSpB megvaltozott. Ekkor a sajat es
+            a koveto tabok accepted false-ra allitja es a koveto tabokon minden nem nullat zoldre a
+            a DataTabs [tabxGr0] listaja szerint. '''    
+            self.parent.GeomInput['accepted'] =False
+            self.parent.ui.tabWidget.setTabEnabled(3, False)
+
+            next_ = False
+            for key in ['tab1','tab2','tab3']:
+                if next_:
+                    (self.parent.GeomInput[key])['accepted'] =False
+                    self.checkZeros(key)
+                elif self.CurrTab == key:
+                    (self.parent.GeomInput[key])['accepted'] =False
+                    next_ = True            
+            #rint('dbg',self.parent.GeomInput)
+
         def checkZeros(self, Tab, _obj = None):
-            '''  Ha egy ertek megvaltoztatasa utan jon, accnextenable hivja, akkor _obj van es TabGr nincs.
-            Ha values rejected hivja, akkor _obj nincs, TabGr van Gr0-val, ekkor ez egy kovetkezo tab-ot jelent 
-            _obj egy DblSpBox, az aktualis, akkor lehet piros is, ha nulla lett az erteke
-                TabGr tabxGr0 formaban johet. datatabs['tabxGr0'] ben az adott tab osszes DblSpBox-a van
-                ha _obj jon, egy widget feldolgozas, plusz ellenorzes accNexthez
-                ha _obj==None es tabgr van, akkor 
-            
-            
+            '''Ha Tab-bal, _obj = None hivjak, akkor a tab-ot ellenorzi DataTabs [tabxGr0] listaja szerint
+            minden nem 0-t zoldre allit
+            Ha tab = '', _obj-jal hivjak, akkor az az aktualis widget. Az aktualis tabot nullakra ellenorizni
+            ha ok, true.
              '''
-            print('DataTabs checkZeros')
-            #print('helo', (self.datatabs[self.CurrTab+self.CurrGr])['ObjNames'] )    #[self.CurrTab+self.CurrGr]
-            checkvalues = 0
-            sum_obj = 0
-            acc_del = False
-            if Tab == '':
-                TabGr = self.CurrTab+self.CurrGr
-            else: TabGr = Tab+'Gr0'
-            print((((self.datatabs[self.CurrTab+self.CurrGr])['ObjNames'])))
-            for widget in (((self.datatabs[self.CurrTab+self.CurrGr])['ObjNames']).values()):  #.itervalues()
-                #print('check ',widget.objectName(), 'obj ',_obj.objectName())
-                sum_obj += 1
-                if _obj != None:
-                    if widget == _obj:
-                        if _obj.value() == 0.0:
-                            _obj.setStyleSheet("background-color:red;font: bold 12px")
-                        else:
-                            _obj.setStyleSheet("background:rgb(144,238,144);font: bold 12px")
-                else:    
-                    if (self.parent.GeomInput[Tab])['accepted']:
+           #rint('dbg','DataTabs checkZeros',Tab,_obj)
+            ###rint('dbg','helo', (self.datatabs[self.CurrTab+self.CurrGr])['ObjNames'] )    #[self.CurrTab+self.CurrGr]
+            if _obj == None:
+                for widget in ((self.datatabs[Tab+'Gr0'])['ObjNames']).values():
+                    if widget.value() != 0:
                         widget.setStyleSheet("background:rgb(144,238,144);font: bold 12px")
-                    acc_del = True    
-                #(self.parent.GeomInput[Tab])['accepted'] = False
-                #print(widget.value()) #, widget.objectName()) #.value()
-                if widget.value() != 0.0:
-                    checkvalues += 1
-                    widget.setStyleSheet("background:rgb(144,238,144);font: bold 12px")
-            #print(self.checkvalues, self.sum_obj)
-            if acc_del:
-                print('DataTabs checkZeros accdelTrue')
-                (self.parent.GeomInput[Tab])['accepted'] = False
-            if checkvalues == sum_obj:
-                return True
             else:
-                return False
-            #print(True)
+                if _obj.value() == 0.0:
+                    _obj.setStyleSheet("background-color:red;font: bold 12px")
+                    return False    
+                checkvalues = 0
+                sum_obj = 0
+                for widget in (((self.datatabs[self.CurrTab+self.CurrGr])['ObjNames']).values()):
+                    sum_obj += 1
+                    if widget.value() != 0.0:
+                        checkvalues += 1
+                        widget.setStyleSheet("background:rgb(144,238,144);font: bold 12px")
+                if checkvalues == sum_obj:
+                    return True
+                else:
+                    return False
 
         def AccNextEnable(self, _obj):
-            print('DataTabs AccNextEnable')
-            #print(_obj.objectName()) #sender()
-            """ for widget in ((self.datatabs[self.CurrTab+self.CurrGr])['ObjContr'].values()):
-                if widget == _obj and _obj.value() == 0.0 """
-
+            '''  '''
+           #rint('dbg','DataTabs AccNextEnable')
             if self.checkZeros('',_obj):   #lehetne for nelkul is, jelenleg egy widget van benne
-                for widget in ((self.datatabs[self.CurrTab+self.CurrGr])['ObjContr'].values()):
-                    #print('enable',widget.objectName())
-                    widget.setEnabled(True)
+                ((self.datatabs[self.CurrTab+self.CurrGr])['ObjContr']).setEnabled(True)
             else:
-                for widget in ((self.datatabs[self.CurrTab+self.CurrGr])['ObjContr'].values()):
-                    print('disable',widget.objectName())
-                    widget.setEnabled(False)
+                ((self.datatabs[self.CurrTab+self.CurrGr])['ObjContr']).setEnabled(False)
 
         def corr_tabs(self,_obj):
-            print('DataTabs  corr_tabs')
+            ''' Az aktualis beadas fuggvenyeben az erintett DblSpB ertekeket aktualizalja.
+            CurrTab, CurrGr kell hozza, _obj az aktualis Widget
+            Tab1, Tab2Gr1, Gr2 Tab3Gr1 kesz , a tobbi megcsinalni'''
+           #rint('dbg','DataTabs  corr_tabs')
             #pass
             self.LabelObjs = {}
             self.ObjLabels = {}
             self.testSeq = []
-            #print(_obj)
+            ###rint('dbg',_obj)
             #for key in ((self.datatabs[self.CurrTab+self.CurrGr])['ObjNames']):
                 #self.WidgetNames[key] = ((self.datatabs[self.CurrTab+self.CurrGr])['ObjNames'])[key]
             for key in ((self.datatabs[self.CurrTab+self.CurrGr])['ObjLabels']):
                 self.ObjLabels[((self.datatabs[self.CurrTab+self.CurrGr])['ObjLabels'])[key]] = key
                 self.LabelObjs[key] = ((self.datatabs[self.CurrTab+self.CurrGr])['ObjLabels'])[key]
-                #print(((self.datatabs[self.CurrTab+self.CurrGr])['ObjLabels'])[key])
+                ###rint('dbg',((self.datatabs[self.CurrTab+self.CurrGr])['ObjLabels'])[key])
                 if ((self.datatabs[self.CurrTab+self.CurrGr])['ObjLabels'])[key] == _obj:
-                    #print(((self.datatabs[self.CurrTab+self.CurrGr])['ObjLabels'])[key])
-                    #print(((self.datatabs[self.CurrTab+self.CurrGr])['ObjLabels'])[key],_obj, key )
-                    self._sender = key      #Label
-            #print(self._sender) #self.ObjLabels, self.LabelObjs, 
+                    ###rint('dbg',((self.datatabs[self.CurrTab+self.CurrGr])['ObjLabels'])[key])
+                    ###rint('dbg',((self.datatabs[self.CurrTab+self.CurrGr])['ObjLabels'])[key],_obj, key )
+                    _sender = key      #Label
 
             if (self.CurrTab+self.CurrGr) == 'tab1Gr0':
                 if self.ObjLabels[_obj] == 'Di' and self.LabelObjs['Di'].value() > 0:
@@ -364,13 +352,13 @@ class MainWidget(QtGui.QMainWindow):
                         self.LabelObjs['Di'].setValue(self.LabelObjs['Do'].value()-2*self.LabelObjs['T'].value())
 
             elif (self.CurrTab+self.CurrGr) == 'tab2Gr1':
-                if self._sender == 'R':
+                if _sender == 'R':
                     self.testSeq = ['D','RH']
-                if self._sender == 'D':
+                if _sender == 'D':
                     self.testSeq = ['R','RH']
-                if self._sender == 'H3':
+                if _sender == 'H3':
                     self.testSeq = ['H3R']
-                if self._sender == 'H4':
+                if _sender == 'H4':
                     self.testSeq = ['H4R']
                 for test in self.testSeq:
                     if test == 'R':
@@ -399,11 +387,11 @@ class MainWidget(QtGui.QMainWindow):
                                 self.testSeq.append('D')
 
             elif (self.CurrTab+self.CurrGr) == 'tab2Gr2':
-                if self._sender == 'R':
+                if _sender == 'R':
                     self.testSeq = ['H','B']
-                if self._sender.find('H') >= 0:
+                if _sender.find('H') >= 0:
                     self.testSeq = ['H','B']
-                if self._sender.find('B') >= 0:
+                if _sender.find('B') >= 0:
                     self.testSeq = ['B','H']
                 for test in self.testSeq:
                     if test == 'H':
@@ -447,7 +435,7 @@ class MainWidget(QtGui.QMainWindow):
 
     def __init__(self):
         #super(MainWidget, self).__init__()
-        print('mainwidget init')
+       #rint('dbg','mainwidget init')
         QtGui.QMainWindow.__init__(self, None, QtCore.Qt.WindowStaysOnTopHint)
         self.file = QtCore.QFile(g_wg_dir+"/MainDialog.ui")
         self.file.open(QtCore.QFile.ReadOnly)
@@ -455,25 +443,27 @@ class MainWidget(QtGui.QMainWindow):
         self.ui=QtUiTools.QUiLoader().load(self.file)
         self.setCentralWidget(self.ui)
         self.setWindowModality(QtCore.Qt.ApplicationModal)
-        #self.ui.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
         self.MyDataTabs = self.DataTabs()
         self.MyDataTabs.parent = self
-        #print('parent: ',self.MyDataTabs.parent)
+
         #region variables
-        self.do_events = True
-        self.tabname = ''
+
         self.obj_BackToMain = None
         self.obj_CheckResults = None
-        self.dict = {}
-        self.currWidget = None 
+        self.obj_WiresInGroove = None
+
+        tabname = ''        
+        _dict = {}
+        #self.currWidget = None 
         #self.tag = ''   #2. mezo, WLabel vagy WName
         self.GeomInput = {}
         self.GeomInput['accepted'] = False
+        self.GeomInput['groove'] = ''
         for key in ['tab1','tab2','tab3','tab4']:
             self.GeomInput[key] = {}
             self.GeomInput[key] = {'values':{},'accepted':False }
-        print('self.GeomInput %s' %self.GeomInput)
-        #print('MainWidget_init',self.GeomInput)
+       #rint('dbg','self.GeomInput %s' %self.GeomInput)
+        ###rint('dbg','MainWidget_init',self.GeomInput)
         #self.obj_CheckResults.GeomInput = self.GeomInput
         #self.ui.L_3_expl.setText("first row <br>second row")
         #WINDING GEOM FreeCAD extension
@@ -556,135 +546,142 @@ class MainWidget(QtGui.QMainWindow):
         self.ui.L_3_expl.setText('')
 
         self.MyDataTabs.actStep = self.ui.tabWidget.currentWidget().objectName()
-        #print(self.MyDataTabs.actStep)
+        ###rint('dbg',self.MyDataTabs.actStep)
         #endregion intial styles
 
         #region send widgets to DataTabs
-        self.tabname = 'tab1Gr0'
-        self.dict[self.ui.Sp_1_Di.objectName()] = self.ui.Sp_1_Di   #{'D1':}
-        self.dict[self.ui.Sp_1_T.objectName()] = self.ui.Sp_1_T #{'T':}
-        self.dict[self.ui.Sp_1_Do.objectName()] = self.ui.Sp_1_Do   #{'Do':}
-        self.dict[self.ui.Sp_1_L.objectName()] = self.ui.Sp_1_L #{'L':}
+        tabname = 'tab1Gr0'
+        _dict[self.ui.Sp_1_Di.objectName()] = self.ui.Sp_1_Di   #{'D1':}
+        _dict[self.ui.Sp_1_T.objectName()] = self.ui.Sp_1_T #{'T':}
+        _dict[self.ui.Sp_1_Do.objectName()] = self.ui.Sp_1_Do   #{'Do':}
+        _dict[self.ui.Sp_1_L.objectName()] = self.ui.Sp_1_L #{'L':}
 
-        self.MyDataTabs.getTab(self.tabname,self.dict,['Di','T','Do','L'])
+        self.MyDataTabs.getTabWidgets(tabname,'ObjNames',_dict,['Di','T','Do','L'])
 
-        #self.dict[self.ui.Cb_1_GtFc.objectName()] = self.ui.Cb_1_GtFc
-        #self.dict[self.ui.Cb_1_AccNext.objectName()] = self.ui.Cb_1_AccNext
-        #self.dict[self.ui.Cb_1_exitWg.objectName()] = self.ui.Cb_1_exitWg
-        self.MyDataTabs.getTabControl(self.tabname,'ObjContr',{self.ui.Cb_1_AccNext.objectName():self.ui.Cb_1_AccNext})
+        self.MyDataTabs.getTabWidgets(tabname,'ObjContr',self.ui.Cb_1_AccNext)
 
         #tab2Gr_ widgets to dict
-        self.dict = {}
-        self.tabname = 'tab2Gr1'
-        self.dict[self.ui.Sp_2_D1.objectName()] = self.ui.Sp_2_D1
-        self.dict[self.ui.Sp_2_D2.objectName()] = self.ui.Sp_2_D2
-        self.dict[self.ui.Sp_2_D3.objectName()] = self.ui.Sp_2_D3
-        self.dict[self.ui.Sp_2_D4.objectName()] = self.ui.Sp_2_D4
-        self.dict[self.ui.Sp_2_D6.objectName()] = self.ui.Sp_2_D6
-        self.dict[self.ui.Sp_2_D7.objectName()] = self.ui.Sp_2_D7
-        self.dict[self.ui.Sp_2_D8.objectName()] = self.ui.Sp_2_D8
-        self.dict[self.ui.Sp_2_D9.objectName()] = self.ui.Sp_2_D9
+        _dict = {}
+        tabname = 'tab2Gr0'
+        _dict[self.ui.Sp_2_D1.objectName()] = self.ui.Sp_2_D1
+        _dict[self.ui.Sp_2_D2.objectName()] = self.ui.Sp_2_D2
+        _dict[self.ui.Sp_2_D3.objectName()] = self.ui.Sp_2_D3
+        _dict[self.ui.Sp_2_D4.objectName()] = self.ui.Sp_2_D4
+        _dict[self.ui.Sp_2_D5.objectName()] = self.ui.Sp_2_D5
+        _dict[self.ui.Sp_2_D6.objectName()] = self.ui.Sp_2_D6
+        _dict[self.ui.Sp_2_D7.objectName()] = self.ui.Sp_2_D7
+        _dict[self.ui.Sp_2_D8.objectName()] = self.ui.Sp_2_D8
+        _dict[self.ui.Sp_2_D9.objectName()] = self.ui.Sp_2_D9
 
-        self.MyDataTabs.getTab(self.tabname,self.dict,['H1','H2','H3','H4','B1','B2','R','D'])
+        self.MyDataTabs.getTabWidgets(tabname,'ObjNames',_dict)
 
-        #self.dict[self.ui.Cb_2_GtFc.objectName()] = self.ui.Cb_2_GtFc
-        #self.dict[self.ui.Cb_2_AccNext.objectName()] = self.ui.Cb_2_AccNext
-        #self.dict[self.ui.Cb_2_exitWg.objectName()] = self.ui.Cb_2_exitWg
-        self.MyDataTabs.getTabControl(self.tabname,'ObjContr',{self.ui.Cb_2_AccNext.objectName():self.ui.Cb_2_AccNext}) 
-        self.MyDataTabs.getTabControl(self.tabname,'ObjHide',{self.ui.Sp_2_D5.objectName():self.ui.Sp_2_D5} )
+        _dict = {}
+        tabname = 'tab2Gr1'
+        _dict[self.ui.Sp_2_D1.objectName()] = self.ui.Sp_2_D1
+        _dict[self.ui.Sp_2_D2.objectName()] = self.ui.Sp_2_D2
+        _dict[self.ui.Sp_2_D3.objectName()] = self.ui.Sp_2_D3
+        _dict[self.ui.Sp_2_D4.objectName()] = self.ui.Sp_2_D4
+        _dict[self.ui.Sp_2_D6.objectName()] = self.ui.Sp_2_D6
+        _dict[self.ui.Sp_2_D7.objectName()] = self.ui.Sp_2_D7
+        _dict[self.ui.Sp_2_D8.objectName()] = self.ui.Sp_2_D8
+        _dict[self.ui.Sp_2_D9.objectName()] = self.ui.Sp_2_D9
 
-        self.dict = {}
-        self.tabname = 'tab2Gr0'
-        self.dict[self.ui.Sp_2_D1.objectName()] = self.ui.Sp_2_D1
-        self.dict[self.ui.Sp_2_D2.objectName()] = self.ui.Sp_2_D2
-        self.dict[self.ui.Sp_2_D3.objectName()] = self.ui.Sp_2_D3
-        self.dict[self.ui.Sp_2_D4.objectName()] = self.ui.Sp_2_D4
-        self.dict[self.ui.Sp_2_D5.objectName()] = self.ui.Sp_2_D5
-        self.dict[self.ui.Sp_2_D6.objectName()] = self.ui.Sp_2_D6
-        self.dict[self.ui.Sp_2_D7.objectName()] = self.ui.Sp_2_D7
-        self.dict[self.ui.Sp_2_D8.objectName()] = self.ui.Sp_2_D8
-        self.dict[self.ui.Sp_2_D9.objectName()] = self.ui.Sp_2_D9
+        self.MyDataTabs.getTabWidgets(tabname,'ObjNames',_dict,['H1','H2','H3','H4','B1','B2','R','D'])
 
-        self.MyDataTabs.getTab(self.tabname,self.dict,None)
+        self.MyDataTabs.getTabWidgets(tabname,'ObjContr',self.ui.Cb_2_AccNext) 
+        
+        self.MyDataTabs.getTabWidgets(tabname,'ObjHide',{self.ui.Sp_2_D5.objectName():self.ui.Sp_2_D5} )
 
-        self.dict = {}
-        self.tabname = 'tab2Gr2'
-        self.dict[self.ui.Sp_2_D1.objectName()] = self.ui.Sp_2_D1
-        self.dict[self.ui.Sp_2_D2.objectName()] = self.ui.Sp_2_D2
-        self.dict[self.ui.Sp_2_D3.objectName()] = self.ui.Sp_2_D3
-        self.dict[self.ui.Sp_2_D4.objectName()] = self.ui.Sp_2_D4
-        self.dict[self.ui.Sp_2_D5.objectName()] = self.ui.Sp_2_D5
-        self.dict[self.ui.Sp_2_D6.objectName()] = self.ui.Sp_2_D6
-        self.dict[self.ui.Sp_2_D7.objectName()] = self.ui.Sp_2_D7
-        self.dict[self.ui.Sp_2_D8.objectName()] = self.ui.Sp_2_D8
-        self.dict[self.ui.Sp_2_D9.objectName()] = self.ui.Sp_2_D9
+        _dict = {}
+        tabname = 'tab2Gr2'
+        _dict[self.ui.Sp_2_D1.objectName()] = self.ui.Sp_2_D1
+        _dict[self.ui.Sp_2_D2.objectName()] = self.ui.Sp_2_D2
+        _dict[self.ui.Sp_2_D3.objectName()] = self.ui.Sp_2_D3
+        _dict[self.ui.Sp_2_D4.objectName()] = self.ui.Sp_2_D4
+        _dict[self.ui.Sp_2_D5.objectName()] = self.ui.Sp_2_D5
+        _dict[self.ui.Sp_2_D6.objectName()] = self.ui.Sp_2_D6
+        _dict[self.ui.Sp_2_D7.objectName()] = self.ui.Sp_2_D7
+        _dict[self.ui.Sp_2_D8.objectName()] = self.ui.Sp_2_D8
+        _dict[self.ui.Sp_2_D9.objectName()] = self.ui.Sp_2_D9
 
-        self.MyDataTabs.getTab(self.tabname,self.dict,['H1','H2','H3','H4','B1','B2','B3','B4','R'])
-        self.MyDataTabs.getTabControl(self.tabname,'ObjContr',{self.ui.Cb_2_AccNext.objectName():self.ui.Cb_2_AccNext})
+        self.MyDataTabs.getTabWidgets(tabname,'ObjNames',_dict,['H1','H2','H3','H4','B1','B2','B3','B4','R'])
 
-        #self.dict[self.ui.Cb_2_GtFc.objectName()] = self.ui.Cb_2_GtFc
-        #self.dict[self.ui.Cb_2_AccNext.objectName()] = self.ui.Cb_2_AccNext
-        #self.dict[self.ui.Cb_2_exitWg.objectName()] = self.ui.Cb_2_exitWg
+        self.MyDataTabs.getTabWidgets(tabname,'ObjContr',self.ui.Cb_2_AccNext)
 
-        #self.MyDataTabs.getTabControl(self.tabname,{})
-        self.dict = {}
-        self.tabname = 'tab2Gr3'
-        self.dict[self.ui.Sp_2_D1.objectName()] = self.ui.Sp_2_D1
-        self.dict[self.ui.Sp_2_D2.objectName()] = self.ui.Sp_2_D2
-        self.dict[self.ui.Sp_2_D3.objectName()] = self.ui.Sp_2_D3
-        self.dict[self.ui.Sp_2_D4.objectName()] = self.ui.Sp_2_D4
-        self.dict[self.ui.Sp_2_D5.objectName()] = self.ui.Sp_2_D5
-        self.dict[self.ui.Sp_2_D6.objectName()] = self.ui.Sp_2_D6
-        self.dict[self.ui.Sp_2_D7.objectName()] = self.ui.Sp_2_D7
-        self.dict[self.ui.Sp_2_D8.objectName()] = self.ui.Sp_2_D8
-        self.dict[self.ui.Sp_2_D9.objectName()] = self.ui.Sp_2_D9
+        _dict = {}
+        tabname = 'tab2Gr3'
+        _dict[self.ui.Sp_2_D1.objectName()] = self.ui.Sp_2_D1
+        _dict[self.ui.Sp_2_D2.objectName()] = self.ui.Sp_2_D2
+        _dict[self.ui.Sp_2_D3.objectName()] = self.ui.Sp_2_D3
+        _dict[self.ui.Sp_2_D4.objectName()] = self.ui.Sp_2_D4
+        _dict[self.ui.Sp_2_D5.objectName()] = self.ui.Sp_2_D5
+        _dict[self.ui.Sp_2_D6.objectName()] = self.ui.Sp_2_D6
+        _dict[self.ui.Sp_2_D7.objectName()] = self.ui.Sp_2_D7
+        _dict[self.ui.Sp_2_D8.objectName()] = self.ui.Sp_2_D8
+        _dict[self.ui.Sp_2_D9.objectName()] = self.ui.Sp_2_D9
 
-        self.MyDataTabs.getTab(self.tabname,self.dict,['H1','H2','H3','H4','B1','B2','B3','B4','R'])
-        self.MyDataTabs.getTabControl(self.tabname,'ObjContr',{self.ui.Cb_2_AccNext.objectName():self.ui.Cb_2_AccNext})
+        self.MyDataTabs.getTabWidgets(tabname,'ObjNames',_dict,['H1','H2','H3','H4','B1','B2','B3','B4','R'])
+
+        self.MyDataTabs.getTabWidgets(tabname,'ObjContr',self.ui.Cb_2_AccNext)
 
         #tab3Gr_ widgets to dict
-        self.dict = {}
-        self.tabname = 'tab3Gr1'
-        self.dict[self.ui.Sp_3_D1.objectName()] = self.ui.Sp_3_D1   
-        self.dict[self.ui.Sp_3_D2.objectName()] = self.ui.Sp_3_D2 
-        self.dict[self.ui.Sp_3_D3.objectName()] = self.ui.Sp_3_D3
-        self.dict[self.ui.Sp_3_D4.objectName()] = self.ui.Sp_3_D4   
-
-
-        self.MyDataTabs.getTab(self.tabname,self.dict,['It','Wd','Wdo','G'])
-        self.MyDataTabs.getTabControl(self.tabname,'ObjContr',{self.ui.Cb_3_AccNext.objectName():self.ui.Cb_3_AccNext})
-        self.MyDataTabs.getTabControl(self.tabname,'ObjHide',{self.ui.Sp_3_D5.objectName():self.ui.Sp_3_D5} ) 
+        _dict = {}
+        tabname = 'tab3Gr0'
+        _dict[self.ui.Sp_3_D1.objectName()] = self.ui.Sp_3_D1
+        _dict[self.ui.Sp_3_D2.objectName()] = self.ui.Sp_3_D2
+        _dict[self.ui.Sp_3_D3.objectName()] = self.ui.Sp_3_D3
+        _dict[self.ui.Sp_3_D4.objectName()] = self.ui.Sp_3_D4
+        _dict[self.ui.Sp_3_D5.objectName()] = self.ui.Sp_3_D5
         
-        self.dict = {}
-        self.tabname = 'tab3Gr2'
-        self.dict[self.ui.Sp_3_D1.objectName()] = self.ui.Sp_3_D1   
-        self.dict[self.ui.Sp_3_D2.objectName()] = self.ui.Sp_3_D2 
-        self.dict[self.ui.Sp_3_D3.objectName()] = self.ui.Sp_3_D3
-        self.dict[self.ui.Sp_3_D4.objectName()] = self.ui.Sp_3_D4   
+        self.MyDataTabs.getTabWidgets(tabname,'ObjNames',_dict)
+
+        _dict = {}
+        tabname = 'tab3Gr1'
+        _dict[self.ui.Sp_3_D1.objectName()] = self.ui.Sp_3_D1   
+        _dict[self.ui.Sp_3_D2.objectName()] = self.ui.Sp_3_D2 
+        _dict[self.ui.Sp_3_D3.objectName()] = self.ui.Sp_3_D3
+        _dict[self.ui.Sp_3_D4.objectName()] = self.ui.Sp_3_D4   
+
+
+        self.MyDataTabs.getTabWidgets(tabname,'ObjNames',_dict,['It','Wd','Wdo','G'])
+        self.MyDataTabs.getTabWidgets(tabname,'ObjContr',self.ui.Cb_3_AccNext)
+        self.MyDataTabs.getTabWidgets(tabname,'ObjHide',{self.ui.Sp_3_D5.objectName():self.ui.Sp_3_D5} ) 
+        
+        _dict = {}
+        tabname = 'tab3Gr2'
+        _dict[self.ui.Sp_3_D1.objectName()] = self.ui.Sp_3_D1   
+        _dict[self.ui.Sp_3_D2.objectName()] = self.ui.Sp_3_D2 
+        _dict[self.ui.Sp_3_D3.objectName()] = self.ui.Sp_3_D3
+        _dict[self.ui.Sp_3_D4.objectName()] = self.ui.Sp_3_D4   
  
 
-        self.MyDataTabs.getTab(self.tabname,self.dict,['It','Wd','Wdo','G'])
-        self.MyDataTabs.getTabControl(self.tabname,'ObjContr',{self.ui.Cb_3_AccNext.objectName():self.ui.Cb_3_AccNext})
-        self.MyDataTabs.getTabControl(self.tabname,'ObjHide',{self.ui.Sp_3_D5.objectName():self.ui.Sp_3_D5} ) 
+        self.MyDataTabs.getTabWidgets(tabname,'ObjNames',_dict,['It','Wd','Wdo','G'])
+        self.MyDataTabs.getTabWidgets(tabname,'ObjContr',self.ui.Cb_3_AccNext)
+        self.MyDataTabs.getTabWidgets(tabname,'ObjHide',{self.ui.Sp_3_D5.objectName():self.ui.Sp_3_D5} ) 
 
 
-        self.dict = {}
-        self.tabname = 'tab3Gr3'
-        self.dict[self.ui.Sp_3_D1.objectName()] = self.ui.Sp_3_D1   
-        self.dict[self.ui.Sp_3_D2.objectName()] = self.ui.Sp_3_D2 
-        self.dict[self.ui.Sp_3_D3.objectName()] = self.ui.Sp_3_D3   
-        self.dict[self.ui.Sp_3_D4.objectName()] = self.ui.Sp_3_D4
+        _dict = {}
+        tabname = 'tab3Gr3'
+        _dict[self.ui.Sp_3_D1.objectName()] = self.ui.Sp_3_D1   
+        _dict[self.ui.Sp_3_D2.objectName()] = self.ui.Sp_3_D2 
+        _dict[self.ui.Sp_3_D3.objectName()] = self.ui.Sp_3_D3   
+        _dict[self.ui.Sp_3_D4.objectName()] = self.ui.Sp_3_D4
  
 
-        self.MyDataTabs.getTab(self.tabname,self.dict,['It','Wd','Wdo','G'])
-        self.MyDataTabs.getTabControl(self.tabname,'ObjContr',{self.ui.Cb_3_AccNext.objectName():self.ui.Cb_3_AccNext})
-        self.MyDataTabs.getTabControl(self.tabname,'ObjHide',{self.ui.Sp_3_D5.objectName():self.ui.Sp_3_D5} )                      
+        self.MyDataTabs.getTabWidgets(tabname,'ObjNames',_dict,['It','Wd','Wdo','G'])
+        self.MyDataTabs.getTabWidgets(tabname,'ObjContr',self.ui.Cb_3_AccNext)
+        self.MyDataTabs.getTabWidgets(tabname,'ObjHide',{self.ui.Sp_3_D5.objectName():self.ui.Sp_3_D5})                      
 
-        #print(self.MyDataTabs.datatabs)
-        ''' print('tab2Gr1',self.MyDataTabs.datatabs['tab2Gr1'])
-        print('tab2Gr2',self.MyDataTabs.datatabs['tab2Gr2'])
-        print('tab2Gr3',self.MyDataTabs.datatabs['tab2Gr3'])
-        print('tab2Gr0',self.MyDataTabs.datatabs['tab2Gr0']) '''
+        ###rint('dbg',self.MyDataTabs.datatabs)
+        '''#rint('dbg','tab1Gr0',self.MyDataTabs.datatabs['tab1Gr0'])
+       #rint('dbg','tab2Gr0',self.MyDataTabs.datatabs['tab2Gr0'])
+       #rint('dbg','tab2Gr1',self.MyDataTabs.datatabs['tab2Gr1'])
+       #rint('dbg','tab2Gr2',self.MyDataTabs.datatabs['tab2Gr2'])
+       #rint('dbg','tab2Gr3',self.MyDataTabs.datatabs['tab2Gr3'])
+       #rint('dbg','tab3Gr0',self.MyDataTabs.datatabs['tab3Gr0'])
+       #rint('dbg','tab3Gr1',self.MyDataTabs.datatabs['tab3Gr1'])
+       #rint('dbg','tab3Gr2',self.MyDataTabs.datatabs['tab3Gr2'])
+       #rint('dbg','tab3Gr3',self.MyDataTabs.datatabs['tab3Gr3']) '''
 
         #endregion send widgets              
 
@@ -692,6 +689,7 @@ class MainWidget(QtGui.QMainWindow):
         self.ui.Cb_1_GtFc.clicked.connect(self.GtFc_onClick)
         self.ui.Cb_2_GtFc.clicked.connect(self.GtFc_onClick)
         self.ui.Cb_3_GtFc.clicked.connect(self.GtFc_onClick)
+        self.ui.Cb_4_GtFc.clicked.connect(self.GtFc_onClick)
 
         self.ui.Cb_1_AccNext.clicked.connect(self.AccNext_Clicked)
         self.ui.Cb_2_AccNext.clicked.connect(self.AccNext_Clicked)
@@ -699,9 +697,17 @@ class MainWidget(QtGui.QMainWindow):
 
         self.ui.Gr1.clicked.connect(self.Rb_Groove_onClick)
         self.ui.Gr2.clicked.connect(self.Rb_Groove_onClick)
-        self.ui.Gr3.clicked.connect(self.Rb_Groove_onClick)        
+        self.ui.Gr3.clicked.connect(self.Rb_Groove_onClick)
+
+        self.ui.Cb_1_exitWg.clicked.connect(self.closeEvent)
+        self.ui.Cb_2_exitWg.clicked.connect(self.closeEvent)
+        self.ui.Cb_3_exitWg.clicked.connect(self.closeEvent)
+        self.ui.Cb_4_exitWg.clicked.connect(self.closeEvent)
+
+        self.ui.Cb_4_CreatArrang.clicked.connect(self.test)    
 
         self.ui.tabWidget.currentChanged.connect(self.tabChange)
+        self.ui.tabWidget.setTabEnabled(3, False)
 
         self.ui.Sp_1_Di.installEventFilter(self)
         self.ui.Sp_1_T.installEventFilter(self)
@@ -728,39 +734,53 @@ class MainWidget(QtGui.QMainWindow):
 
         self.MyDataTabs.CurrTab = self.ui.tabWidget.currentWidget().objectName()    #kezdoallapot beallitasa
         self.MyDataTabs.CurrGr = 'Gr0'
-        #print('tabwidget', self.ui.tabWidget.currentWidget().objectName())
+        ###rint('dbg','tabwidget', self.ui.tabWidget.currentWidget().objectName())
+
+        self.testvalues()
+        #rint('dbg',self.GeomInput)
               
     def test(self):
-        print(self.sender())
+        self.obj_CreateGeom.dummy()
+       #rint('dbg',self.sender())
+
+    def closeEvent(self, event = None):
+        reply = QtGui.QMessageBox.question(self, 'WINDING GEOM', 'Are you sure you want to close WINDING GEOM?',
+            QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No)
+
+        if reply == QtGui.QMessageBox.Yes:
+            if event != None:
+                event.accept()
+            #rint('Window closed')
+            else:
+                self.hide()
+
+        else:
+            if event != None:
+                event.ignore()
 
     def eventFilter(self, obj, event):
-        #print('MainWidget eventfliter')
-        #print(event.type(), obj)
+        ###rint('dbg','MainWidget eventfliter')
+        ###rint('dbg',event.type(), obj)
         if event.type() == 6:
             if event.key() == 16777220 or event.key() == 16777221:   #2 fele enter
-                #print('enter')
+                ###rint('dbg','enter')
                 self.valueEntered(obj)
         if event.type() == 9:
-            #print('exit widget')
+            ###rint('dbg','exit widget')
             self.valueEntered(obj)
         return False
 
     def valueEntered(self, obj):    #koztes fuggveny, eventfilter es a kovetkezok koze
-        print('MainWidget valueEntered')
-        ''' if 'accepted' in self.GeomInput[self.MyDataTabs.CurrTab]:       #indikator kodreszlet
-            #print('van accepted')
-            if (self.GeomInput[self.MyDataTabs.CurrTab])['accepted']:
-                #print('accepted:True')
-                (self.GeomInput[self.MyDataTabs.CurrTab])['accepted'] = False
-                print('accepted:false') '''
+        '''1. Az aktualis es az utana levo osszes tab Geominput['tabx']['accepted']
+        es a Geominput['accepted'] false-ra allitasa.
+         '''
+       #rint('dbg','MainWidget valueEntered')
+        self.MyDataTabs.resetEnabled()
         self.MyDataTabs.corr_tabs(obj)
         self.MyDataTabs.AccNextEnable(obj)
 
-
-    def Show_(self):
-        print('MainWidget Show_')
-        if self.obj_BackToMain.Widget.isVisible():
-            self.obj_BackToMain.Widget.hide()
+    def testvalues(self):
+        #rint('dbg','MainWidget testvalues')
 
         self.ui.Sp_1_Di.setValue(10)    #----------------------testvalues
         self.ui.Sp_1_T.setValue(10)
@@ -780,14 +800,60 @@ class MainWidget(QtGui.QMainWindow):
         self.ui.Sp_3_D1.setValue(1)
         self.ui.Sp_3_D2.setValue(1)
         self.ui.Sp_3_D3.setValue(1)
+        self.ui.Sp_3_D4.setValue(1)
 
+        ''' self.GeomInput
+        dbg {'accepted': False, 'tab1': {'values': {'Di': 10.0, 'T': 10.0, 'Do': 30.0, 'L': 10.0}, 'accepted': False},
+        'tab2': {'values': {'H1': 10.0, 'H2': 10.0, 'H3': 10.0, 'H4': 15.0, 'B1': 10.0, 'B2': 10.0, 'R': 5.0, 'D': 10.0}, 'accepted': False},
+        'tab3': {'values': {'It': 1.0, 'Wd': 1.0, 'Wdo': 1.0, 'G': 0.1}, 'accepted': True},
+        'tab4': {'values': {}, 'accepted': False}} '''
+        
+        self.GeomInput['accepted'] = True
+        self.GeomInput['groove'] = 'Gr1'
+
+        self.GeomInput['tab1'] = {'values':{}}
+        (self.GeomInput['tab1'])['values'] = {'Di': self.ui.Sp_1_Di.value(),
+                                            'T': self.ui.Sp_1_T.value(),
+                                            'Do': self.ui.Sp_1_Do.value(),
+                                            'L': self.ui.Sp_1_L.value()}
+        (self.GeomInput['tab1'])['accepted'] = True
+
+        self.GeomInput['tab2'] = {'values':{}}
+        (self.GeomInput['tab2'])['values'] = {'H1': self.ui.Sp_2_D1.value(),
+                                            'H2': self.ui.Sp_2_D2.value(),
+                                            'H3': self.ui.Sp_2_D3.value(),
+                                            'H4': self.ui.Sp_2_D4.value(),
+                                            'B1': self.ui.Sp_2_D6.value(),
+                                            'B2': self.ui.Sp_2_D7.value(),
+                                            'R': self.ui.Sp_2_D8.value(),
+                                            'D': self.ui.Sp_2_D9.value()}
+        (self.GeomInput['tab2'])['accepted'] = True
+
+        self.GeomInput['tab3'] = {'values':{}}
+        (self.GeomInput['tab3'])['values'] = {'It': self.ui.Sp_3_D1.value(),
+                                            'Wd': self.ui.Sp_3_D2.value(),
+                                            'Wdo': self.ui.Sp_3_D3.value(),
+                                            'G': self.ui.Sp_3_D4.value()}
+        (self.GeomInput['tab3'])['accepted'] = True
+        self.ui.tabWidget.setCurrentIndex(3)
+
+
+
+    def Show_(self):
+       #rint('dbg','MainWidget Show_')
+        if self.obj_BackToMain.Widget.isVisible():
+            self.obj_BackToMain.Widget.hide()
         self.show()
+        ####################################################   TEST   TEST   TEST   TEST   TEST   TEST 
+        self.ui.tabWidget.setTabEnabled(3, True)
+        self.ui.tabWidget.setCurrentIndex(3)        ###########################################################################################
+
 
     def GtFc_onClick(self):
         self.obj_BackToMain.Show_()        
 
     def Rb_Groove_onClick(self):
-        print('MainWidget Rb_Groove_onClick')
+       #rint('dbg','MainWidget Rb_Groove_onClick')
         #self.sender().objectName()
         self.ui.Gr1.setChecked(self.sender().objectName()==self.ui.Gr1.objectName())
         self.ui.Gr2.setChecked(self.sender().objectName()==self.ui.Gr2.objectName())
@@ -798,65 +864,40 @@ class MainWidget(QtGui.QMainWindow):
         self.ui.S3_L1.setPixmap(self.pixmap)
         # explanation text to variables
         self.MyDataTabs.setCurrTabGr('',self.sender())
-        #print("self.MyDataTabs.CurrGr ", self.MyDataTabs.CurrGr)
+        ###rint('dbg',"self.MyDataTabs.CurrGr ", self.MyDataTabs.CurrGr)
         if self.MyDataTabs.CurrGr == 'Gr1' or self.MyDataTabs.CurrGr == 'Gr2':
             self.ui.L_3_expl.setText("Explanation of dimension variables:<br><br>It: insulation thickness<br>Wd: wire diameter <br>" \
                 "Wdo: insulated wire outer diameter<br>G: gap between Wdo")
         elif self.MyDataTabs.CurrGr == 'Gr3':
             self.ui.L_3_expl.setText("Gr3 <br>first row <br>second row")
-        #print(self.sender().objectName())
+        ###rint('dbg',self.sender().objectName())
                 
 
     def tabChange(self):
-        print('MainWidget tabChange')
-        #print(self.sender().currentWidget().objectName())
+       #rint('dbg','MainWidget tabChange')
         self.MyDataTabs.setCurrTabGr(self.sender().currentWidget(),'')
 
     def AccNext_Clicked(self):
-        print('MainWidget AccNext_Clicked')
-        #self.GeomInput
-        self.MyDataTabs.CurrTab
-        self.MyDataTabs.CurrGr
-        #self.valuesAccepted()
-        #tabindex = self.allTab.index()     if 'accepted' in self.GeomInput[self.MyDataTabs.CurrTab]
-        #print(self.GeomInput)
+       #rint('dbg','MainWidget AccNext_Clicked')
         Tab = self.MyDataTabs.CurrTab
         Gr = self.MyDataTabs.CurrGr
         TabGr =   Tab+Gr
+        
         if (self.GeomInput[Tab])['accepted']:
             tabindex = self.MyDataTabs.allTab.index(Tab)
-            #print(tabindex)
             self.ui.tabWidget.setCurrentIndex(tabindex+1)
             self.MyDataTabs.setCurrTabGr(self.ui.tabWidget.currentWidget(),'')
-            #setCurrentIndex(1)
-            #print(self.MyDataTabs.CurrTab,self.MyDataTabs.CurrGr)
-            #print('akt werte in geominput', self.GeomInput)     #########################################################################
         else:
             for key in (self.MyDataTabs.datatabs[TabGr])['ObjLabels']:
-                #print(key,(((self.MyDataTabs.datatabs[TabGr])['ObjLabels'])[key]).value())
                 ((self.GeomInput[Tab])['values'])[key] = (((self.MyDataTabs.datatabs[TabGr])['ObjLabels'])[key]).value()
-            #print('akt werte in geominput', self.GeomInput)         #########################################################################
             self.obj_CheckResults.Init()
     
     def valuesAccepted(self):
-        print('MainWidget valuesAccepted')
-        #rgb(153, 204, 255)
-        #self.MyDataTabs.CurrTab+self.MyDataTabs.CurrGr
-        #print(self.MyDataTabs.datatabs[self.MyDataTabs.CurrTab+self.MyDataTabs.CurrGr])['ObjNames']
-        #print((self.MyDataTabs.datatabs[self.MyDataTabs.CurrTab+self.MyDataTabs.CurrGr])['ObjNames'])
+        #rint('dbg','MainWidget valuesAccepted')
+        #rint('dbg',self.GeomInput)
         for Widget in (self.MyDataTabs.datatabs[self.MyDataTabs.CurrTab+self.MyDataTabs.CurrGr])['ObjNames']:
             (((self.MyDataTabs.datatabs[self.MyDataTabs.CurrTab+self.MyDataTabs.CurrGr])['ObjNames'])[Widget]).setStyleSheet("background:rgb(153, 204, 255);font: bold 12px")
-        #self.valuesRefused()
-
-    def valuesRefused(self):
-        print('MainWidget valuesRefused')       #az aktualis tab utáni tabokhoz tartozo accepted es a fo accepted false ra allitasa
-        #print(self.GeomInput)
-        next_ = False
-        for key in ['tab1','tab2','tab3']:
-            if next_:
-                self.MyDataTabs.checkZeros(key)
-            elif self.MyDataTabs.CurrTab == key:
-                #print('key = %s' %key)
-                next_ = True
-        print(self.GeomInput)
-            
+        self.GeomInput['accepted'] = (self.GeomInput['tab1'])['accepted'] and (self.GeomInput['tab2'])['accepted'] and (self.GeomInput['tab3'])['accepted']
+        self.GeomInput['groove'] = self.MyDataTabs.CurrGr
+        self.ui.tabWidget.setTabEnabled(3, self.GeomInput['accepted'])
+        #rint('dbg',self.GeomInput)

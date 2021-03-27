@@ -71,7 +71,7 @@
     <enum>QTabWidget::South</enum>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>3</number>
    </property>
    <widget class="QWidget" name="tab1">
     <attribute name="title">
@@ -1543,7 +1543,7 @@
        <item>
         <widget class="QPushButton" name="Cb_4_CreatArrang">
          <property name="text">
-          <string>crate wire / bar arrangement (2D)</string>
+          <string>create wire / bar arrangement (2D)</string>
          </property>
         </widget>
        </item>

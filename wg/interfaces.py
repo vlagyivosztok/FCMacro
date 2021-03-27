@@ -269,7 +269,9 @@ class MainWidget(QtGui.QMainWindow):
             a DataTabs [tabxGr0] listaja szerint. '''    
             self.parent.GeomInput['accepted'] =False
             self.parent.ui.tabWidget.setTabEnabled(3, False)
-
+            self.parent.ui.Cb_4_CreatArrang.setStyleSheet("background:rgb(255,255,224);font: bold 12px")
+            self.parent.ui.Cb_4_CreatGeom.setEnabled(False)
+            #rint('dbg',self.parent.ui.Cb_4_CreatArrang.styleSheet())
             next_ = False
             for key in ['tab1','tab2','tab3']:
                 if next_:
@@ -485,6 +487,7 @@ class MainWidget(QtGui.QMainWindow):
         self.ui.Cb_1_AccNext.setEnabled(False)
         self.ui.Cb_2_AccNext.setEnabled(False)
         self.ui.Cb_3_AccNext.setEnabled(False)              #-----------------------------------------------------------------
+        self.ui.Cb_4_CreatGeom.setEnabled(False)
 
         self.ui.Sp_1_Di.setStyleSheet("background:rgb(255,255,224)")
         self.ui.Sp_1_T.setStyleSheet("background:rgb(255,255,224)")
@@ -739,8 +742,8 @@ class MainWidget(QtGui.QMainWindow):
         #rint('dbg',self.GeomInput)
               
     def test(self):
-        self.obj_CreateGeom.dummy()
-       #rint('dbg',self.sender())
+        self.obj_CreateGeom.create2D()
+        #rint('dbg',self.sender())
 
     def closeEvent(self, event = None):
         reply = QtGui.QMessageBox.question(self, 'WINDING GEOM', 'Are you sure you want to close WINDING GEOM?',
@@ -781,20 +784,20 @@ class MainWidget(QtGui.QMainWindow):
     def testvalues(self):
         #rint('dbg','MainWidget testvalues')
 
-        self.ui.Sp_1_Di.setValue(10)    #----------------------####################### testvalues
-        self.ui.Sp_1_T.setValue(10)
-        self.ui.Sp_1_Do.setValue(10)
-        self.ui.Sp_1_L.setValue(10)
+        self.ui.Sp_1_Di.setValue(85)    #----------------------####################### testvalues
+        self.ui.Sp_1_T.setValue(20)
+        self.ui.Sp_1_Do.setValue(85+2*20)
+        self.ui.Sp_1_L.setValue(110)
 
-        self.ui.Sp_2_D1.setValue(10)
-        self.ui.Sp_2_D2.setValue(10)
+        self.ui.Sp_2_D1.setValue(1)
+        self.ui.Sp_2_D2.setValue(1)
         self.ui.Sp_2_D3.setValue(10)
         self.ui.Sp_2_D4.setValue(10)
         self.ui.Sp_2_D5.setValue(10)
-        self.ui.Sp_2_D6.setValue(10)
-        self.ui.Sp_2_D7.setValue(10)
+        self.ui.Sp_2_D6.setValue(1.5)
+        self.ui.Sp_2_D7.setValue(4)
         self.ui.Sp_2_D8.setValue(10)
-        self.ui.Sp_2_D9.setValue(10)
+        self.ui.Sp_2_D9.setValue(6)
 
         self.ui.Sp_3_D1.setValue(1)
         self.ui.Sp_3_D2.setValue(1)
@@ -802,6 +805,10 @@ class MainWidget(QtGui.QMainWindow):
         self.ui.Sp_3_D4.setValue(1)
 
         ''' self.GeomInput
+
+        #tab2Gr1: {'H1': D1, 'H2': D2, 'H3': D3, 'H4': D4, 'B1': D6, 'B2': D7, 'R': D8, 'D': D9}
+        #tab2Gr2: ['H1' D1,'H2' D2, 'H3' D3 ,'H4' D4 ,'B1' D5 ,'B2' D6 ,'B3' D7 ,'B4' D8 ,'R' D9]
+
         dbg {'accepted': False, 'groove': '', 'tab1': {'values': {'Di': 10.0, 'T': 10.0, 'Do': 30.0, 'L': 10.0}, 'accepted': False},
         'tab2': {'values': {'H1': 10.0, 'H2': 10.0, 'H3': 10.0, 'H4': 15.0, 'B1': 10.0, 'B2': 10.0, 'R': 5.0, 'D': 10.0}, 'accepted': False},
         'tab3': {'values': {'It': 1.0, 'Wd': 1.0, 'Wdo': 1.0, 'G': 0.1}, 'accepted': True},

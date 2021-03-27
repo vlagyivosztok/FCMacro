@@ -10,12 +10,11 @@ try:
     import sys
     #import site
     #import inspect
-    from operator import xor
+    #from operator import xor
     from PySide import QtGui #QWidget
     from PySide import QtUiTools #QUiLoader
     from PySide import QtCore #QFile, Qt
 except:
-   #rint('dbg','interfaces import')
     os.system(g_wg_dir+'\import-error.vbs')
     raise Exception("Quit macro / interfaces.py")
 #endregion imports
@@ -736,7 +735,7 @@ class MainWidget(QtGui.QMainWindow):
         self.MyDataTabs.CurrGr = 'Gr0'
         ###rint('dbg','tabwidget', self.ui.tabWidget.currentWidget().objectName())
 
-        self.testvalues()
+        self.testvalues()           ##############################################  TESTVALUES
         #rint('dbg',self.GeomInput)
               
     def test(self):
@@ -782,7 +781,7 @@ class MainWidget(QtGui.QMainWindow):
     def testvalues(self):
         #rint('dbg','MainWidget testvalues')
 
-        self.ui.Sp_1_Di.setValue(10)    #----------------------testvalues
+        self.ui.Sp_1_Di.setValue(10)    #----------------------####################### testvalues
         self.ui.Sp_1_T.setValue(10)
         self.ui.Sp_1_Do.setValue(10)
         self.ui.Sp_1_L.setValue(10)
@@ -803,7 +802,7 @@ class MainWidget(QtGui.QMainWindow):
         self.ui.Sp_3_D4.setValue(1)
 
         ''' self.GeomInput
-        dbg {'accepted': False, 'tab1': {'values': {'Di': 10.0, 'T': 10.0, 'Do': 30.0, 'L': 10.0}, 'accepted': False},
+        dbg {'accepted': False, 'groove': '', 'tab1': {'values': {'Di': 10.0, 'T': 10.0, 'Do': 30.0, 'L': 10.0}, 'accepted': False},
         'tab2': {'values': {'H1': 10.0, 'H2': 10.0, 'H3': 10.0, 'H4': 15.0, 'B1': 10.0, 'B2': 10.0, 'R': 5.0, 'D': 10.0}, 'accepted': False},
         'tab3': {'values': {'It': 1.0, 'Wd': 1.0, 'Wdo': 1.0, 'G': 0.1}, 'accepted': True},
         'tab4': {'values': {}, 'accepted': False}} '''

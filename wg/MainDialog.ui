@@ -1252,7 +1252,7 @@
        <x>0</x>
        <y>5</y>
        <width>781</width>
-       <height>18</height>
+       <height>41</height>
       </rect>
      </property>
      <property name="sizePolicy">
@@ -1271,7 +1271,7 @@
       </font>
      </property>
      <property name="text">
-      <string>In the next step, the geometry of the wire / conductor bar and insulation(s) will be defined</string>
+      <string>In the next step, the geometry of the wire / conductor bar and insulation(s) will be defined.&lt;br&gt;Onthe previous tab a groove has to be selected.</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -1438,7 +1438,7 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>50</y>
+       <y>55</y>
        <width>781</width>
        <height>121</height>
       </rect>

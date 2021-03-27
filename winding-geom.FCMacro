@@ -14,9 +14,8 @@ try:
     from wg.interfaces import MainWidget, BackToMain, CheckResults
     from wg.creategeom import CreateGeom
 except:
-    print('main import')    
     os.system(g_WG_dir+'\import-error.vbs')
-    raise Exception("Quit macro")
+    raise Exception("Quit winding-geom.FCMacro")
 #endregion imports
 
 #print(dir(WG.interfaces))

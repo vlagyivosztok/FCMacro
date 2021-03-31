@@ -179,7 +179,7 @@ class CheckResults(QtGui.QWidget):
             (self.obj_MainWidget.GeomInput[Tab])['accepted'] = True
         self.Widget.hide()
         self.obj_MainWidget.valuesAccepted()
-        print('dbg',self.obj_MainWidget.GeomInput)
+        #rint('dbg',self.obj_MainWidget.GeomInput)
 
 class MainWidget(QtGui.QMainWindow):
     class DataTabs:    #minden tab es az adatai, adatfeldolgozasa, lathatosagok
@@ -196,6 +196,9 @@ class MainWidget(QtGui.QMainWindow):
             self.datatabs =  {}
             for key in ['tab1Gr0','tab2Gr0','tab2Gr1','tab2Gr2','tab2Gr3','tab3Gr0','tab3Gr1','tab3Gr2','tab3Gr3','tab4Gr0']:
                 self.datatabs[key]= {}
+            (self.datatabs['tab1Gr0'])['tabconf']='Gr0'
+            (self.datatabs['tab2Gr0'])['tabconf']='Gr0'
+            (self.datatabs['tab3Gr0'])['tabconf']='Gr0'
             ###rint('dbg',self.datatabs)               #debug #rint
             #self.dict = {}
             self.CurrTab = ''   
@@ -272,79 +275,60 @@ class MainWidget(QtGui.QMainWindow):
                     self.parent.ui.findChild(QtGui.QLabel, widgetL).setHidden(True)
 
         def resetEnabled(self):
-            print('dbg','DataTabs resetEnabled')
+            #rint('dbg','DataTabs resetEnabled')
             #rint('dbg',self.parent.GeomInput)
-            ''' egy DblSpB megvaltozott. Ekkor a sajat es
-            a koveto tabok accepted false-ra allitja es a koveto tabokon minden nem nullat zoldre a
-            a DataTabs [tabxGr0] listaja szerint.
-            mivel a tab2-re bejott meg egy vezerlesi kor, szet kell rakni egyesevel?
-            tab1: ertekek, accNext
-            tab2: ertekek, accnext, createGroove True / False
-            tab3:ertekek, accNext
-
-            tab2: self.obj_CreateGeom.closeGr(), file becsuk
+            ''' 
             '''
-
-
             self.parent.GeomInput['accepted'] =False #osszes adat meg nem kesz
             self.parent.ui.tabWidget.setTabEnabled(3, False)    #utolso lap nem valaszthato
             self.parent.ui.Cb_4_CreatArrang.setStyleSheet("background:rgb(255,255,224);font: bold 12px") #utolso lap gombja sarga
             self.parent.ui.Cb_4_CreatGeom.setEnabled(False) #utolso lap masik gombja disable
             #rint('dbg',self.parent.ui.Cb_4_CreatArrang.styleSheet())
             next_ = False
-            print(self.parent.GeomInput)
+            #rint(self.parent.GeomInput)
             for key in ['tab1','tab2','tab3']:
-                #print(next_,self.CurrTab == key,(self.parent.GeomInput[key])['accepted'])
+                ##rint(next_,self.CurrTab == key,(self.parent.GeomInput[key])['accepted'])
 
-                if (next_ or self.CurrTab == key) and (self.parent.GeomInput[key])['accepted']: # csak akkor megy be, tab accepted
-                    #ide kellene egy if minden tabhoz...???
+                if (next_ or self.CurrTab == key): # csak akkor megy be, tab accepted
+                    next_ = True
                     (self.parent.GeomInput[key])['accepted'] =False
-                    print(key,(self.parent.GeomInput[key])['accepted'] )
                     (self.parent.GeomInput[key])['checkGr'] =False  # Ez ugyis csak a tab2-n lehet mas.
                     self.setgreen(key)
-                    #self.ui.Cb_2_CreatGroove.setEnabled(False)  # ez mintha nem ide valo lenne, de hova?? AccNextEnable??
-                    next_ = True
+                    if key == 'tab2':
+                        self.parent.ui.Cb_2_CreatGroove.setStyleSheet("background:rgb(255,255,224);font: bold 12px")
+                        self.parent.ui.Cb_2_CreatGroove.setEnabled(False)  # ez mintha nem ide valo lenne, de hova?? AccNextEnable??
+                    
 
                                 
             #rint('dbg',self.parent.GeomInput)
 
         def setgreen(self, Tab):
+            #rint('dbg','setgreen',Tab)
             for widget in (self.datatabs[Tab+'Gr0'])['ObjNames'].values():
-                
+                #lastwidget = widget
                 if widget.value() != 0:
                     #rint(widget.objectName(), 'nem nulla')
-                    widget.setStyleSheet("background:rgb(144,238,144);font: bold 12px")            
+                    widget.setStyleSheet("background:rgb(144,238,144);font: bold 12px")
+            #rint(lastwidget.objectName(),Tab)
+            self.AccNextEnable(Tab)      
         
         
-        def checkZeros(self, _obj):
-            ''' elegge osszetett funkcio. widgetek szinenek beallitasa es 0 erteku widgetek ellenorzese
-            
-            
-            Ha Tab-bal, _obj = None hivjak, akkor a tab-ot ellenorzi DataTabs [tabxGr0] listaja szerint
-            minden nem 0-t zoldre allit
-            Ha tab = '', _obj-jal hivjak, akkor az az aktualis widget. Az aktualis tabot nullakra ellenorizni
-            ha ok, true.
-             '''
-            #print('dbg','DataTabs checkZeros',Tab,_obj)
-            ###rint('dbg','helo', (self.datatabs[self.CurrTab+self.CurrGr])['ObjNames'] )    #[self.CurrTab+self.CurrGr]
-            #if _obj == None:
-            #lastwidget = None
-            #rint('dbg',Tab)
-            #rint('dbg',Tab+'Gr0',(self.datatabs[Tab+'Gr0'])['ObjNames'] )
-            ''' for widget in (self.datatabs[Tab+'Gr0'])['ObjNames'].values():
-                
-                if widget.value() != 0:
-                    #rint(widget.objectName(), 'nem nulla')
-                    widget.setStyleSheet("background:rgb(144,238,144);font: bold 12px") '''
-            #lastwidget = widget
-            #AccNextEnable(lastwidget)
-            #else:
-            if _obj.value() == 0.0:
-                _obj.setStyleSheet("background-color:red;font: bold 12px")
-                return False    
+        def checkZeros(self,TabGr, _obj= None):
+            ''' TabGr-rel hivja resetEnabled, vegigmegy az aktualis es utan levo tabokon es Grx-nek megfeleloen
+           ha egy se 0, akkor AccNex enabled
+           _obj-jal hivja Acc
+           '''
+            #rint('dbg','checkZeros',TabGr, '_obj None: ', _obj != None)#, _obj.objectName())
+            if _obj != None:
+                if _obj.value() == 0.0:
+                    #rint(_obj.objectName())
+                    _obj.setStyleSheet("background-color:red;font: bold 12px")
+                    return False    
             checkvalues = 0
             sum_obj = 0
-            for widget in ((self.datatabs[self.CurrTab+self.CurrGr])['ObjNames'].values()):
+            if TabGr == '' and _obj != None: 
+                TabGr = self.CurrTab+self.CurrGr
+            for widget in ((self.datatabs[TabGr])['ObjNames'].values()):
                 sum_obj += 1
                 if widget.value() != 0.0:
                     checkvalues += 1
@@ -354,47 +338,30 @@ class MainWidget(QtGui.QMainWindow):
             else:
                 return False
 
-        def AccNextEnable(self, _obj):
-            '''tab 2-nel eloszor createGroove enable, accnext disable, majd, ha groove True, akkor accnext megint enable
-            bemenetek _obj -> checkZeros True False, (self.parent.GeomInput[self.CurrTab])['checkGr'] True False
+        def AccNextEnable(self,Tab ='', _obj= None) :#, _obj=None):
+            #rint('dbg','AccNextEnable',Tab,'_obj None: ', _obj != None)
 
-            kimenetek Cb_2_CreatGroove
-
-            '''
-            #rint('dbg','DataTabs AccNextEnable')
-            # (self.parent.GeomInput[key])['checkGr']
-            
-            ''' checkZeros_ = self.checkZeros('',_obj)
-            checkGr = (self.parent.GeomInput[self.CurrTab])['checkGr']
-
-
-            if (self.parent.GeomInput[self.CurrTab])['checkGr']:
-                ((self.datatabs[self.CurrTab+self.CurrGr])['ObjContr']).setEnabled(True)
+            if Tab == '': # and _obj != None:  #egy widget beadasa utan a curr tab es gr-n megy vegig
+                tabGr = self.CurrTab+self.CurrGr
+            else:       # ResetEnabled utan a tabot a kivalasztott Gr szerint vizsgalja curr Gr-tol fuggetlenul
+                tabGr = Tab + (self.datatabs[Tab+'Gr0'])['tabconf']
+                #rint('Tab + (self.datatabs[Tab+"Gr0"])["tabconf"]',Tab + (self.datatabs[Tab+'Gr0'])['tabconf']) 
+            if self.checkZeros(tabGr, _obj):   #
+                if 'ObjContr' in self.datatabs[tabGr]:
+                    for widget in ((self.datatabs[tabGr])['ObjContr'].values()):
+                        #rint('enable',widget.objectName())
+                        widget.setEnabled(True)
             else:
-                ((self.datatabs[self.CurrTab+self.CurrGr])['ObjContr']).setEnabled(False)
-
-            if self.checkZeros('',_obj):   #lehetne for nelkul is, jelenleg egy widget van benne
-                ((self.datatabs[self.CurrTab+self.CurrGr])['ObjContr']).setEnabled(True)
-            else:
-                ((self.datatabs[self.CurrTab+self.CurrGr])['ObjContr']).setEnabled(False) '''
-
-
-            
-            #eredeti:
-            if self.checkZeros(_obj):   #lehetne for nelkul is, jelenleg egy widget van benne
-                for widget in ((self.datatabs[self.CurrTab+self.CurrGr])['ObjContr'].values()):
-                    #rint('enable',widget.objectName())
-                    widget.setEnabled(True)
-            else:
-                for widget in ((self.datatabs[self.CurrTab+self.CurrGr])['ObjContr'].values()):
-                    #rint('disable',widget.objectName())
-                    widget.setEnabled(False)
+                if 'ObjContr' in self.datatabs[tabGr]:
+                    for widget in ((self.datatabs[tabGr])['ObjContr'].values()):
+                        #rint('disable',widget.objectName())
+                        widget.setEnabled(False)
 
         def corr_tabs(self,_obj):
             ''' Az aktualis beadas fuggvenyeben az erintett DblSpB ertekeket aktualizalja.
             CurrTab, CurrGr kell hozza, _obj az aktualis Widget
             Tab1, Tab2Gr1, Gr2 Tab3Gr1 kesz , a tobbi megcsinalni'''
-           #rint('dbg','DataTabs  corr_tabs')
+            #rint('dbg','DataTabs  corr_tabs')
             #pass
             self.LabelObjs = {}
             self.ObjLabels = {}
@@ -758,15 +725,15 @@ class MainWidget(QtGui.QMainWindow):
         self.MyDataTabs.getTabWidgets(tabname,'ObjHide',{self.ui.Sp_3_D5.objectName():self.ui.Sp_3_D5})                      
 
 ###rint('dbg',self.MyDataTabs.datatabs)        
-        ''' print('dbg','tab1Gr0',self.MyDataTabs.datatabs['tab1Gr0'])
-        print('dbg','tab2Gr0',self.MyDataTabs.datatabs['tab2Gr0'])
-        print('dbg','tab2Gr1',self.MyDataTabs.datatabs['tab2Gr1'])
-        print('dbg','tab2Gr2',self.MyDataTabs.datatabs['tab2Gr2'])
-        print('dbg','tab2Gr3',self.MyDataTabs.datatabs['tab2Gr3'])
-        print('dbg','tab3Gr0',self.MyDataTabs.datatabs['tab3Gr0'])
-        print('dbg','tab3Gr1',self.MyDataTabs.datatabs['tab3Gr1'])
-        print('dbg','tab3Gr2',self.MyDataTabs.datatabs['tab3Gr2'])
-        print('dbg','tab3Gr3',self.MyDataTabs.datatabs['tab3Gr3']) '''
+        ''' #rint('dbg','tab1Gr0',self.MyDataTabs.datatabs['tab1Gr0'])
+        #rint('dbg','tab2Gr0',self.MyDataTabs.datatabs['tab2Gr0'])
+        #rint('dbg','tab2Gr1',self.MyDataTabs.datatabs['tab2Gr1'])
+        #rint('dbg','tab2Gr2',self.MyDataTabs.datatabs['tab2Gr2'])
+        #rint('dbg','tab2Gr3',self.MyDataTabs.datatabs['tab2Gr3'])
+        #rint('dbg','tab3Gr0',self.MyDataTabs.datatabs['tab3Gr0'])
+        #rint('dbg','tab3Gr1',self.MyDataTabs.datatabs['tab3Gr1'])
+        #rint('dbg','tab3Gr2',self.MyDataTabs.datatabs['tab3Gr2'])
+        #rint('dbg','tab3Gr3',self.MyDataTabs.datatabs['tab3Gr3']) '''
 
         #endregion send widgets              
 
@@ -831,15 +798,20 @@ class MainWidget(QtGui.QMainWindow):
         '''  '''
         if self.obj_CreateGeom.createGroove():
             self.ui.Cb_2_CreatGroove.setStyleSheet("background:rgb(153, 204, 255);font: bold 12px")
+            (self.GeomInput['tab2'])['checkGr'] = True
             self.ui.Cb_2_AccNext.setEnabled(True)
+            print('return True')
+        else:
+            print('END')
 
     def createArrang(self):
         self.obj_CreateGeom.createArrang()
     
     
     def test(self):
+        pass
         #self.obj_CreateGeom.create2D()
-        print('dbg',self.sender())
+        #rint('dbg',self.sender())
 
     def closeEvent(self, event = None):
         reply = QtGui.QMessageBox.question(self, 'WINDING GEOM', 'Are you sure you want to close WINDING GEOM?',
@@ -875,7 +847,7 @@ class MainWidget(QtGui.QMainWindow):
        #rint('dbg','MainWidget valueEntered')
         self.MyDataTabs.resetEnabled()
         self.MyDataTabs.corr_tabs(obj)
-        self.MyDataTabs.AccNextEnable(obj)
+        self.MyDataTabs.AccNextEnable(self.MyDataTabs.CurrTab, obj)
 
     def testvalues(self):
         #rint('dbg','MainWidget testvalues')
@@ -938,7 +910,9 @@ class MainWidget(QtGui.QMainWindow):
                                                 'Wdo': self.ui.Sp_3_D3.value(),
                                                 'G': self.ui.Sp_3_D4.value()}
             (self.GeomInput['tab3'])['accepted'] = True
-            self.ui.tabWidget.setCurrentIndex(3)
+            #self.ui.tabWidget.setCurrentIndex(3)       #Show_ ban van
+            self.ui.tabWidget.setTabEnabled(3, True)
+            (self.GeomInput['tab2'])['checkGr'] = True                        
 
 
 
@@ -947,7 +921,7 @@ class MainWidget(QtGui.QMainWindow):
         if self.obj_BackToMain.Widget.isVisible():
             self.obj_BackToMain.Widget.hide()
         self.show()
-        self.ui.tabWidget.setCurrentIndex(0)
+        #self.ui.tabWidget.setCurrentIndex(0)
         ####################################################   TEST   TEST   TEST   TEST   TEST   TEST 
         #self.ui.tabWidget.setTabEnabled(3, True)
         #self.ui.tabWidget.setCurrentIndex(3)        ###########################################################################################
@@ -974,12 +948,17 @@ class MainWidget(QtGui.QMainWindow):
                 "Wdo: insulated wire outer diameter<br>G: gap between Wdo")
         elif self.MyDataTabs.CurrGr == 'Gr3':
             self.ui.L_3_expl.setText("Gr3 <br>first row <br>second row")
+        (self.MyDataTabs.datatabs['tab2Gr0'])['tabconf']=self.MyDataTabs.CurrGr
+        (self.MyDataTabs.datatabs['tab3Gr0'])['tabconf']=self.MyDataTabs.CurrGr
+        #rint((self.MyDataTabs.datatabs['tab1Gr0'])['tabconf'], (self.MyDataTabs.datatabs['tab2Gr0'])['tabconf'],(self.MyDataTabs.datatabs['tab3Gr0'])['tabconf'])
         ###rint('dbg',self.sender().objectName())
+        self.MyDataTabs.resetEnabled()
                 
 
     def tabChange(self):
        #rint('dbg','MainWidget tabChange')
         self.MyDataTabs.setCurrTabGr(self.sender().currentWidget(),'')
+        self.MyDataTabs.resetEnabled()
 
     def AccNext_Clicked(self):
         #rint('dbg','MainWidget AccNext_Clicked')
@@ -1013,7 +992,9 @@ class MainWidget(QtGui.QMainWindow):
         
         for Widget in (self.MyDataTabs.datatabs[self.MyDataTabs.CurrTab+self.MyDataTabs.CurrGr])['ObjNames']:
             (((self.MyDataTabs.datatabs[self.MyDataTabs.CurrTab+self.MyDataTabs.CurrGr])['ObjNames'])[Widget]).setStyleSheet("background:rgb(153, 204, 255);font: bold 12px")
-        self.GeomInput['accepted'] = (self.GeomInput['tab1'])['accepted'] and (self.GeomInput['tab2'])['accepted'] and (self.GeomInput['tab3'])['accepted']
+        self.GeomInput['accepted'] = (self.GeomInput['tab1'])['accepted'] and (self.GeomInput['tab2'])['accepted'] and (self.GeomInput['tab3'])['accepted'] \
+            and (self.GeomInput['tab2'])['checkGr']
         self.GeomInput['groove'] = self.MyDataTabs.CurrGr
+        #rint((self.GeomInput['tab1'])['accepted'],(self.GeomInput['tab2'])['accepted'],(self.GeomInput['tab3'])['accepted'],(self.GeomInput['tab2'])['checkGr'])
         self.ui.tabWidget.setTabEnabled(3, self.GeomInput['accepted'])
         #rint('dbg',self.GeomInput)

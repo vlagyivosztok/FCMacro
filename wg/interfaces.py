@@ -427,31 +427,29 @@ class MainWidget(QtGui.QMainWindow):
                                 self.testSeq.append('D')
 
             elif (self.CurrTab+self.CurrGr) == 'tab2Gr2':
-                #######################################################kijavitani: nem lehet B4,B3;R-rel lefele menni!!!!!!!!!!!!!!!!
-                # tobbfele koncepcio van ebben a szakaszban. egysegesiteni kell!!!!
+                if _sender == 'H3':
+                    if self.LabelObjs['H3'].value() > 0 and self.LabelObjs['R'].value() > 0:
+                        self.LabelObjs['H4'].setValue(self.LabelObjs['H3'].value()+self.LabelObjs['R'].value())
+                if _sender == 'H4':
+                    control = self.LabelObjs['R'].value()+self.LabelObjs['H1'].value()+self.LabelObjs['H2'].value()
+                    if self.LabelObjs['H4'].value() > 0 and self.LabelObjs['R'].value() > 0 and  self.LabelObjs['H4'].value() > control:
+                        self.LabelObjs['H3'].setValue(self.LabelObjs['H4'].value()-self.LabelObjs['R'].value())
+                if _sender == 'B3':
+                    if self.LabelObjs['H3'].value() > 0 and self.LabelObjs['R'].value() > 0:
+                        self.LabelObjs['B4'].setValue(self.LabelObjs['B3'].value()+self.LabelObjs['R'].value()*2)
+                if _sender == 'B4':
+                    if self.LabelObjs['B4'].value() > 0 and self.LabelObjs['R'].value() > 0 and  self.LabelObjs['B4'].value() > self.LabelObjs['R'].value()*2:
+                        self.LabelObjs['B3'].setValue(self.LabelObjs['B4'].value()-self.LabelObjs['R'].value()*2)
                 if _sender == 'R':
-                    self.testSeq = ['H','B']
-                if _sender.find('H') >= 0:
-                    self.testSeq = ['H','B']
-                if _sender.find('B') >= 0:
-                    self.testSeq = ['B','H']
-                for test in self.testSeq:
-                    if test == 'H':
-
-                        if self.LabelObjs['H3'].value() > 0 and self.LabelObjs['R'].value() > 0:
-                            self.LabelObjs['H4'].setValue(self.LabelObjs['H3'].value()+self.LabelObjs['R'].value())
-                        elif self.LabelObjs['H4'].value() > 0 and self.LabelObjs['R'].value() > 0 and self.LabelObjs['H4'].value()>self.LabelObjs['R'].value():
-                            self.LabelObjs['H3'].setValue(self.LabelObjs['H4'].value()-self.LabelObjs['R'].value())
-                        elif self.LabelObjs['H4'].value() > 0 and self.LabelObjs['H3'].value() > 0 and self.LabelObjs['H4'].value()>self.LabelObjs['H3'].value():
-                            self.LabelObjs['R'].setValue(self.LabelObjs['H4'].value()-self.LabelObjs['H3'].value())
-
-                    if test == 'B':                              
-                        if self.LabelObjs['B3'].value() > 0 and self.LabelObjs['R'].value() > 0:
-                              self.LabelObjs['B4'].setValue(self.LabelObjs['B3'].value()+self.LabelObjs['R'].value()*2)
-                        elif self.LabelObjs['B4'].value() > 0 and self.LabelObjs['R'].value() > 0 and self.LabelObjs['B4'].value()>self.LabelObjs['R'].value()*2:
-                              self.LabelObjs['B3'].setValue(self.LabelObjs['B4'].value()-self.LabelObjs['R'].value()*2)                                                
-                        elif self.LabelObjs['B4'].value() > 0 and self.LabelObjs['B3'].value() > 0 and self.LabelObjs['B4'].value()>self.LabelObjs['B3'].value():
-                            self.LabelObjs['R'].setValue((self.LabelObjs['B4'].value()-self.LabelObjs['B3'].value())/2)
+                    control = self.LabelObjs['R'].value()+self.LabelObjs['H1'].value()+self.LabelObjs['H2'].value()
+                    if self.LabelObjs['B3'].value() > 0 and self.LabelObjs['R'].value() > 0:
+                        self.LabelObjs['B4'].setValue(self.LabelObjs['B3'].value()+self.LabelObjs['R'].value()*2)
+                    elif self.LabelObjs['B4'].value() > 0 and self.LabelObjs['R'].value() > 0 and  self.LabelObjs['B4'].value() > self.LabelObjs['R'].value()*2:
+                        self.LabelObjs['B3'].setValue(self.LabelObjs['B4'].value()-self.LabelObjs['R'].value()*2)                        
+                    if self.LabelObjs['H3'].value() > 0 and self.LabelObjs['R'].value() > 0:
+                        self.LabelObjs['H4'].setValue(self.LabelObjs['H3'].value()+self.LabelObjs['R'].value())
+                    elif self.LabelObjs['H4'].value() > 0 and self.LabelObjs['R'].value() > 0 and  self.LabelObjs['H4'].value() > control:
+                        self.LabelObjs['H3'].setValue(self.LabelObjs['H4'].value()-self.LabelObjs['R'].value())                                                            
                     
             elif (self.CurrTab+self.CurrGr) == 'tab2Gr3':
                 pass
@@ -725,15 +723,15 @@ class MainWidget(QtGui.QMainWindow):
         self.MyDataTabs.getTabWidgets(tabname,'ObjHide',{self.ui.Sp_3_D5.objectName():self.ui.Sp_3_D5})                      
 
 ###rint('dbg',self.MyDataTabs.datatabs)        
-        ''' #rint('dbg','tab1Gr0',self.MyDataTabs.datatabs['tab1Gr0'])
-        #rint('dbg','tab2Gr0',self.MyDataTabs.datatabs['tab2Gr0'])
-        #rint('dbg','tab2Gr1',self.MyDataTabs.datatabs['tab2Gr1'])
-        #rint('dbg','tab2Gr2',self.MyDataTabs.datatabs['tab2Gr2'])
-        #rint('dbg','tab2Gr3',self.MyDataTabs.datatabs['tab2Gr3'])
-        #rint('dbg','tab3Gr0',self.MyDataTabs.datatabs['tab3Gr0'])
-        #rint('dbg','tab3Gr1',self.MyDataTabs.datatabs['tab3Gr1'])
-        #rint('dbg','tab3Gr2',self.MyDataTabs.datatabs['tab3Gr2'])
-        #rint('dbg','tab3Gr3',self.MyDataTabs.datatabs['tab3Gr3']) '''
+        ''' print('dbg','tab1Gr0',self.MyDataTabs.datatabs['tab1Gr0'])
+        print('dbg','tab2Gr0',self.MyDataTabs.datatabs['tab2Gr0'])
+        print('dbg','tab2Gr1',self.MyDataTabs.datatabs['tab2Gr1'])
+        print('dbg','tab2Gr2',self.MyDataTabs.datatabs['tab2Gr2'])
+        print('dbg','tab2Gr3',self.MyDataTabs.datatabs['tab2Gr3'])
+        print('dbg','tab3Gr0',self.MyDataTabs.datatabs['tab3Gr0'])
+        print('dbg','tab3Gr1',self.MyDataTabs.datatabs['tab3Gr1'])
+        print('dbg','tab3Gr2',self.MyDataTabs.datatabs['tab3Gr2'])
+        print('dbg','tab3Gr3',self.MyDataTabs.datatabs['tab3Gr3']) '''
 
         #endregion send widgets              
 
@@ -796,16 +794,18 @@ class MainWidget(QtGui.QMainWindow):
               
     def createGroove(self):
         '''  '''
-        if self.obj_CreateGeom.createGroove():
-            self.ui.Cb_2_CreatGroove.setStyleSheet("background:rgb(153, 204, 255);font: bold 12px")
-            (self.GeomInput['tab2'])['checkGr'] = True
-            self.ui.Cb_2_AccNext.setEnabled(True)
-            print('return True')
-        else:
-            print('END')
+        ''' if self.obj_CreateGeom.createGroove(): '''
+        print(self.obj_CreateGeom.createGroove())
+        self.ui.Cb_2_CreatGroove.setStyleSheet("background:rgb(153, 204, 255);font: bold 12px")
+        (self.GeomInput['tab2'])['checkGr'] = True
+        self.ui.Cb_2_AccNext.setEnabled(True)
+        #rint('dbg',self.GeomInput)
+        print('return True')
+        ''' else: '''
+        print('return False')
 
     def createArrang(self):
-        self.obj_CreateGeom.createArrang()
+        print('dbg Arrang',self.obj_CreateGeom.createArrang())
     
     
     def test(self):
@@ -852,25 +852,26 @@ class MainWidget(QtGui.QMainWindow):
     def testvalues(self):
         #rint('dbg','MainWidget testvalues')
 
-        self.ui.Sp_1_Di.setValue(85)    #----------------------####################### testvalues
-        self.ui.Sp_1_T.setValue(20)
-        self.ui.Sp_1_Do.setValue(85+2*20)
-        self.ui.Sp_1_L.setValue(110)
+        if False:
+            self.ui.Sp_1_Di.setValue(85)    #----------------------####################### testvalues
+            self.ui.Sp_1_T.setValue(20)
+            self.ui.Sp_1_Do.setValue(85+2*20)
+            self.ui.Sp_1_L.setValue(110)
 
-        self.ui.Sp_2_D1.setValue(1)
-        self.ui.Sp_2_D2.setValue(1)
-        self.ui.Sp_2_D3.setValue(10)
-        self.ui.Sp_2_D4.setValue(10)
-        self.ui.Sp_2_D5.setValue(10)
-        self.ui.Sp_2_D6.setValue(1.5)
-        self.ui.Sp_2_D7.setValue(4)
-        self.ui.Sp_2_D8.setValue(10)
-        self.ui.Sp_2_D9.setValue(6)
+            self.ui.Sp_2_D1.setValue(1)     #H1
+            self.ui.Sp_2_D2.setValue(1)     #H2
+            self.ui.Sp_2_D3.setValue(10)     #H3
+            self.ui.Sp_2_D4.setValue(13)     #H4        
+            self.ui.Sp_2_D5.setValue(2)     #--     B1
+            self.ui.Sp_2_D6.setValue(4)     #B1     B2
+            self.ui.Sp_2_D7.setValue(4)     #B2     B3
+            self.ui.Sp_2_D8.setValue(10)     #R     B4
+            self.ui.Sp_2_D9.setValue(3)     #D      R
 
-        self.ui.Sp_3_D1.setValue(1)
-        self.ui.Sp_3_D2.setValue(1)
-        self.ui.Sp_3_D3.setValue(1.1)
-        self.ui.Sp_3_D4.setValue(0.05)
+            self.ui.Sp_3_D1.setValue(0.05)
+            self.ui.Sp_3_D2.setValue(1)
+            self.ui.Sp_3_D3.setValue(1.1)
+            self.ui.Sp_3_D4.setValue(0.05)
 
         ''' self.GeomInput
 
@@ -958,7 +959,7 @@ class MainWidget(QtGui.QMainWindow):
     def tabChange(self):
        #rint('dbg','MainWidget tabChange')
         self.MyDataTabs.setCurrTabGr(self.sender().currentWidget(),'')
-        self.MyDataTabs.resetEnabled()
+        #self.MyDataTabs.resetEnabled()
 
     def AccNext_Clicked(self):
         #rint('dbg','MainWidget AccNext_Clicked')
@@ -998,3 +999,6 @@ class MainWidget(QtGui.QMainWindow):
         #rint((self.GeomInput['tab1'])['accepted'],(self.GeomInput['tab2'])['accepted'],(self.GeomInput['tab3'])['accepted'],(self.GeomInput['tab2'])['checkGr'])
         self.ui.tabWidget.setTabEnabled(3, self.GeomInput['accepted'])
         #rint('dbg',self.GeomInput)
+        #rint('dbg',(self.MyDataTabs.datatabs['tab1Gr0'])['tabconf'])
+        #rint('dbg',(self.MyDataTabs.datatabs['tab2Gr0'])['tabconf'])
+        #rint('dbg',(self.MyDataTabs.datatabs['tab3Gr0'])['tabconf'])

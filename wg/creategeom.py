@@ -222,7 +222,7 @@ class CreateGeom():
     
     def dummy(self):
         pass
-        #rint('dbg','WiresInGroove dummy',self.obj_MainWidget.GeomInput)
+     #rint('dbg','WiresInGroove dummy',self.obj_MainWidget.GeomInput)
 
     def def_quaternion(self,v1,v2): #ket vektor kozotti elmozdulas quaternion eloallitasa
         """quaternion eloallitasa ket vektorbol

@@ -1,0 +1,87 @@
+"""
+1 Body letrehozasa
+2 tobb pont, terben
+3 kor az elso ponton xy sikon
+4 Bspline a pontokra
+5 Pipe a pontokra a korbol
+"""
+#import Draft
+
+##try:
+lista = []
+
+for obj in App.ActiveDocument.Objects:
+	#print(obj.Name)
+	lista.append(obj.Name)
+if len(lista):
+	for Name in lista:
+		pass
+		#print(Name)
+		App.ActiveDocument.removeObject(Name)	
+
+
+else:
+	print('letrehoz')
+	test = 'test1'
+	pontok = (('pont1',10,5,0),('pont2',10,5,5),('pont3',10,5,10),('pont4',10,5,15),('pont5',10,5,20),('pont6',10,0,40),('pont7',10,30,60),('pont8',10,5,80))
+	Vectors = []
+	Pontok =[]
+	Test= App.ActiveDocument.addObject('PartDesign::Body',test)
+	for pont in pontok:
+		#print(pont)
+		Pontok.append(Test.newObject('PartDesign::Point',pont[0]))
+		Test.getObject(pont[0]).Placement.Base.x = pont[1]
+		Test.getObject(pont[0]).Placement.Base.y = pont[2]
+		Test.getObject(pont[0]).Placement.Base.z = pont[3]
+	#print(Pontok)
+	for Pont in Pontok:
+		Vectors.append(App.Vector(Pont.Placement.Base.x,Pont.Placement.Base.y,Pont.Placement.Base.z))
+	#print(Vectors)
+	spline1 = Draft.makeBSpline(Vectors,closed=False,face=False,support=None)
+	pl=App.Placement()
+	pl.Rotation.Q=(0,0,0,1)	# Z irany
+	pl.Base=FreeCAD.Vector(Vectors[0])
+	circle1 = Draft.makeCircle(radius=0.3,placement=pl,face=False,support=None)
+	circle2 = Draft.makeCircle(radius=0.29,placement=pl,face=False,support=None)
+	
+	test = 'test2'
+	Test= App.ActiveDocument.addObject('PartDesign::Body',test)
+	Test.addObject(spline1)
+	Test.addObject(circle1)
+	Test.addObject(circle2)
+	Test.newObject("PartDesign::AdditivePipe","AdditivePipe1")
+	App.ActiveDocument.getObject("AdditivePipe1").Profile = App.ActiveDocument.getObject(circle1.Name)
+	App.ActiveDocument.getObject("AdditivePipe1").Spine = App.ActiveDocument.getObject(spline1.Name),['Edge1']
+
+	App.ActiveDocument.recompute()
+
+	Test.newObject("PartDesign::SubtractivePipe","SubtractivePipe")
+	App.ActiveDocument.getObject("SubtractivePipe").Profile = App.ActiveDocument.getObject(circle2.Name)
+	App.ActiveDocument.getObject("SubtractivePipe").Spine = App.ActiveDocument.getObject(spline1.Name),['Edge1']
+	
+	App.ActiveDocument.recompute()	
+	
+	Gui.ActiveDocument.getObject("AdditivePipe1").Visibility=False
+
+	test = 'test3'
+	Test= App.ActiveDocument.addObject('PartDesign::Body',test)
+
+	spline2 = Draft.makeBSpline(Vectors,closed=False,face=False,support=None)
+	pl=App.Placement()
+	pl.Rotation.Q=(0,0,0,1)	# Z irany
+	pl.Base=FreeCAD.Vector(Vectors[0])
+	circle3 = Draft.makeCircle(radius=0.29,placement=pl,face=False,support=None)
+
+	Test.addObject(spline2)
+	Test.addObject(circle3)
+
+	Test.newObject("PartDesign::AdditivePipe","AdditivePipe3")
+	App.ActiveDocument.getObject("AdditivePipe3").Profile = App.ActiveDocument.getObject(circle3.Name)
+	App.ActiveDocument.getObject("AdditivePipe3").Spine = App.ActiveDocument.getObject(spline2.Name),['Edge1']
+
+	App.ActiveDocument.recompute()
+	
+#except:
+	#print('error')
+
+#App.activeDocument().recompute()

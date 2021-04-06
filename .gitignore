@@ -7,3 +7,4 @@ TEMP/
 !.gitignore
 !winding-geom.FCMacro
 !test-macro1.FCMacro
+!test-macro2.FCMacro

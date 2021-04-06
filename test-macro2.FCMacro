@@ -1,9 +1,6 @@
 """
-1 Body letrehozasa
-2 tobb pont, terben
-3 kor az elso ponton xy sikon
-4 Bspline a pontokra
-5 Pipe a pontokra a korbol
+pontokon kereztul ket gorbe
+tovuknel 1 nagy korlap, ket kis kor, huzalok, szigetelessel
 """
 #import Draft
 

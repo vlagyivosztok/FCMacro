@@ -108,6 +108,7 @@ class CreateGeom():
             App.ActiveDocument.getObjectsByLabel("Sketch005")[0].solve()
             App.ActiveDocument.getObjectsByLabel("Sketch006")[0].solve()
             App.ActiveDocument.recompute()
+            self.Bmax = max((self.tab2['values'])['B2'],(self.tab2['values'])['D'])
             #rint('Sketch005 ready')            
 
         elif self.obj_MainWidget.GeomInput['groove'] == 'Gr2':
@@ -119,6 +120,7 @@ class CreateGeom():
             App.ActiveDocument.getObjectsByLabel("Sketch")[0].solve()
             App.ActiveDocument.getObjectsByLabel("Sketch006")[0].solve()
             App.ActiveDocument.recompute()
+            self.Bmax = max((self.tab2['values'])['B2'],(self.tab2['values'])['B4'])
             #rint('Sketch005 ready')
 
             #rint('Gr2 Sketch')
@@ -136,17 +138,20 @@ class CreateGeom():
 
         #minden geometria valtozas utan:        
         App.ActiveDocument.recompute()
+        print('max B %s' % self.Bmax)
         #rint('recompute')
 
         #Body a sketch origojaba: Sketch006 Ymid, Ydir
         #App.Vector(App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymid"),0)
         self.v_gr_base = App.Vector(0,App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymid"),0)
-        self.v_gr_dir = App.Vector(0,App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ydir"),0)
-        self.v_dir = self.v_gr_dir.sub(self.v_gr_base).normalize()
-        self.base_dir = App.Vector(0,1,0)
+        """ nem forditjuk el, csak pozicioba helyezzuk ??? """
+        #self.v_gr_dir = App.Vector(0,App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ydir"),0)
+        #self.v_dir = self.v_gr_dir.sub(self.v_gr_base).normalize()
+        #self.base_dir = App.Vector(0,1,0)
         #rint(self.v_gr_base,self.v_dir)
         App.ActiveDocument.getObject("C_BdWires").Placement.Base = self.v_gr_base
-        App.ActiveDocument.getObject("C_BdWires").Placement.Rotation = self.def_quaternion(self.base_dir,self.v_dir)
+        App.ActiveDocument.getObject("C_BdWires").Placement.Rotation = (0,0,0,1) #(0,0,1,0)
+        #App.ActiveDocument.getObject("C_BdWires").Placement.Rotation = self.def_quaternion(self.base_dir,self.v_dir)
         
         App.ActiveDocument.recompute()
         #rint('CS placed')
@@ -169,14 +174,18 @@ class CreateGeom():
             return False '''
 
     def createArrang(self):     
+        #meretek atadasa
         self.tab3 = self.obj_MainWidget.GeomInput['tab3']
         self.A  = ((self.obj_MainWidget.GeomInput['tab3'])['values'])['Wdo'] + ((self.obj_MainWidget.GeomInput['tab3'])['values'])['G']    # = Dk + Lr Wdo+G
         self.y_incr = self.A*sqrt(3)/2      #y_incr = A*sqrt(3)/2
         self.Dk = ((self.obj_MainWidget.GeomInput['tab3'])['values'])['Wdo']  #Dk = Dh + 2*Hsz
-             
+        self.Dw = ((self.obj_MainWidget.GeomInput['tab3'])['values'])['Wd']
+        self.plane_h = (self.tab1['values'])['L'] + self.Bmax 
         
 
         self.wire_collection = []
+        self.insul_collection = []
+        self.point_collection = []
         ''' >>> for obj in App.ActiveDocument.getObject('C_BdWires').OutList:
      	#rint(obj.Name)
         >>> for obj in App.ActiveDocument.getObject('C_BdWires').OutList:
@@ -190,6 +199,9 @@ class CreateGeom():
         if not self.clearGroove():
             return 'clearGroove False'
     #sketch kontur bekerese         App.ActiveDocument.getObjectsByLabel("Sketch006")[0]
+        """ 
+        Egy masik bodyba pontokat a körök közepére. 
+         """
         if self.obj_MainWidget.GeomInput['groove'] == 'Gr1':
             self.gr_cont_pts_ = self.groove_contour(App.ActiveDocument.getObjectsByLabel("Sketch006")[0])
             #rint('dbg',gr_cont_pts_)
@@ -208,8 +220,12 @@ class CreateGeom():
         self.gr_cont_pts = []
         for pts in self.gr_cont_pts_:
             self.vec1 = (App.Vector(self.v_gr_base[0],self.v_gr_base[1])).sub(App.Vector(pts[0],pts[1]))
-            self.gr_cont_pts.append((self.vec1[0],self.vec1[1]))
+            self.gr_cont_pts.append((self.vec1[0],-self.vec1[1]))               #x-re tukrozes------------------------------
         #rint('dbg points move',self.gr_cont_pts)
+
+        self.Bd_Points = App.ActiveDocument.addObject('PartDesign::Body','Points')
+        self.Bd_Points.Placement.Base = self.v_gr_base
+        self.Bd_Points.Placement.Rotation = (0,0,0,1)
 
         self.wloc_in_groove()
 
@@ -220,30 +236,34 @@ class CreateGeom():
         ''' except:
             return False '''
     
+        #datum plane Placement
+        App.ActiveDocument.getObject('DatumPlane').Placement.Base.z = self.plane_h
+        App.ActiveDocument.getObject('Pad').Length = (self.tab1['values'])['L']
+
+        #innen a huzalok letrehozasa#################################################################################################################
+        #pontok self.Bd_Points-ban
+        #huzal korok
+        #
+
     def dummy(self):
         pass
      #rint('dbg','WiresInGroove dummy',self.obj_MainWidget.GeomInput)
 
-    def def_quaternion(self,v1,v2): #ket vektor kozotti elmozdulas quaternion eloallitasa
-        """quaternion eloallitasa ket vektorbol
-        ket nem normalizalt vektorbol eloallitja a normalizalt quaterniont
-        """
+    def def_quaternion(v1, v2):
+        """ Quaternion v1 es v2 kozott, Tuple-t ad vissza FreeCAD formatumban """
+        v1.normalize(), v2.normalize()
 
-        if(abs(v1.normalize().dot(v2.normalize())-1) < 0.0001):
-            #parhuzamos, irany marad
-            return_tuple = (0,0,0,1)
+        if(abs(v1.dot(v2)-1) < 0.0001):
+                #parhuzamos, irany marad
+            print('azonos')
+            return_tuple = (0.0,0.0,0.0,1.0)
             return return_tuple
 
-        elif(abs(v1.normalize().dot(v2.normalize())+1) < 0.0001):
-            new_q = Quaternion(axis=[0, 0, 1], degrees=180) # (pyquaternion)
-            return_tuple = (round(new_q[1],6),round(new_q[2],6),round(new_q[3],0),round(new_q[0],0))
-            return return_tuple
-
-        else: #altalanos helyzetu vektorok
-            x_vect = v1.cross(v2)
-            q_w = sqrt((pow(v1.Length,2)) * (pow(v2.Length,2))) + v1.dot(v2)
-            new_q = Quaternion(q_w, x_vect[0], x_vect[1], x_vect[2])
-            return_tuple = (round(new_q[1],6),round(new_q[2],6),round(new_q[3],0),round(new_q[0],0))
+        elif(abs(v1.dot(v2)+1) < 0.0001):
+            print('ellentetes')
+            new_q = Quaternion(axis=[0, 1, 0], degrees=180) # (pyquaternion)
+            print(new_q)
+            return_tuple = (round(new_q[1],6),round(new_q[2],6),round(new_q[3],6),round(new_q[0],6))
             return return_tuple
 
     def groove_contour(self, cont): # a horony geometria bekerese
@@ -292,22 +312,34 @@ class CreateGeom():
 
         for pnt_ in circ_cont:
             pnts.append((pnt_[0],pnt_[1],pnt_[2]))
+        
+        App.ActiveDocument.recompute()
 
         if Polygon(self.gr_cont_pts).contains(Polygon(pnts)):
             App.ActiveDocument.getObject("C_BdWires").addObject(self.wire_collection[-1])
+            #point in the circle
+            self.point_collection.append(self.Bd_Points.newObject('PartDesign::Point','point'))
+            self.point_collection[-1].Placement = self.wire_collection[-1].Placement
+            
+            """ Pontok2.append(Test.newObject('PartDesign::Point',pont[0]))
+            Test.getObject(pont[0]).Placement.Base.x = pont[1]
+            Test.getObject(pont[0]).Placement.Base.y = pont[2]
+            Test.getObject(pont[0]).Placement.Base.z = pont[3] """
             #mirrored: a vizsgalat csak az x tengely pozitiv ertekeire tortenik. A tukrozotteket automatikusan hozza tesszuk.
             if x_circ != 0:
                 pl = App.Placement()
                 pl.Rotation.Q=(0,0,0,1)
-                pl.Base=App.Vector(-x_circ,y_circ,0)
+                pl.Base=App.Vector(-x_circ,-y_circ,0)
                 self.wire_collection.append(Draft.makeCircle(radius=self.Dk/2,placement=pl,face=False,support=None))
                 App.ActiveDocument.getObject("C_BdWires").addObject(self.wire_collection[-1])
+                self.point_collection.append(self.Bd_Points.newObject('PartDesign::Point','point'))
+                self.point_collection[-1].Placement = self.wire_collection[-1].Placement
                 #rint(self.wire_collection[-1].Name)
         else:
             App.ActiveDocument.removeObject(self.wire_collection[-1].Name)
             self.wire_collection.pop()
             return False
-    
+        App.ActiveDocument.recompute()
         return True
 
 
@@ -316,7 +348,7 @@ class CreateGeom():
         #global self.wire_collection
         pl = App.Placement()
         pl.Rotation.Q=(0,0,0,1)
-        pl.Base=App.Vector(x,y,0)
+        pl.Base=App.Vector(x,-y,0)
         self.wire_collection.append(Draft.makeCircle(radius=r,placement=pl,face=False,support=None))
-        
+ 
         return self.wire_collection[-1].Shape.discretize(int(self.wire_collection[-1].Shape.Length/0.1))

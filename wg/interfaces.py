@@ -852,7 +852,7 @@ class MainWidget(QtGui.QMainWindow):
     def testvalues(self):
         #rint('dbg','MainWidget testvalues')
 
-        if False:
+        if True:
             self.ui.Sp_1_Di.setValue(85)    #----------------------####################### testvalues
             self.ui.Sp_1_T.setValue(20)
             self.ui.Sp_1_Do.setValue(85+2*20)
@@ -860,13 +860,13 @@ class MainWidget(QtGui.QMainWindow):
 
             self.ui.Sp_2_D1.setValue(1)     #H1
             self.ui.Sp_2_D2.setValue(1)     #H2
-            self.ui.Sp_2_D3.setValue(10)     #H3
-            self.ui.Sp_2_D4.setValue(13)     #H4        
+            self.ui.Sp_2_D3.setValue(11.5)     #H3
+            self.ui.Sp_2_D4.setValue(15)     #H4        
             self.ui.Sp_2_D5.setValue(2)     #--     B1
-            self.ui.Sp_2_D6.setValue(4)     #B1     B2
+            self.ui.Sp_2_D6.setValue(2)     #B1     B2
             self.ui.Sp_2_D7.setValue(4)     #B2     B3
-            self.ui.Sp_2_D8.setValue(10)     #R     B4
-            self.ui.Sp_2_D9.setValue(3)     #D      R
+            self.ui.Sp_2_D8.setValue(3.5)     #R     B4
+            self.ui.Sp_2_D9.setValue(7)     #D      R
 
             self.ui.Sp_3_D1.setValue(0.05)
             self.ui.Sp_3_D2.setValue(1)
@@ -883,7 +883,7 @@ class MainWidget(QtGui.QMainWindow):
         'tab3': {'values': {'It': 1.0, 'Wd': 1.0, 'Wdo': 1.0, 'G': 0.1}, 'accepted': True},
         'tab4': {'values': {}, 'accepted': False}} '''
         
-        if False:
+        if True:
             self.GeomInput['accepted'] = True
             self.GeomInput['groove'] = 'Gr1'
 

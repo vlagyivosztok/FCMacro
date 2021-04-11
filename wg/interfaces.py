@@ -757,7 +757,7 @@ class MainWidget(QtGui.QMainWindow):
         self.ui.Cb_2_CreatGroove.clicked.connect(self.createGroove)
 
         self.ui.Cb_4_CreatArrang.clicked.connect(self.createArrang)
-        self.ui.Cb_4_CreatGeom.clicked.connect(self.test)    
+        self.ui.Cb_4_CreatGeom.clicked.connect(self.createGeom)    
 
         self.ui.tabWidget.currentChanged.connect(self.tabChange)
         self.ui.tabWidget.setTabEnabled(3, False)
@@ -804,9 +804,11 @@ class MainWidget(QtGui.QMainWindow):
         ''' else: '''
         print('return False')
 
-    def createArrang(self):
-        print('dbg Arrang',self.obj_CreateGeom.createArrang())
+    def createArrang(self): #createGeom
+        print('dbg crArrang',self.obj_CreateGeom.createArrang())
     
+    def createGeom(self): #createGeom
+        print('dbg crGeom',self.obj_CreateGeom.createGeom())
     
     def test(self):
         pass
@@ -861,12 +863,23 @@ class MainWidget(QtGui.QMainWindow):
             self.ui.Sp_2_D1.setValue(1)     #H1
             self.ui.Sp_2_D2.setValue(1)     #H2
             self.ui.Sp_2_D3.setValue(11.5)     #H3
-            self.ui.Sp_2_D4.setValue(15)     #H4        
+            self.ui.Sp_2_D4.setValue(13.5)     #H4        
             self.ui.Sp_2_D5.setValue(2)     #--     B1
-            self.ui.Sp_2_D6.setValue(2)     #B1     B2
-            self.ui.Sp_2_D7.setValue(4)     #B2     B3
-            self.ui.Sp_2_D8.setValue(3.5)     #R     B4
-            self.ui.Sp_2_D9.setValue(7)     #D      R
+            self.ui.Sp_2_D6.setValue(4)     #B1     B2
+            self.ui.Sp_2_D7.setValue(3)     #B2     B3
+            self.ui.Sp_2_D8.setValue(7)     #R     B4
+            self.ui.Sp_2_D9.setValue(2)     #D      R
+
+            #Gr2:
+            """ self.ui.Sp_2_D1.setValue(1)     #H1
+            self.ui.Sp_2_D2.setValue(1)     #H2
+            self.ui.Sp_2_D3.setValue(11.5)     #H3
+            self.ui.Sp_2_D4.setValue(13.5)     #H4        
+            self.ui.Sp_2_D5.setValue(2)     #--     B1
+            self.ui.Sp_2_D6.setValue(4)     #B1     B2
+            self.ui.Sp_2_D7.setValue(3)     #B2     B3
+            self.ui.Sp_2_D8.setValue(7)     #R     B4
+            self.ui.Sp_2_D9.setValue(2)     #D      R """
 
             self.ui.Sp_3_D1.setValue(0.05)
             self.ui.Sp_3_D2.setValue(1)

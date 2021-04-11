@@ -1,0 +1,106 @@
+from pyquaternion import Quaternion
+from pyquaternion.quaternion import np
+from math import sqrt
+import Draft
+
+""" 
+Quaternion, matrix transzformacios gyakorlat.
+Quaternion - trafo Matrix oda-vissza alakitas
+Inverz matrix - inverz quaternion
+
+ """
+
+
+def quat_rot(quat):		#pyquaternion.quaternion.Quaternion
+	#rint(type(quat))
+	if type(quat) == Quaternion:
+		return_tuple = (round(quat[1],6),round(quat[2],6),round(quat[3],6),round(quat[0],6))
+		return return_tuple
+	else:
+		return None
+
+def def_quaternion(v1, v2, quat = False):
+	#Quaternion v1 es v2 kozott, Tuple-t ad vissza FreeCAD formatumban
+	print(type(v1),v1, type(v2),v2)
+	v1.normalize(), v2.normalize()
+
+	if(abs(v1.dot(v2)-1) < 0.0001):
+			#parhuzamos, irany marad
+		#rint('azonos')
+		return_tuple = (0.0,0.0,0.0,1.0)
+		return return_tuple
+
+	elif(abs(v1.dot(v2)+1) < 0.0001):
+		#rint('ellentetes')
+		new_q = Quaternion(axis=[0, 1, 0], degrees=180) # (pyquaternion)
+		#rint(new_q)
+		return_tuple = (round(new_q[1],6),round(new_q[2],6),round(new_q[3],6),round(new_q[0],6))
+		return return_tuple
+	else: #altalanos helyzetu vektorok	
+
+		##rint(v1,v2)
+		v = v1+v2
+		##rint(v)
+		v.normalize()
+		##rint(v)
+		x_vect = v1.cross(v2)
+		q_w = sqrt((pow(v1.Length,2)) * (pow(v2.Length,2))) + v1.dot(v2)
+		new_q = Quaternion(q_w, x_vect[0], x_vect[1], x_vect[2])
+		#rint((new_q.inverse).rotation_matrix)                
+		if quat:
+			return new_q
+		else:
+			return_tuple = (round(new_q[1],6),round(new_q[2],6),round(new_q[3],6),round(new_q[0],6))
+			return return_tuple
+
+Test= App.ActiveDocument.addObject('PartDesign::Body','test')
+Gui.ActiveDocument.getObject(Test.Origin.Name).Visibility = True
+for item in Test.Origin.OutList:
+		if (item.Role).find('Axis') >= 0:
+			Gui.ActiveDocument.getObject(item.Name).Visibility = False
+
+quat1 = Quaternion(axis=[0, 1, 0], degrees=45) 
+#rint(quat_rot(quat1))
+#rint(quat1.rotation_matrix)
+
+Test= App.ActiveDocument.addObject('PartDesign::Body','test')
+
+Test.Placement.Base.x = 0
+Test.Placement.Base.y = 0
+Test.Placement.Base.z = 0
+Gui.ActiveDocument.getObject(Test.Origin.Name).Visibility = True
+
+Test.Placement.Rotation = quat_rot(quat1)
+Gui.ActiveDocument.getObject(Test.Origin.Name).Visibility = True
+for item in Test.Origin.OutList:
+		if (item.Role).find('Plane') >= 0:
+			Gui.ActiveDocument.getObject(item.Name).Visibility = False
+
+ln1 = Draft.makeLine(App.Vector(0,0,0),App.Vector(5,1,5))
+
+mtx1 = quat1.rotation_matrix
+
+vec1 = App.Vector(1,0,0)
+print(vec1)
+vec1_rot = App.Vector(mtx1.dot(vec1))
+print(vec1_rot)
+
+ln_rot = def_quaternion(vec1,vec1_rot)
+
+ln1.Placement.Rotation = ln_rot
+
+
+#x = np.array( (2, 3, 5) )
+#y = np.matrix( ((1,2), (5, -1)) )
+#rint(quat1.rotation_matrix * x)
+""" matrix([[17,  1],
+        [28,  1]]) """
+
+
+#test1 = App.ActiveDocument.getObject('test')
+#test1.Placement.Rotation = 
+
+
+
+
+

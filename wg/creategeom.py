@@ -198,7 +198,7 @@ class CreateGeom():
         ''' try: '''
         if not self.clearGroove():
             return 'clearGroove False'
-    #sketch kontur bekerese         App.ActiveDocument.getObjectsByLabel("Sketch006")[0]
+        #sketch kontur bekerese         App.ActiveDocument.getObjectsByLabel("Sketch006")[0]
         """ 
         Egy masik bodyba pontokat a körök közepére. 
          """
@@ -232,18 +232,36 @@ class CreateGeom():
         #a vegen a gombok beallitasa
         self.obj_MainWidget.ui.Cb_4_CreatArrang.setStyleSheet("background:rgb(144,238,144);font: bold 12px")
         self.obj_MainWidget.ui.Cb_4_CreatGeom.setEnabled(True)
+
+        App.ActiveDocument.getObject('DatumPlane').Placement.Base.z = self.plane_h
+        App.ActiveDocument.getObject('DatumPlane001').Placement.Base.z = (self.tab1['values'])['L']
+
+        App.ActiveDocument.recompute()        
+
         return 'gombok, vege True'
         ''' except:
             return False '''
     
         #datum plane Placement
-        App.ActiveDocument.getObject('DatumPlane').Placement.Base.z = self.plane_h
-        App.ActiveDocument.getObject('Pad').Length = (self.tab1['values'])['L']
+
 
         #innen a huzalok letrehozasa#################################################################################################################
         #pontok self.Bd_Points-ban
         #huzal korok
         #
+
+
+    def createGeom(self):
+        pass
+        #2 vezeto gorbe
+        #App.Vector(0,App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymid"),0)
+        #App.Vector(0,App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymax"),0)
+        #Bd_Guide
+        #mag magassagban
+        #vectorok letrehozasa, majd a bodyban elhelyezese
+        self.guide1 = [] 
+        self.guide2 = []
+
 
     def dummy(self):
         pass
@@ -297,7 +315,7 @@ class CreateGeom():
 
 
     def wire_condition(self,x,y): # huzal vizsgalata, hogy a hornyon belul helyezkedik-e el
-        #global A, y_incr, gr_cont_pts, Dk, self.wire_collection
+        #global A, y_incr, gr_cont_pts, Dk, self.insul_collection
         #rint('dbg wire_condition')
         pnts = []
         if y%2: # paratlan
@@ -316,11 +334,18 @@ class CreateGeom():
         App.ActiveDocument.recompute()
 
         if Polygon(self.gr_cont_pts).contains(Polygon(pnts)):
-            App.ActiveDocument.getObject("C_BdWires").addObject(self.wire_collection[-1])
-            #point in the circle
+            App.ActiveDocument.getObject("C_BdWires").addObject(self.insul_collection[-1])
+            #point in the circle (Outer D)
             self.point_collection.append(self.Bd_Points.newObject('PartDesign::Point','point'))
-            self.point_collection[-1].Placement = self.wire_collection[-1].Placement
-            
+            self.point_collection[-1].Placement = self.insul_collection[-1].Placement
+
+            #wire circle:
+            pl = self.insul_collection[-1].Placement
+            #pl.Rotation.Q=(0,0,0,1)
+            #pl.Base=App.Vector(x,-y,0)
+            self.wire_collection.append(Draft.makeCircle(radius=self.Dw/2,placement=pl,face=False,support=None))
+            App.ActiveDocument.getObject("C_BdWires").addObject(self.wire_collection[-1])
+
             """ Pontok2.append(Test.newObject('PartDesign::Point',pont[0]))
             Test.getObject(pont[0]).Placement.Base.x = pont[1]
             Test.getObject(pont[0]).Placement.Base.y = pont[2]
@@ -330,14 +355,17 @@ class CreateGeom():
                 pl = App.Placement()
                 pl.Rotation.Q=(0,0,0,1)
                 pl.Base=App.Vector(-x_circ,-y_circ,0)
-                self.wire_collection.append(Draft.makeCircle(radius=self.Dk/2,placement=pl,face=False,support=None))
-                App.ActiveDocument.getObject("C_BdWires").addObject(self.wire_collection[-1])
+                self.insul_collection.append(Draft.makeCircle(radius=self.Dk/2,placement=pl,face=False,support=None))
+                App.ActiveDocument.getObject("C_BdWires").addObject(self.insul_collection[-1])
                 self.point_collection.append(self.Bd_Points.newObject('PartDesign::Point','point'))
-                self.point_collection[-1].Placement = self.wire_collection[-1].Placement
-                #rint(self.wire_collection[-1].Name)
+                self.point_collection[-1].Placement = self.insul_collection[-1].Placement
+                self.wire_collection.append(Draft.makeCircle(radius=self.Dw/2,placement=pl,face=False,support=None))
+                App.ActiveDocument.getObject("C_BdWires").addObject(self.wire_collection[-1])
+
+                #rint(self.insul_collection[-1].Name)
         else:
-            App.ActiveDocument.removeObject(self.wire_collection[-1].Name)
-            self.wire_collection.pop()
+            App.ActiveDocument.removeObject(self.insul_collection[-1].Name)
+            self.insul_collection.pop()
             return False
         App.ActiveDocument.recompute()
         return True
@@ -345,10 +373,10 @@ class CreateGeom():
 
     def circ_contour(self,x,y,r): # a kordinatakkal es sugarral kort rajzol, berakja a wire bodyba, es visszaadja a konturpontjait (lokalis??)
 
-        #global self.wire_collection
+        #global self.insul_collection
         pl = App.Placement()
         pl.Rotation.Q=(0,0,0,1)
         pl.Base=App.Vector(x,-y,0)
-        self.wire_collection.append(Draft.makeCircle(radius=r,placement=pl,face=False,support=None))
+        self.insul_collection.append(Draft.makeCircle(radius=r,placement=pl,face=False,support=None))
  
-        return self.wire_collection[-1].Shape.discretize(int(self.wire_collection[-1].Shape.Length/0.1))
+        return self.insul_collection[-1].Shape.discretize(int(self.insul_collection[-1].Shape.Length/0.1))

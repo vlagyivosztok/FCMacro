@@ -17,11 +17,16 @@ try:
     import Draft        #FreeCAD, Part, PartDesign,
     from math import sqrt
     from pyquaternion import Quaternion
+    from pyquaternion.quaternion import np
+    from copy import deepcopy
     from shapely.geometry import Point, Polygon
 except:
     os.system(g_wg_dir+'\import-error.vbs')
     raise Exception("Quit macro / creategeom.py")
 #endregion imports
+from pyquaternion import Quaternion
+from pyquaternion.quaternion import np
+from copy import copy, deepcopy
 
 
 class CreateGeom():
@@ -138,7 +143,7 @@ class CreateGeom():
 
         #minden geometria valtozas utan:        
         App.ActiveDocument.recompute()
-        print('max B %s' % self.Bmax)
+        #rint('max B %s' % self.Bmax)
         #rint('recompute')
 
         #Body a sketch origojaba: Sketch006 Ymid, Ydir
@@ -267,22 +272,46 @@ class CreateGeom():
         pass
      #rint('dbg','WiresInGroove dummy',self.obj_MainWidget.GeomInput)
 
-    def def_quaternion(v1, v2):
-        """ Quaternion v1 es v2 kozott, Tuple-t ad vissza FreeCAD formatumban """
+    def def_quaternion(self,v1_, v2_, quat = False):
+        v1 = deepcopy(v1_)
+        v2 = deepcopy(v2_)
         v1.normalize(), v2.normalize()
 
         if(abs(v1.dot(v2)-1) < 0.0001):
-                #parhuzamos, irany marad
-            print('azonos')
-            return_tuple = (0.0,0.0,0.0,1.0)
-            return return_tuple
+            new_q = Quaternion(axis=[0, 0, 1], degrees=0)
+            if quat:
+                return new_q
+            else:
+                return_tuple = (round(new_q[1],6),round(new_q[2],6),round(new_q[3],6),round(new_q[0],6))
+                return return_tuple
 
         elif(abs(v1.dot(v2)+1) < 0.0001):
-            print('ellentetes')
-            new_q = Quaternion(axis=[0, 1, 0], degrees=180) # (pyquaternion)
-            print(new_q)
-            return_tuple = (round(new_q[1],6),round(new_q[2],6),round(new_q[3],6),round(new_q[0],6))
+            new_q=(Quaternion(axis=[0, 0, 1], degrees=0)).inverse
+            if quat:
+                return new_q
+            else:
+                return_tuple = (round(new_q[1],6),round(new_q[2],6),round(new_q[3],6),round(new_q[0],6))
+                return return_tuple
+
+        else:
+            v = v1+v2
+            v.normalize()
+            x_vect = v1.cross(v2)
+            q_w = sqrt((pow(v1.Length,2)) * (pow(v2.Length,2))) + v1.dot(v2)
+            new_q = Quaternion(q_w, x_vect[0], x_vect[1], x_vect[2])
+            if quat:
+                return new_q
+            else:
+                return_tuple = (round(new_q[1],6),round(new_q[2],6),round(new_q[3],6),round(new_q[0],6))
+                return return_tuple
+
+
+    def quat_rot(self,quat):		#pyquaternion.quaternion.Quaternion
+        if type(quat) == Quaternion:
+            return_tuple = (round(quat[1],6),round(quat[2],6),round(quat[3],6),round(quat[0],6))
             return return_tuple
+        else:
+            return None
 
     def groove_contour(self, cont): # a horony geometria bekerese
         #rint(type(cont))

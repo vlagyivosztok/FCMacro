@@ -1,134 +1,54 @@
 g_UserMacroDir = (App.getUserMacroDir()).replace('\\','/')
 g_wg_dir = g_UserMacroDir+"wg"
 
-import os
+#import os
 from pyquaternion import Quaternion
 from pyquaternion.quaternion import np
 from math import sqrt
 from copy import copy, deepcopy
 import Draft
 
-#2 vezeto gorbe
-#App.Vector(0,App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymid"),0)
-#App.Vector(0,App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymax"),0)
-#Bd_Guide
-#mag magassagban
-#vectorok letrehozasa, majd a bodyban elhelyezese
-
-#rint('Test_Macro1')
 
 def def_quaternion(v1_, v2_, quat = False):
-    	#Quaternion v1 es v2 kozott, Tuple-t ad vissza FreeCAD formatumban
-	#rint(type(v1),v1, type(v2),v2)
-
 	v1 = deepcopy(v1_)
 	v2 = deepcopy(v2_)
-	#rint(id(v1),id(v1_), id(v2), id(v2_))
-
 	v1.normalize(), v2.normalize()
-	#rint(v1,v1_,v2,v2_)
 
 	if(abs(v1.dot(v2)-1) < 0.0001):
-			#parhuzamos, irany marad
-		#rint('azonos')
-
 		new_q = Quaternion(axis=[0, 0, 1], degrees=0)
 		if quat:
-			#rint('return quat')
 			return new_q
 		else:
 			return_tuple = (round(new_q[1],6),round(new_q[2],6),round(new_q[3],6),round(new_q[0],6))
-			#rint('return tuple')
 			return return_tuple
 
 	elif(abs(v1.dot(v2)+1) < 0.0001):
-		#rint('ellentetes')
-		
-		#Quaternion(matrix=R)
-		#new_q = Quaternion(axis=[0, 0, 1], degrees=180) # (pyquaternion)
 		new_q=(Quaternion(axis=[0, 0, 1], degrees=0)).inverse
-		#rint(new_q)
 		if quat:
-			#rint('return quat')
 			return new_q
 		else:
 			return_tuple = (round(new_q[1],6),round(new_q[2],6),round(new_q[3],6),round(new_q[0],6))
-			#rint('return tuple')
 			return return_tuple
 
-	else: #altalanos helyzetu vektorok	
-		#new_q = Quaternion
-		#rint('altalanos')
+	else:
 		v = v1+v2
-		#print(v)
 		v.normalize()
-		#print(v)
 		x_vect = v1.cross(v2)
 		q_w = sqrt((pow(v1.Length,2)) * (pow(v2.Length,2))) + v1.dot(v2)
 		new_q = Quaternion(q_w, x_vect[0], x_vect[1], x_vect[2])
-		#rint((new_q.inverse).rotation_matrix)                
 		if quat:
-			#rint('return quat')
 			return new_q
 		else:
 			return_tuple = (round(new_q[1],6),round(new_q[2],6),round(new_q[3],6),round(new_q[0],6))
-			#rint('return tuple')
 			return return_tuple
 
-		'''
-		Quaternion q;
-vector x = crossproduct(v1, v2);
-q.xyz = x;
-q.w = sqrt((v1.Length ^ 2) * (v2.Length ^ 2)) + dotproduct(v1, v2);
-
-
-		def diffVectors(v1, v2):
-        """ Get rotation Quaternion between 2 vectors """
-    v1.normalize(), v2.normalize()
-    v = v1+v2
-    v.normalize()
-    angle = v.dot(v2)
-    axis = v.cross(v2)
-    return Quaternion( angle, *axis )
-		 '''
 
 def quat_rot(quat):		#pyquaternion.quaternion.Quaternion
-	#rint(type(quat))
 	if type(quat) == Quaternion:
 		return_tuple = (round(quat[1],6),round(quat[2],6),round(quat[3],6),round(quat[0],6))
 		return return_tuple
 	else:
 		return None
-
-""" 
-def_quaternion tesztelese
-
- """
-''' testbd1 = App.ActiveDocument.addObject('PartDesign::Body','test')
-Gui.ActiveDocument.getObject(testbd1.Origin.Name).Visibility = True
-for elem in testbd1.Origin.OutList:
-	if (elem.Role).find('Axis') >= 0:
-		Gui.ActiveDocument.getObject(elem.Name).Visibility = False
-
-testbd2 = App.ActiveDocument.addObject('PartDesign::Body','test')
-Gui.ActiveDocument.getObject(testbd2.Origin.Name).Visibility = True
-for elem in testbd2.Origin.OutList:
-	if (elem.Role).find('Plane') >= 0:
-		Gui.ActiveDocument.getObject(elem.Name).Visibility = False
-
-
-pt = testbd2.newObject('PartDesign::Point','pt')
-vec1 = App.Vector(2,3,4)
-pt.Placement.Base = vec1
-
-vec2 = App.Vector(11,25,-60)
-pt = testbd1.newObject('PartDesign::Point','pt')
-pt.Placement.Base = vec2
-
-quat1= def_quaternion(vec1,vec2,True)
-
-testbd2.Placement.Rotation = quat_rot(quat1)
-raise Exception('Temp End' ) '''
 
 
 guide1 = [] 
@@ -137,18 +57,17 @@ spline1_pts = []
 spline2_pts = []
 """ spline1_pts_ = []
 spline2_pts_ = [] """
-
+coreL = App.ActiveDocument.getObject('DatumPlane001').Placement.Base.z
 test1 = App.ActiveDocument.getObject('Bd_Guide')
 
+
 for step in [0,0.1,0.5,0.9,0.92,0.94,0.96,0.98,0.99,1,1.02]:
-	guide1.append(App.Vector(0,App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymid"),App.ActiveDocument.getObject('DatumPlane001').Placement.Base.z * step))
-	guide2.append(App.Vector(0,App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymax"),App.ActiveDocument.getObject('DatumPlane001').Placement.Base.z * step))
+	guide1.append(App.Vector(0,App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymid"),coreL * step))
+	guide2.append(App.Vector(0,App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymax"),coreL * step))
 
 pts = App.ActiveDocument.getObjectsByLabel("Sketch010")[0].Shape.discretize(int(App.ActiveDocument.getObjectsByLabel("Sketch010")[0].Shape.Length))
-#rint(pts)
 for pt in pts:
     	guide1.append(pt)
-
 pts = App.ActiveDocument.getObjectsByLabel("Sketch011")[0].Shape.discretize(int(App.ActiveDocument.getObjectsByLabel("Sketch011")[0].Shape.Length))
 for pt in pts:
     	guide2.append(pt)
@@ -156,26 +75,22 @@ for pt in pts:
 spline1 = Draft.makeBSpline(guide1,closed=False,face=False,support=None)
 spline2 = Draft.makeBSpline(guide2,closed=False,face=False,support=None)
 
-##rint(len(guide1), len(guide2))
-#spline 1 3 mm-re disretize, spline 2 1 mm-re
-#mindkettonek az App.ActiveDocument.getObject('DatumPlane001').Placement.Base.z 90 %-a alatti pontjait kivenni. 0, 90,92,94,stb
-
 spline1_pts = spline1.Shape.discretize(int(spline1.Shape.Length )) 
 spline2_pts = spline2.Shape.discretize(int(spline2.Shape.Length /0.5))
 App.ActiveDocument.removeObject(spline1.Name)
 App.ActiveDocument.removeObject(spline2.Name)
 
+'''ez csak disz volt... 
 Draft.makeWire(spline1_pts)
-Draft.makeWire(spline2_pts)
+Draft.makeWire(spline2_pts) '''
 
-items = []	#a pontonkenti adatok listaja
-pt_data=()	#spl1 pt1, spl2 pt, ami a legkozelebbi, spl1 pt1 pt2 vektor
+items = []	#az osszes pont pontonkenti adatok listaja
+pt_data=()	#egy pont adatai spl1 pt1, spl2 pt, ami a legkozelebbi, spl1 pt1 pt2 vektor
 sp2_counter = 0
 counter_act = 0
 dist = 0.0
-divider = 9
+divider = int(0.1*coreL)
 Ls_points = []
-#raise Exception("end")
 
 """ >>> App.ActiveDocument.getObject('Points').Placement.Base
 Vector (0.0, 49.75, 0.0)
@@ -187,116 +102,70 @@ BD_points = App.ActiveDocument.getObject('Points')
 BD_points.Placement.Base = App.Vector(0.0, 49.75, 0.0)
 BD_points.Placement.Rotation = (0.0, 0.0, 0.0, 1.0)
 
+BD_curvePoints = App.ActiveDocument.addObject('PartDesign::Body','BD_curvePoints')
+
 for item in BD_points.OutList:
 	if (item.Name).find('point') >= 0:
 		Ls_points.append(item)
 
-##rint(Ls_points)
 
 
-
-#BD_curvePoints = App.ActiveDocument.addObject('PartDesign::Body','BD_curvePoints')
+#for step in [0,0.1,0.5,0.9,0.92,0.94,0.96,0.98,0.99,1,1.02]:
+#coreL	#App.ActiveDocument.getObject('DatumPlane001').Placement.Base.z * step
+#self.plane_h = (self.tab1['values'])['L'] + self.Bmax
 
 for index, item in enumerate(spline1_pts):
 	pt_data=[]	
 	if index +1 < len(spline1_pts):
-		#rint('sp1', index)
 		subtr = item.sub(spline2_pts[counter_act])
 		dist = sqrt(subtr.x*subtr.x+subtr.y*subtr.y+subtr.z*subtr.z)
 		sp2_counter= counter_act 
 		while sp2_counter < counter_act+divider+1 and sp2_counter < len(spline2_pts):
-			#rint('sp2',sp2_counter)
 			subtr = item.sub(spline2_pts[sp2_counter])
 			if sqrt(subtr.x*subtr.x+subtr.y*subtr.y+subtr.z*subtr.z) < dist:
 				dist = sqrt(subtr.x*subtr.x+subtr.y*subtr.y+subtr.z*subtr.z)
 				counter_act = sp2_counter
-				#rint('rovidebb')
 			else:
 				pass
-				#rint('nem')
 			sp2_counter += 1
-		if not index%divider:
+
+		if item.z > 0.1*coreL:
+			divider = int(0.49*coreL)
+		if item.z > 0.5*coreL:
+			divider = int(0.89*coreL)
+		if item.z > 0.95*coreL:
+			divider = int(0.02*coreL)
+		if item.z > 1.02*coreL:
+			divider = 5
+		''' if self.plane_h - item.z < 0.02*self.plane_h:
+    			divider = 10 '''
+		if 80- item.z < 0.02*80:
+    			divider = 6	
+		
+		if not index%divider or index == len(spline1_pts)-2:
+			print(index, divider,index%divider)
 			pt_data.append(item)
 			pt_data.append(spline2_pts[counter_act])
 			pt_data.append(spline1_pts[index+1].sub(item))
 			items.append(pt_data)
 
-			Test = App.ActiveDocument.addObject('PartDesign::Body','test')
-			Test.Placement.Base = pt_data[0]
-
-			#y irany a masik gorbe legkozelebbi pontja fele
 			quat1 = def_quaternion(App.Vector(0,1,0),pt_data[1].sub(pt_data[0]), True)
-			
-			#z irany erintolegesre illesztve
-			#quat1 = def_quaternion(App.Vector(0,0,1),pt_data[2], True)
-			
-			#Test.Placement.Rotation = quat_rot(quat1)
-			#mx_rot1 = quat1.rotation_matrix
-
 			mx_rot1_inv = (quat1.inverse).rotation_matrix
-
 			vect1= App.Vector(mx_rot1_inv.dot(pt_data[2]))
-
-			#rint(vect1)
-			pt1 = Test.newObject('PartDesign::Point','pt')
-			pt1.Placement.Base = vect1
-
 			vect2 = App.Vector(np.insert(np.delete(vect1,1,False),1,0,False))
-			#rint(vect2)
-			
+		
 			quat2 = def_quaternion(App.Vector(0,0,1),vect2,True)
 
-			pt2 = Test.newObject('PartDesign::Point','pt')
-			pt2.Placement.Base = App.Vector(vect2)
-			pt3 = Test.newObject('PartDesign::Point','pt')
-			pt3.Placement.Base = App.Vector(0,0,1)
+			BD_points.Placement.Base = pt_data[0]
+			BD_points.Placement.Rotation = quat_rot(quat1*quat2)
 
-			#rint(type(quat1),type(quat2))
-			quat3 = Quaternion(quat2)	#a vegleges irany
-
-
-			#test-test
-
-			#rot3 = quat_rot(quat2)
-			#rint(rot3)
-
-			Test.Placement.Rotation = quat_rot(quat2)
-			##rint(item, pt_data[0])
-
-
-			#BD_points.Placement.Base = pt_data[0]
-			#BD_points.Placement.Rotation = quat_rot(quat3)
-
-			
-			""" for point in Ls_points:
+			for point in Ls_points:
 				pt2 = BD_curvePoints.newObject('PartDesign::Point','pt')
-				pt2.Placement.Base = point.getGlobalPlacement().Base """
-
-			#raise Exception('Temp End')
-
-			""" 
-			BD_points Ls_points
-			BD_curvePoints
-
-
-
-
-			 """
-
-			#pt1.Placement.Base = App.Vector(mx_rot1_inv.dot(np.insert(np.delete(mx_rot1_inv.dot(pt_data[2]),2,False),2,0,False)))
-
-
-			# z-t a gorbere illeszteni
-			#Test.Placement.Rotation = def_quaternion(App.Vector(0,0,1),pt_data[2])
-			#rint(pt_data[2])
-			
-			#q1 = def_quaternion(App.Vector(0,0,1),pt_data[2], True)
-			#q2 = def_quaternion(App.Vector(0,1,0),(pt_data[1]).sub(pt_data[0]), True)
-			#Test.Placement.Rotation = (round((q1 + q2)[1],6),round((q1 + q2)[2],6),round((q1 + q2)[3],6),round((q1 + q2)[0],6)) 
-			
-			Gui.ActiveDocument.getObject(Test.Origin.Name).Visibility = True
+				pt2.Placement.Base = point.getGlobalPlacement().Base
+	
+			''' Gui.ActiveDocument.getObject(Test.Origin.Name).Visibility = True
 			for elem in Test.Origin.OutList:
 				if (elem.Role).find('Plane') >= 0:
-					Gui.ActiveDocument.getObject(elem.Name).Visibility = False
+					Gui.ActiveDocument.getObject(elem.Name).Visibility = False '''
 			
 			

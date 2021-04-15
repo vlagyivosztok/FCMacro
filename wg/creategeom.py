@@ -18,15 +18,12 @@ try:
     from math import sqrt
     from pyquaternion import Quaternion
     from pyquaternion.quaternion import np
-    from copy import deepcopy
+    from copy import copy, deepcopy
     from shapely.geometry import Point, Polygon
 except:
     os.system(g_wg_dir+'\import-error.vbs')
     raise Exception("Quit macro / creategeom.py")
 #endregion imports
-from pyquaternion import Quaternion
-from pyquaternion.quaternion import np
-from copy import copy, deepcopy
 
 
 class CreateGeom():
@@ -149,13 +146,13 @@ class CreateGeom():
         #Body a sketch origojaba: Sketch006 Ymid, Ydir
         #App.Vector(App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymid"),0)
         self.v_gr_base = App.Vector(0,App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymid"),0)
-        """ nem forditjuk el, csak pozicioba helyezzuk ??? """
+        """ nem forditjuk el, csak pozicioba helyezzuk ??? nem a kr-t toljuk el, hanem a koroket """
         #self.v_gr_dir = App.Vector(0,App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ydir"),0)
         #self.v_dir = self.v_gr_dir.sub(self.v_gr_base).normalize()
         #self.base_dir = App.Vector(0,1,0)
         #rint(self.v_gr_base,self.v_dir)
-        App.ActiveDocument.getObject("C_BdWires").Placement.Base = self.v_gr_base
-        App.ActiveDocument.getObject("C_BdWires").Placement.Rotation = (0,0,0,1) #(0,0,1,0)
+        #App.ActiveDocument.getObject("C_BdWires").Placement.Base = self.v_gr_base
+        #App.ActiveDocument.getObject("C_BdWires").Placement.Rotation = (0,0,0,1) #(0,0,1,0)
         #App.ActiveDocument.getObject("C_BdWires").Placement.Rotation = self.def_quaternion(self.base_dir,self.v_dir)
         
         App.ActiveDocument.recompute()
@@ -185,12 +182,25 @@ class CreateGeom():
         self.y_incr = self.A*sqrt(3)/2      #y_incr = A*sqrt(3)/2
         self.Dk = ((self.obj_MainWidget.GeomInput['tab3'])['values'])['Wdo']  #Dk = Dh + 2*Hsz
         self.Dw = ((self.obj_MainWidget.GeomInput['tab3'])['values'])['Wd']
+        #rint(self.tab1)
         self.plane_h = (self.tab1['values'])['L'] + self.Bmax 
         
-
-        self.wire_collection = []
+        #ezeket majt torolni
+        self.wire_collection = []   
         self.insul_collection = []
         self.point_collection = []
+
+        #3 Bd-ba tobb adatszerkezet es bele a geom
+        self.Bd_Wires_Dw = []
+
+        self.Bd_InsLay_Dwo = []
+        self.Bd_InsLay_Dw = []
+
+        self.Bd_InsComp_Gr = []
+        self.Bd_InsComp_Dwo = []
+
+
+
         ''' >>> for obj in App.ActiveDocument.getObject('C_BdWires').OutList:
      	#rint(obj.Name)
         >>> for obj in App.ActiveDocument.getObject('C_BdWires').OutList:
@@ -208,12 +218,12 @@ class CreateGeom():
         Egy masik bodyba pontokat a körök közepére. 
          """
         if self.obj_MainWidget.GeomInput['groove'] == 'Gr1':
-            self.gr_cont_pts_ = self.groove_contour(App.ActiveDocument.getObjectsByLabel("Sketch006")[0])
+            self.gr_cont_pts = self.groove_contour(App.ActiveDocument.getObjectsByLabel("Sketch006")[0])
             #rint('dbg',gr_cont_pts_)
             #rint('dbg Gr1 Sketch points',self.gr_cont_pts_)
 
         elif self.obj_MainWidget.GeomInput['groove'] == 'Gr2':
-            self.gr_cont_pts_ = self.groove_contour(App.ActiveDocument.getObjectsByLabel("Sketch006")[0])
+            self.gr_cont_pts = self.groove_contour(App.ActiveDocument.getObjectsByLabel("Sketch006")[0])
             #rint('dbg Gr2 Sketch points',self.gr_cont_pts_)
 
 
@@ -221,16 +231,25 @@ class CreateGeom():
             #rint('Gr3 not implemented yet')
             raise Exception("not implemented...")             
 
+        #rint('self.gr_cont_pts_',self.gr_cont_pts_)
 
-        self.gr_cont_pts = []
-        for pts in self.gr_cont_pts_:
-            self.vec1 = (App.Vector(self.v_gr_base[0],self.v_gr_base[1])).sub(App.Vector(pts[0],pts[1]))
-            self.gr_cont_pts.append((self.vec1[0],-self.vec1[1]))               #x-re tukrozes------------------------------
+        ''' self.gr_cont_pts = []               #nem kell atfejteni, mert helyben marad
+        for pt in self.gr_cont_pts_:    
+            #self.vec1 = (App.Vector(self.v_gr_base[0],self.v_gr_base[1])).sub(App.Vector(pts[0],pts[1])) # amikor a kr meg el volt tolva...
+            #self.gr_cont_pts.append((self.vec1[0],-self.vec1[1]))               #x-re tukrozes------------------------------
+            self.gr_cont_pts.append(pt[0],pt[1],pt[2])               #eltolas nelkul, ott, ahol van '''
+
         #rint('dbg points move',self.gr_cont_pts)
 
-        self.Bd_Points = App.ActiveDocument.addObject('PartDesign::Body','Points')
-        self.Bd_Points.Placement.Base = self.v_gr_base
-        self.Bd_Points.Placement.Rotation = (0,0,0,1)
+        self.Bd_Points = App.ActiveDocument.addObject('PartDesign::Body','Bd_Points')
+        ''' self.Bd_Points.Placement.Base = self.v_gr_base
+        self.Bd_Points.Placement.Rotation = (0,0,0,1) '''       # ponts body mar benne lesz a modellben
+        ''' tobbi Bd a geometriakhoz: '''
+        self.Bd_Wires = App.ActiveDocument.addObject('PartDesign::Body','Bd_Wires')
+        self.Bd_InsLay = App.ActiveDocument.addObject('PartDesign::Body','Bd_InsLay')
+        self.Bd_InsComp = App.ActiveDocument.addObject('PartDesign::Body','Bd_InsComp')
+
+
 
         self.wloc_in_groove()
 
@@ -243,7 +262,7 @@ class CreateGeom():
 
         App.ActiveDocument.recompute()        
 
-        return 'gombok, vege True'
+        return 'arrange vege'
         ''' except:
             return False '''
     
@@ -355,57 +374,111 @@ class CreateGeom():
             x_circ = x*self.A
             y_circ = y*self.y_incr
 
-        circ_cont = self.circ_contour(x_circ,y_circ,self.Dk/2)    #a kor konturpontjait adja vissza
+        #circ_cont_ = self.circ_contour(x_circ,y_circ,self.Dk/2)    #a kor konturpontjait adja vissza
+        
+
+        pl = App.Placement()
+        pl.Rotation=(0,0,0,1)
+        #rint('teszt_kor',x,y+self.v_gr_base[1])
+        pl.Base=App.Vector(x_circ,y_circ+self.v_gr_base[1],0)
+        circ = Draft.makeCircle(radius=self.Dk/2,placement=pl,face=False,support=None)
+        #self.Bd_InsLay_Dwo[-1].Shape.discretize(int(self.Bd_InsLay_Dwo[-1].Shape.Length/0.1))
+        circ_cont = circ.Shape.discretize(int(circ.Shape.Length/0.1))
 
         for pnt_ in circ_cont:
             pnts.append((pnt_[0],pnt_[1],pnt_[2]))
         
+        ''' Draft.makeWire(circ_cont)
+        Draft.makeWire(pnts)
+        raise Exception ('temp end') '''
+
         App.ActiveDocument.recompute()
 
-        if Polygon(self.gr_cont_pts).contains(Polygon(pnts)):
-            App.ActiveDocument.getObject("C_BdWires").addObject(self.insul_collection[-1])
-            #point in the circle (Outer D)
+        if Polygon(self.gr_cont_pts).contains(Polygon(pnts)): # a legutobb keletkezett kor a gr-ban van
+            #A legutobb keletkezett kor Dwo, kell mindegyikbe
+            #Adatszerkezet is kell hozza
+
+            #Dwo:
+            #print(self.Bd_InsLay_Dwo,self.Bd_InsLay_Dwo[-1])
+            #_obj = self.Bd_InsLay_Dwo[-1]
+            #copy_obj = copy(circ_cont_)
+            self.Bd_InsLay_Dwo.append(circ)
+            self.Bd_InsLay.addObject(self.Bd_InsLay_Dwo[-1])            
+            
+            circ = Draft.makeCircle(radius=self.Dk/2,placement=pl,face=False,support=None)
+            self.Bd_InsComp_Dwo.append(circ)
+            self.Bd_InsComp.addObject(self.Bd_InsComp_Dwo[-1])
+
+            #Dw:
+            circ = Draft.makeCircle(radius=self.Dw/2,placement=pl,face=False,support=None)
+            self.Bd_Wires_Dw.append(circ)
+            self.Bd_Wires.addObject(self.Bd_Wires_Dw[-1])
+
+            circ = Draft.makeCircle(radius=self.Dw/2,placement=pl,face=False,support=None)
+            self.Bd_InsLay_Dw.append(circ)
+            self.Bd_InsLay.addObject(self.Bd_InsLay_Dw[-1])
+
             self.point_collection.append(self.Bd_Points.newObject('PartDesign::Point','point'))
-            self.point_collection[-1].Placement = self.insul_collection[-1].Placement
+            self.point_collection[-1].Placement = pl
 
-            #wire circle:
-            pl = self.insul_collection[-1].Placement
-            #pl.Rotation.Q=(0,0,0,1)
-            #pl.Base=App.Vector(x,-y,0)
-            self.wire_collection.append(Draft.makeCircle(radius=self.Dw/2,placement=pl,face=False,support=None))
-            App.ActiveDocument.getObject("C_BdWires").addObject(self.wire_collection[-1])
-
-            """ Pontok2.append(Test.newObject('PartDesign::Point',pont[0]))
-            Test.getObject(pont[0]).Placement.Base.x = pont[1]
-            Test.getObject(pont[0]).Placement.Base.y = pont[2]
-            Test.getObject(pont[0]).Placement.Base.z = pont[3] """
-            #mirrored: a vizsgalat csak az x tengely pozitiv ertekeire tortenik. A tukrozotteket automatikusan hozza tesszuk.
             if x_circ != 0:
+            #a tukrozottek hozzatetele
+                ''' self.Bd_Wires_Dw = []
+
+                self.Bd_InsLay_Dwo = []
+                self.Bd_InsLay_Dw = []
+
+                self.Bd_InsComp_Gr = []
+                self.Bd_InsComp_Dwo = []
+
+                self.Bd_Points 
+                self.Bd_Wires 
+                self.Bd_InsLay 
+                self.Bd_InsComp            
+                '''
+
                 pl = App.Placement()
-                pl.Rotation.Q=(0,0,0,1)
-                pl.Base=App.Vector(-x_circ,-y_circ,0)
-                self.insul_collection.append(Draft.makeCircle(radius=self.Dk/2,placement=pl,face=False,support=None))
-                App.ActiveDocument.getObject("C_BdWires").addObject(self.insul_collection[-1])
+                pl.Rotation=(0,0,0,1)
+                pl.Base=App.Vector(-x_circ,y_circ+self.v_gr_base[1],0)
+
+                circ = Draft.makeCircle(radius=self.Dk/2,placement=pl,face=False,support=None)
+                self.Bd_InsLay_Dwo.append(circ)
+                self.Bd_InsLay.addObject(self.Bd_InsLay_Dwo[-1])            
+                
+                circ = Draft.makeCircle(radius=self.Dk/2,placement=pl,face=False,support=None)
+                self.Bd_InsComp_Dwo.append(circ)
+                self.Bd_InsComp.addObject(self.Bd_InsComp_Dwo[-1])
+
+                #Dw:
+                circ = Draft.makeCircle(radius=self.Dw/2,placement=pl,face=False,support=None)
+                self.Bd_Wires_Dw.append(circ)
+                self.Bd_Wires.addObject(self.Bd_Wires_Dw[-1])
+
+                circ = Draft.makeCircle(radius=self.Dw/2,placement=pl,face=False,support=None)
+                self.Bd_InsLay_Dw.append(circ)
+                self.Bd_InsLay.addObject(self.Bd_InsLay_Dw[-1])
+
                 self.point_collection.append(self.Bd_Points.newObject('PartDesign::Point','point'))
-                self.point_collection[-1].Placement = self.insul_collection[-1].Placement
-                self.wire_collection.append(Draft.makeCircle(radius=self.Dw/2,placement=pl,face=False,support=None))
-                App.ActiveDocument.getObject("C_BdWires").addObject(self.wire_collection[-1])
+                self.point_collection[-1].Placement = pl
 
                 #rint(self.insul_collection[-1].Name)
         else:
-            App.ActiveDocument.removeObject(self.insul_collection[-1].Name)
-            self.insul_collection.pop()
+            App.ActiveDocument.removeObject(circ.Name)
+            #self.Bd_InsLay_Dwo.pop()
             return False
         App.ActiveDocument.recompute()
         return True
 
 
     def circ_contour(self,x,y,r): # a kordinatakkal es sugarral kort rajzol, berakja a wire bodyba, es visszaadja a konturpontjait (lokalis??)
-
+        #itt at kell alakitani, hogy a body az origoban maradjon. a korok kepzesehez kell az eltolast hasznalni, nem a krsz-t eltolni es a pontokat helyben hagyni.
+        
         #global self.insul_collection
         pl = App.Placement()
         pl.Rotation.Q=(0,0,0,1)
-        pl.Base=App.Vector(x,-y,0)
-        self.insul_collection.append(Draft.makeCircle(radius=r,placement=pl,face=False,support=None))
+        #rint('teszt_kor',x,y+self.v_gr_base[1])
+        pl.Base=App.Vector(x,y+self.v_gr_base[1],0)
+        
+        #self.Bd_InsLay_Dwo.append(Draft.makeCircle(radius=r,placement=pl,face=False,support=None))
  
-        return self.insul_collection[-1].Shape.discretize(int(self.insul_collection[-1].Shape.Length/0.1))
+        return Draft.makeCircle(radius=r,placement=pl,face=False,support=None) #self.Bd_InsLay_Dwo[-1].Shape.discretize(int(self.Bd_InsLay_Dwo[-1].Shape.Length/0.1))

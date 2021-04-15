@@ -7,6 +7,10 @@ from pyquaternion.quaternion import np
 from math import sqrt
 from copy import copy, deepcopy
 import Draft
+from PySide import QtGui #QWidget
+from PySide import QtUiTools #QUiLoader
+from PySide import QtCore #QFile, Q
+
 
 
 def def_quaternion(v1_, v2_, quat = False):
@@ -50,6 +54,11 @@ def quat_rot(quat):		#pyquaternion.quaternion.Quaternion
 	else:
 		return None
 
+#MyProgress = Progress()
+
+#Progress.show()
+
+#raise Exception('END')
 
 guide1 = [] 
 guide2 = []
@@ -90,7 +99,9 @@ sp2_counter = 0
 counter_act = 0
 dist = 0.0
 divider = int(0.1*coreL)
-Ls_points = []
+Ls_points = []	#az alap ponthalmaz az arrangementbol
+Ls_curves = []
+tmp = []
 
 """ >>> App.ActiveDocument.getObject('Points').Placement.Base
 Vector (0.0, 49.75, 0.0)
@@ -102,13 +113,15 @@ BD_points = App.ActiveDocument.getObject('Points')
 BD_points.Placement.Base = App.Vector(0.0, 49.75, 0.0)
 BD_points.Placement.Rotation = (0.0, 0.0, 0.0, 1.0)
 
-BD_curvePoints = App.ActiveDocument.addObject('PartDesign::Body','BD_curvePoints')
+#BD_curves1 = App.ActiveDocument.addObject('PartDesign::Body','BD_curves1')
+
 
 for item in BD_points.OutList:
 	if (item.Name).find('point') >= 0:
 		Ls_points.append(item)
 
-
+#rint(Ls_points, Ls_curves)
+firstLoop = True
 
 #for step in [0,0.1,0.5,0.9,0.92,0.94,0.96,0.98,0.99,1,1.02]:
 #coreL	#App.ActiveDocument.getObject('DatumPlane001').Placement.Base.z * step
@@ -141,9 +154,9 @@ for index, item in enumerate(spline1_pts):
     			divider = 10 '''
 		if 80- item.z < 0.02*80:
     			divider = 6	
-		
+		#rint(index%divider,index == len(spline1_pts)-2)
 		if not index%divider or index == len(spline1_pts)-2:
-			print(index, divider,index%divider)
+
 			pt_data.append(item)
 			pt_data.append(spline2_pts[counter_act])
 			pt_data.append(spline1_pts[index+1].sub(item))
@@ -159,13 +172,30 @@ for index, item in enumerate(spline1_pts):
 			BD_points.Placement.Base = pt_data[0]
 			BD_points.Placement.Rotation = quat_rot(quat1*quat2)
 
-			for point in Ls_points:
-				pt2 = BD_curvePoints.newObject('PartDesign::Point','pt')
-				pt2.Placement.Base = point.getGlobalPlacement().Base
-	
-			''' Gui.ActiveDocument.getObject(Test.Origin.Name).Visibility = True
-			for elem in Test.Origin.OutList:
-				if (elem.Role).find('Plane') >= 0:
-					Gui.ActiveDocument.getObject(elem.Name).Visibility = False '''
+			for index, point in enumerate(Ls_points):
+				if firstLoop:
+					#rint(index,'first')
+					tmp = []
+					tmp.append(point.getGlobalPlacement().Base)
+					Ls_curves.append(tmp)
+				#print(type(point),point.Placement)
+
+				if not firstLoop:
+					#rint(index,'nem first')
+					Ls_curves[index].append(point.getGlobalPlacement().Base)
+			firstLoop = False
+''' for vect in Ls_curves[0]:
+	pt2 = BD_curvePoints.newObject('PartDesign::Point','pt')
+	pt2.Placement.Base = vect '''
+for curvepoints in Ls_curves:
+	spline1 = Draft.makeBSpline(curvepoints,closed=False,face=False,support=None)
+	App.ActiveDocument.getObject('C_BdWires').addObject(spline1)
+
+
+
+	''' Gui.ActiveDocument.getObject(Test.Origin.Name).Visibility = True
+	for elem in Test.Origin.OutList:
+	if (elem.Role).find('Plane') >= 0:
+		Gui.ActiveDocument.getObject(elem.Name).Visibility = False '''
 			
 			

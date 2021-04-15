@@ -3,7 +3,7 @@ TEMP/
 !work*.*
 !rel*.*
 !README.md
-!*.FCStd
+*.FCStd
 !.gitignore
 !winding-geom.FCMacro
 !test-macro1.FCMacro

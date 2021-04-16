@@ -299,6 +299,9 @@ class MainWidget(QtGui.QMainWindow):
             self.parent.GeomInput['accepted'] =False #osszes adat meg nem kesz
             self.parent.ui.tabWidget.setTabEnabled(3, False)    #utolso lap nem valaszthato
             self.parent.ui.Cb_4_CreatArrang.setStyleSheet("background:rgb(255,255,224);font: bold 12px") #utolso lap gombja sarga
+            self.parent.ui.L2_Message.setText('Message:')
+            self.parent.ui.L4_Message1.setText('Message:')
+            self.parent.ui.L4_Message2.setText('Message:')
             self.parent.ui.Cb_4_CreatGeom.setEnabled(False) #utolso lap masik gombja disable
             #rint('dbg',self.parent.ui.Cb_4_CreatArrang.styleSheet())
             next_ = False
@@ -501,7 +504,7 @@ class MainWidget(QtGui.QMainWindow):
         self.file.close()        
         self.setCentralWidget(self.ui)
         #print(self.WindowFlags & QtCore.Qt.WindowStaysOnTopHint)
-        #self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+        self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
         #print(self.WindowFlags())
         self.setWindowModality(QtCore.Qt.ApplicationModal)
         self.MyDataTabs = self.DataTabs()
@@ -514,13 +517,13 @@ class MainWidget(QtGui.QMainWindow):
         self.obj_WiresInGroove = None
         self.obj_Progress = None
 
-        self.msgBox = QtGui.QMessageBox()
+        ''' self.msgBox = QtGui.QMessageBox()
         self.msgBox.setWindowTitle("WINDING GEOM")
         self.msgBox.setText('...')
         #self.msgBox.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
         self.msgBox.setIcon(QtGui.QMessageBox.Critical)
         #msgBox.setWindowModality(QtCore.Qt.NonModal)
-        #QtGui.QApplication.processEvents()
+        #QtGui.QApplication.processEvents() '''
 
         tabname = ''        
         _dict = {}
@@ -822,7 +825,8 @@ class MainWidget(QtGui.QMainWindow):
 
         self.testvalues()           ##############################################  TESTVALUES
         #rint('dbg',self.GeomInput)
-              
+
+                      
     def createGroove(self):
         '''  '''
         ''' if self.obj_CreateGeom.createGroove(): '''
@@ -832,12 +836,10 @@ class MainWidget(QtGui.QMainWindow):
             self.ui.Cb_2_AccNext.setEnabled(True)
             #rint('dbg',self.GeomInput)
             #print('return True')
-
+            self.ui.L2_Message.setText('Message: Generating successful...')
         else:
-            self.error_msg()
-            ''' reply = QtGui.QMessageBox.critical(self, 'WINDING GEOM', 'An error occured...\nPlease try another dimensions!',
-            QtGui.QMessageBox.Ok)
-            #print('return False') '''
+            self.ui.L2_Message.setText('Message: An error occured...\nPlease try another dimensions!')
+
 
     def createArrang(self): #createGeom
         t = Timer(0.5,self.start_createArrang)
@@ -852,43 +854,34 @@ class MainWidget(QtGui.QMainWindow):
             self.ui.Cb_4_CreatArrang.setStyleSheet("background:rgb(144,238,144);font: bold 12px")
             self.ui.Cb_4_CreatGeom.setEnabled(True)
             self.obj_Progress.close_()
-            #QtGui.QApplication.processEvents()
-
-            #QtGui.QApplication.processEvents()
-            #self.setWindowFlags(self.windowFlags() & ~QtCore.Qt.WindowStaysOnTopHint)
+            self.ui.L4_Message1.setText('Message: Generating successful...')
             self.show()            
-            ''' t = Timer(1,self.generating_msg)
-            t.start() '''
+
             #self.success_msg()
             #self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
         else:
-            #QtGui.QApplication.processEvents()
             self.obj_Progress.close_()
-            #QtGui.QApplication.processEvents()
-
-            #self.setWindowFlags(self.windowFlags() & ~QtCore.Qt.WindowStaysOnTopHint)
+            self.ui.L4_Message1.setText('Message: An error occured...\nPlease try another dimensions!')
             self.show()            
-            #QtGui.QApplication.processEvents()
-            #self.error_msg()
-            #self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+
 
     def createGeom(self): #createGeom
-        ''' t = Timer(2,self.start_createGeom)
-        t.start() '''
-        self.call_Progress()
-        self.start_createGeom
+        t = Timer(0.5,self.start_createGeom)
+        t.start()
+        self.obj_Progress.Show_()
         #self.obj_Progress.Widget.repaint()
 
     def start_createGeom(self):
+        self.hide()
         if self.obj_CreateGeom.createGeom():
             self.obj_Progress.close_()
-            self.generating_msg()
+
         else:
             pass
             ''' reply = QtGui.QMessageBox.critical(self, 'WINDING GEOM', 'An error occured...\nPlease try another dimensions!',
             QtGui.QMessageBox.Ok) '''
 
-    def error_msg(self):
+    ''' def error_msg(self):
             self.msgBox.setText('An error occured...\nPlease try another dimensions!')
             self.msgBox.setIcon(QtGui.QMessageBox.Critical)
             #msgBox.setWindowModality(QtCore.Qt.NonModal)       window.setWindowFlags(window.windowFlags() & ~QtCore.Qt.WindowStaysOnTopHint)
@@ -900,7 +893,7 @@ class MainWidget(QtGui.QMainWindow):
             self.msgBox.setIcon(QtGui.QMessageBox.Information)
             #msgBox.setWindowModality(QtCore.Qt.NonModal)
             #QtGui.QApplication.processEvents()
-            self.msgBox.show()            
+            self.msgBox.show() '''            
 
     ''' def call_Progress(self):
         self.obj_Progress.Show_() '''

@@ -179,6 +179,27 @@ class CreateGeom():
     def createArrang(self):     
         
         try:
+            #ha van mar body, torolni mindenestul
+            list_ = App.ActiveDocument.Objects
+            del_item = ['Bd_Points','Bd_Wires','Bd_InsLay','Bd_InsComp']
+            body_list = []
+            feature_list =[]
+            for elem1 in list_:
+                for elem2 in del_item:
+                    if elem1.Name == elem2:
+                        body_list.append(elem1)
+                        for 	elem3 in elem1.OutList:
+                            if elem3.TypeId != 'App::Origin':
+                                feature_list.append(elem3)
+            for elem in feature_list:
+                #print(elem.Name)	
+                App.ActiveDocument.removeObject(elem.Name)
+
+            for elem in body_list:
+                #print(elem.Name)	
+                App.ActiveDocument.removeObject(elem.Name)
+
+
             #meretek atadasa
             self.tab3 = self.obj_MainWidget.GeomInput['tab3']
             self.A  = ((self.obj_MainWidget.GeomInput['tab3'])['values'])['Wdo'] + ((self.obj_MainWidget.GeomInput['tab3'])['values'])['G']    # = Dk + Lr Wdo+G
@@ -265,28 +286,145 @@ class CreateGeom():
             return True
         except:
             return False
-    
-        #datum plane Placement
+
+    def createGeom(self):   #'Bd_Points','Bd_Wires','Bd_InsLay','Bd_InsComp'
+        try:
+            guide1 = [] 
+            guide2 = []
+            spline1_pts = []
+            spline2_pts = []
+            """ spline1_pts_ = []
+            spline2_pts_ = [] """
+            coreL = App.ActiveDocument.getObject('DatumPlane001').Placement.Base.z
+            test1 = App.ActiveDocument.getObject('Bd_Guide')
+
+            print('step1')
+            for step in [0,0.1,0.5,0.9,0.92,0.94,0.96,0.98,0.99,1,1.02]:
+                guide1.append(App.Vector(0,App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymid"),coreL * step))
+                guide2.append(App.Vector(0,App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymax"),coreL * step))
+
+            pts = App.ActiveDocument.getObjectsByLabel("Sketch010")[0].Shape.discretize(int(App.ActiveDocument.getObjectsByLabel("Sketch010")[0].Shape.Length))
+            for pt in pts:
+                    guide1.append(pt)
+            pts = App.ActiveDocument.getObjectsByLabel("Sketch011")[0].Shape.discretize(int(App.ActiveDocument.getObjectsByLabel("Sketch011")[0].Shape.Length))
+            for pt in pts:
+                    guide2.append(pt)
+            print('step2')
+            spline1 = Draft.makeBSpline(guide1,closed=False,face=False,support=None)
+            spline2 = Draft.makeBSpline(guide2,closed=False,face=False,support=None)
+
+            spline1_pts = spline1.Shape.discretize(int(spline1.Shape.Length )) 
+            spline2_pts = spline2.Shape.discretize(int(spline2.Shape.Length /0.5))
+            App.ActiveDocument.removeObject(spline1.Name)
+            App.ActiveDocument.removeObject(spline2.Name)
+            print('step3')
+            '''ez csak disz volt... 
+            Draft.makeWire(spline1_pts)
+            Draft.makeWire(spline2_pts) '''
+
+            items = []	#az osszes pont pontonkenti adatok listaja
+            pt_data=()	#egy pont adatai spl1 pt1, spl2 pt, ami a legkozelebbi, spl1 pt1 pt2 vektor
+            sp2_counter = 0
+            counter_act = 0
+            dist = 0.0
+            divider = int(0.1*coreL)
+            Ls_points = []	#az alap ponthalmaz az arrangementbol
+            Ls_curves = []
+            tmp = []
+
+            """ >>> App.ActiveDocument.getObject('Points').Placement.Base
+            Vector (0.0, 49.75, 0.0)
+            >>> App.ActiveDocument.getObject('Points').Placement.Rotation
+            Rotation (0.0, 0.0, 0.0, 1.0) """
 
 
-        #innen a huzalok letrehozasa#################################################################################################################
-        #pontok self.Bd_Points-ban
-        #huzal korok
-        #
+            BD_points = App.ActiveDocument.getObject('Bd_Points')
+            BD_points.Placement.Base = App.Vector(0.0, 49.75, 0.0)
+            BD_points.Placement.Rotation = (0.0, 0.0, 0.0, 1.0)
+
+            #BD_curves1 = App.ActiveDocument.addObject('PartDesign::Body','BD_curves1')
 
 
-    def createGeom(self):
+            for item in BD_points.OutList:
+                if (item.Name).find('point') >= 0:
+                    Ls_points.append(item)
 
-        #time.sleep(5)
-        return True
-        #2 vezeto gorbe
-        #App.Vector(0,App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymid"),0)
-        #App.Vector(0,App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymax"),0)
-        #Bd_Guide
-        #mag magassagban
-        #vectorok letrehozasa, majd a bodyban elhelyezese
-        self.guide1 = [] 
-        self.guide2 = []
+            #rint(Ls_points, Ls_curves)
+            firstLoop = True
+
+            #for step in [0,0.1,0.5,0.9,0.92,0.94,0.96,0.98,0.99,1,1.02]:
+            #coreL	#App.ActiveDocument.getObject('DatumPlane001').Placement.Base.z * step
+            #self.plane_h = (self.tab1['values'])['L'] + self.Bmax
+            print('step4')
+            for index, item in enumerate(spline1_pts):
+                pt_data=[]	
+                if index +1 < len(spline1_pts):
+                    subtr = item.sub(spline2_pts[counter_act])
+                    dist = sqrt(subtr.x*subtr.x+subtr.y*subtr.y+subtr.z*subtr.z)
+                    sp2_counter= counter_act 
+                    while sp2_counter < counter_act+divider+1 and sp2_counter < len(spline2_pts):
+                        subtr = item.sub(spline2_pts[sp2_counter])
+                        if sqrt(subtr.x*subtr.x+subtr.y*subtr.y+subtr.z*subtr.z) < dist:
+                            dist = sqrt(subtr.x*subtr.x+subtr.y*subtr.y+subtr.z*subtr.z)
+                            counter_act = sp2_counter
+                        else:
+                            pass
+                        sp2_counter += 1
+
+                    if item.z > 0.1*coreL:
+                        divider = int(0.49*coreL)
+                    if item.z > 0.5*coreL:
+                        divider = int(0.89*coreL)
+                    if item.z > 0.95*coreL:
+                        divider = int(0.02*coreL)
+                    if item.z > 1.02*coreL:
+                        divider = 5
+                    ''' if self.plane_h - item.z < 0.02*self.plane_h:
+                            divider = 10 '''
+                    if 80- item.z < 0.02*80:
+                            divider = 6	
+                    #rint(index%divider,index == len(spline1_pts)-2)
+                    if not index%divider or index == len(spline1_pts)-2:
+                        print(index)
+                        pt_data.append(item)
+                        pt_data.append(spline2_pts[counter_act])
+                        pt_data.append(spline1_pts[index+1].sub(item))
+                        items.append(pt_data)
+
+                        quat1 = self.def_quaternion(App.Vector(0,1,0),pt_data[1].sub(pt_data[0]), True)
+                        mx_rot1_inv = (quat1.inverse).rotation_matrix
+                        vect1= App.Vector(mx_rot1_inv.dot(pt_data[2]))
+                        vect2 = App.Vector(np.insert(np.delete(vect1,1,False),1,0,False))
+                    
+                        quat2 = self.def_quaternion(App.Vector(0,0,1),vect2,True)
+
+                        BD_points.Placement.Base = pt_data[0]
+                        BD_points.Placement.Rotation = self.quat_rot(quat1*quat2)
+
+                        for index, point in enumerate(Ls_points):
+                            if firstLoop:
+                                #rint(index,'first')
+                                tmp = []
+                                tmp.append(point.getGlobalPlacement().Base)
+                                Ls_curves.append(tmp)
+                            #print(type(point),point.Placement)
+
+                            if not firstLoop:
+                                #rint(index,'nem first')
+                                Ls_curves[index].append(point.getGlobalPlacement().Base)
+                        firstLoop = False
+            ''' for vect in Ls_curves[0]:
+                pt2 = BD_curvePoints.newObject('PartDesign::Point','pt')
+                pt2.Placement.Base = vect '''
+            for curvepoints in Ls_curves:
+                spline1 = Draft.makeBSpline(curvepoints,closed=False,face=False,support=None)
+                App.ActiveDocument.getObject('C_BdWires').addObject(spline1)
+
+
+
+            return True
+        except:
+            return False
 
 
     def dummy(self):

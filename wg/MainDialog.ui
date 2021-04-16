@@ -1633,9 +1633,9 @@
      <property name="geometry">
       <rect>
        <x>360</x>
-       <y>120</y>
-       <width>391</width>
-       <height>121</height>
+       <y>130</y>
+       <width>401</width>
+       <height>111</height>
       </rect>
      </property>
      <property name="frameShape">
@@ -1644,31 +1644,46 @@
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <widget class="QLabel" name="L4_Message">
-      <property name="geometry">
-       <rect>
-        <x>6</x>
-        <y>12</y>
-        <width>371</width>
-        <height>101</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>11</pointsize>
-        <weight>75</weight>
-        <italic>false</italic>
-        <bold>true</bold>
-        <kerning>true</kerning>
-       </font>
-      </property>
-      <property name="text">
-       <string>Message:</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-      </property>
-     </widget>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QLabel" name="L4_Message1">
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>75</weight>
+          <italic>false</italic>
+          <bold>true</bold>
+          <kerning>true</kerning>
+         </font>
+        </property>
+        <property name="text">
+         <string>Message:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="L4_Message2">
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>75</weight>
+          <italic>false</italic>
+          <bold>true</bold>
+          <kerning>true</kerning>
+         </font>
+        </property>
+        <property name="text">
+         <string>Message:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </widget>
   </widget>

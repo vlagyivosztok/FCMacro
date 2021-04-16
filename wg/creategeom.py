@@ -20,6 +20,7 @@ try:
     from pyquaternion.quaternion import np
     from copy import copy, deepcopy
     from shapely.geometry import Point, Polygon
+    import time
 except:
     os.system(g_wg_dir+'\import-error.vbs')
     raise Exception("Quit macro / creategeom.py")
@@ -67,99 +68,99 @@ class CreateGeom():
         #rint('dbg','WiresInGroove dummy',self.obj_MainWidget.GeomInput)
         ''' 
          '''
-        
-        self.FcSTD = g_wg_dir+'/'+self.obj_MainWidget.GeomInput['groove']+'.FCSTD'
-        #rint(App.listDocuments())
-        for doc in App.listDocuments():
-            #rint(doc, App.listDocuments()['Gr1'].FileName, self.FcSTD)
-            if App.listDocuments()[doc].FileName != self.FcSTD:
-                App.closeDocument(doc)
-        #rint('dbg App.closeDocument')
-        #return False  App.listDocuments()['Gr1'].FileName
+        try:
+            self.FcSTD = g_wg_dir+'/'+self.obj_MainWidget.GeomInput['groove']+'.FCSTD'
+            #rint(App.listDocuments())
+            for doc in App.listDocuments():
+                #rint(doc, App.listDocuments()['Gr1'].FileName, self.FcSTD)
+                if App.listDocuments()[doc].FileName != self.FcSTD:
+                    App.closeDocument(doc)
+            #rint('dbg App.closeDocument')
+            #return False  App.listDocuments()['Gr1'].FileName
 
-            #ellenorizni, hogy van-e nyitott Document
-        
-        if App.ActiveDocument == None:
-            App.open(self.FcSTD)
-        if App.ActiveDocument.FileName != self.FcSTD:
+                #ellenorizni, hogy van-e nyitott Document
+            
+            if App.ActiveDocument == None:
+                App.open(self.FcSTD)
+            if App.ActiveDocument.FileName != self.FcSTD:
+                return False
+            self.tab1 = self.obj_MainWidget.GeomInput['tab1']
+            self.tab2 = self.obj_MainWidget.GeomInput['tab2'] 
+            #rint('dbg App.open(self.FcSTD)')
+            ''' try: '''
+            if not self.clearGroove():
+                return False
+            #rint('dbg self.clearGroove')
+            #rint(self.tab1['values'])
+            #rint('core')
+            for key in ['Di','T']:
+                #rint('dbg', key, (self.tab1['values'])[key])
+                    
+                App.ActiveDocument.getObjectsByLabel("StatCore0")[0].setDatum(key,(self.tab1['values'])[key])
+            #meretek atadasa a sketchnek
+            #sk.solve() App.ActiveDocument.getObjectsByLabel("Sketch005")[0].solve()
+            App.ActiveDocument.getObjectsByLabel("StatCore0")[0].solve()
+            App.ActiveDocument.recompute()
+            #rint('core ready')
+
+            if self.obj_MainWidget.GeomInput['groove'] == 'Gr1':
+                #rint('Gr1 Sketch005')
+                for key in ['B1','B2','H1','H2','H3', 'D']:
+                    #rint('dbg', key, (self.tab2['values'])[key])
+                    App.ActiveDocument.getObjectsByLabel("Sketch005")[0].setDatum(key,(self.tab2['values'])[key])
+                App.ActiveDocument.getObjectsByLabel("Sketch005")[0].solve()
+                App.ActiveDocument.getObjectsByLabel("Sketch006")[0].solve()
+                App.ActiveDocument.recompute()
+                self.Bmax = max((self.tab2['values'])['B2'],(self.tab2['values'])['D'])
+                #rint('Sketch005 ready')            
+
+            elif self.obj_MainWidget.GeomInput['groove'] == 'Gr2':
+                #rint('Gr2 Sketch005')
+                for key in ['B1','B2','H1','H2','H4']:
+                    App.ActiveDocument.getObjectsByLabel("Sketch005")[0].setDatum(key,(self.tab2['values'])[key])
+                    #rint('dbg', key,(self.tab2['values'])[key])
+                App.ActiveDocument.getObjectsByLabel("Sketch005")[0].solve()
+                App.ActiveDocument.getObjectsByLabel("Sketch")[0].solve()
+                App.ActiveDocument.getObjectsByLabel("Sketch006")[0].solve()
+                App.ActiveDocument.recompute()
+                self.Bmax = max((self.tab2['values'])['B2'],(self.tab2['values'])['B4'])
+                #rint('Sketch005 ready')
+
+                #rint('Gr2 Sketch')
+                for key in ['R','B4']:
+                    App.ActiveDocument.getObjectsByLabel("Sketch")[0].setDatum(key,(self.tab2['values'])[key])
+                    #rint('dbg', key,(self.tab2['values'])[key])
+                App.ActiveDocument.getObjectsByLabel("Sketch")[0].solve()
+                App.ActiveDocument.getObjectsByLabel("Sketch006")[0].solve()         
+                App.ActiveDocument.recompute()
+                #rint('Sketch ready')
+
+            elif self.obj_MainWidget.GeomInput['groove'] == 'Gr3':
+                #rint('Gr3 not implemented yet')
+                raise Exception("not implemented...")                    
+
+            #minden geometria valtozas utan:        
+            App.ActiveDocument.recompute()
+            #rint('max B %s' % self.Bmax)
+            #rint('recompute')
+
+            #Body a sketch origojaba: Sketch006 Ymid, Ydir
+            #App.Vector(App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymid"),0)
+            self.v_gr_base = App.Vector(0,App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymid"),0)
+            """ nem forditjuk el, csak pozicioba helyezzuk ??? nem a kr-t toljuk el, hanem a koroket """
+            #self.v_gr_dir = App.Vector(0,App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ydir"),0)
+            #self.v_dir = self.v_gr_dir.sub(self.v_gr_base).normalize()
+            #self.base_dir = App.Vector(0,1,0)
+            #rint(self.v_gr_base,self.v_dir)
+            #App.ActiveDocument.getObject("C_BdWires").Placement.Base = self.v_gr_base
+            #App.ActiveDocument.getObject("C_BdWires").Placement.Rotation = (0,0,0,1) #(0,0,1,0)
+            #App.ActiveDocument.getObject("C_BdWires").Placement.Rotation = self.def_quaternion(self.base_dir,self.v_dir)
+            
+            App.ActiveDocument.recompute()
+            #rint('CS placed')
+            return True
+        except:
             return False
-        self.tab1 = self.obj_MainWidget.GeomInput['tab1']
-        self.tab2 = self.obj_MainWidget.GeomInput['tab2'] 
-        #rint('dbg App.open(self.FcSTD)')
-        ''' try: '''
-        if not self.clearGroove():
-            return False
-        #rint('dbg self.clearGroove')
-        #rint(self.tab1['values'])
-        #rint('core')
-        for key in ['Di','T']:
-            #rint('dbg', key, (self.tab1['values'])[key])
-                
-            App.ActiveDocument.getObjectsByLabel("StatCore0")[0].setDatum(key,(self.tab1['values'])[key])
-        #meretek atadasa a sketchnek
-        #sk.solve() App.ActiveDocument.getObjectsByLabel("Sketch005")[0].solve()
-        App.ActiveDocument.getObjectsByLabel("StatCore0")[0].solve()
-        App.ActiveDocument.recompute()
-        #rint('core ready')
-
-        if self.obj_MainWidget.GeomInput['groove'] == 'Gr1':
-            #rint('Gr1 Sketch005')
-            for key in ['B1','B2','H1','H2','H3', 'D']:
-                #rint('dbg', key, (self.tab2['values'])[key])
-                App.ActiveDocument.getObjectsByLabel("Sketch005")[0].setDatum(key,(self.tab2['values'])[key])
-            App.ActiveDocument.getObjectsByLabel("Sketch005")[0].solve()
-            App.ActiveDocument.getObjectsByLabel("Sketch006")[0].solve()
-            App.ActiveDocument.recompute()
-            self.Bmax = max((self.tab2['values'])['B2'],(self.tab2['values'])['D'])
-            #rint('Sketch005 ready')            
-
-        elif self.obj_MainWidget.GeomInput['groove'] == 'Gr2':
-            #rint('Gr2 Sketch005')
-            for key in ['B1','B2','H1','H2','H4']:
-                App.ActiveDocument.getObjectsByLabel("Sketch005")[0].setDatum(key,(self.tab2['values'])[key])
-                #rint('dbg', key,(self.tab2['values'])[key])
-            App.ActiveDocument.getObjectsByLabel("Sketch005")[0].solve()
-            App.ActiveDocument.getObjectsByLabel("Sketch")[0].solve()
-            App.ActiveDocument.getObjectsByLabel("Sketch006")[0].solve()
-            App.ActiveDocument.recompute()
-            self.Bmax = max((self.tab2['values'])['B2'],(self.tab2['values'])['B4'])
-            #rint('Sketch005 ready')
-
-            #rint('Gr2 Sketch')
-            for key in ['R','B4']:
-                App.ActiveDocument.getObjectsByLabel("Sketch")[0].setDatum(key,(self.tab2['values'])[key])
-                #rint('dbg', key,(self.tab2['values'])[key])
-            App.ActiveDocument.getObjectsByLabel("Sketch")[0].solve()
-            App.ActiveDocument.getObjectsByLabel("Sketch006")[0].solve()         
-            App.ActiveDocument.recompute()
-            #rint('Sketch ready')
-
-        elif self.obj_MainWidget.GeomInput['groove'] == 'Gr3':
-            #rint('Gr3 not implemented yet')
-            raise Exception("not implemented...")                    
-
-        #minden geometria valtozas utan:        
-        App.ActiveDocument.recompute()
-        #rint('max B %s' % self.Bmax)
-        #rint('recompute')
-
-        #Body a sketch origojaba: Sketch006 Ymid, Ydir
-        #App.Vector(App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymid"),0)
-        self.v_gr_base = App.Vector(0,App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymid"),0)
-        """ nem forditjuk el, csak pozicioba helyezzuk ??? nem a kr-t toljuk el, hanem a koroket """
-        #self.v_gr_dir = App.Vector(0,App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ydir"),0)
-        #self.v_dir = self.v_gr_dir.sub(self.v_gr_base).normalize()
-        #self.base_dir = App.Vector(0,1,0)
-        #rint(self.v_gr_base,self.v_dir)
-        #App.ActiveDocument.getObject("C_BdWires").Placement.Base = self.v_gr_base
-        #App.ActiveDocument.getObject("C_BdWires").Placement.Rotation = (0,0,0,1) #(0,0,1,0)
-        #App.ActiveDocument.getObject("C_BdWires").Placement.Rotation = self.def_quaternion(self.base_dir,self.v_dir)
-        
-        App.ActiveDocument.recompute()
-        #rint('CS placed')
-        return True
-        ''' except:
-            return False '''
 
     def closeGr(self):
         ''' ResetEnabled, ha tab2 reset, modell becsuk (ha nyitva van), mentes neklul '''
@@ -176,95 +177,94 @@ class CreateGeom():
             return False '''
 
     def createArrang(self):     
-        #meretek atadasa
-        self.tab3 = self.obj_MainWidget.GeomInput['tab3']
-        self.A  = ((self.obj_MainWidget.GeomInput['tab3'])['values'])['Wdo'] + ((self.obj_MainWidget.GeomInput['tab3'])['values'])['G']    # = Dk + Lr Wdo+G
-        self.y_incr = self.A*sqrt(3)/2      #y_incr = A*sqrt(3)/2
-        self.Dk = ((self.obj_MainWidget.GeomInput['tab3'])['values'])['Wdo']  #Dk = Dh + 2*Hsz
-        self.Dw = ((self.obj_MainWidget.GeomInput['tab3'])['values'])['Wd']
-        #rint(self.tab1)
-        self.plane_h = (self.tab1['values'])['L'] + self.Bmax 
         
-        #ezeket majt torolni
-        self.wire_collection = []   
-        self.insul_collection = []
-        self.point_collection = []
+        try:
+            #meretek atadasa
+            self.tab3 = self.obj_MainWidget.GeomInput['tab3']
+            self.A  = ((self.obj_MainWidget.GeomInput['tab3'])['values'])['Wdo'] + ((self.obj_MainWidget.GeomInput['tab3'])['values'])['G']    # = Dk + Lr Wdo+G
+            self.y_incr = self.A*sqrt(3)/2      #y_incr = A*sqrt(3)/2
+            self.Dk = ((self.obj_MainWidget.GeomInput['tab3'])['values'])['Wdo']  #Dk = Dh + 2*Hsz
+            self.Dw = ((self.obj_MainWidget.GeomInput['tab3'])['values'])['Wd']
+            #rint(self.tab1)
+            self.plane_h = (self.tab1['values'])['L'] + self.Bmax 
+            
+            #ezeket majt torolni
+            self.wire_collection = []   
+            self.insul_collection = []
+            self.point_collection = []
 
-        #3 Bd-ba tobb adatszerkezet es bele a geom
-        self.Bd_Wires_Dw = []
+            #3 Bd-ba tobb adatszerkezet es bele a geom
+            self.Bd_Wires_Dw = []
 
-        self.Bd_InsLay_Dwo = []
-        self.Bd_InsLay_Dw = []
+            self.Bd_InsLay_Dwo = []
+            self.Bd_InsLay_Dw = []
 
-        self.Bd_InsComp_Gr = []
-        self.Bd_InsComp_Dwo = []
-
-
-
-        ''' >>> for obj in App.ActiveDocument.getObject('C_BdWires').OutList:
-     	#rint(obj.Name)
-        >>> for obj in App.ActiveDocument.getObject('C_BdWires').OutList:
-     	App.ActiveDocument.removeObject(obj.Name)
-        >>> for obj in App.ActiveDocument.getObject('C_BdWires').OutList:
-        if App.ActiveDocument.getObject(obj.Name).TypeId == 'Part::Part2DObjectPython':
-    	#rint(obj.Name)
-        '''
-
-        ''' try: '''
-        if not self.clearGroove():
-            return 'clearGroove False'
-        #sketch kontur bekerese         App.ActiveDocument.getObjectsByLabel("Sketch006")[0]
-        """ 
-        Egy masik bodyba pontokat a körök közepére. 
-         """
-        if self.obj_MainWidget.GeomInput['groove'] == 'Gr1':
-            self.gr_cont_pts = self.groove_contour(App.ActiveDocument.getObjectsByLabel("Sketch006")[0])
-            #rint('dbg',gr_cont_pts_)
-            #rint('dbg Gr1 Sketch points',self.gr_cont_pts_)
-
-        elif self.obj_MainWidget.GeomInput['groove'] == 'Gr2':
-            self.gr_cont_pts = self.groove_contour(App.ActiveDocument.getObjectsByLabel("Sketch006")[0])
-            #rint('dbg Gr2 Sketch points',self.gr_cont_pts_)
-
-
-        elif self.obj_MainWidget.GeomInput['groove'] == 'Gr3':
-            #rint('Gr3 not implemented yet')
-            raise Exception("not implemented...")             
-
-        #rint('self.gr_cont_pts_',self.gr_cont_pts_)
-
-        ''' self.gr_cont_pts = []               #nem kell atfejteni, mert helyben marad
-        for pt in self.gr_cont_pts_:    
-            #self.vec1 = (App.Vector(self.v_gr_base[0],self.v_gr_base[1])).sub(App.Vector(pts[0],pts[1])) # amikor a kr meg el volt tolva...
-            #self.gr_cont_pts.append((self.vec1[0],-self.vec1[1]))               #x-re tukrozes------------------------------
-            self.gr_cont_pts.append(pt[0],pt[1],pt[2])               #eltolas nelkul, ott, ahol van '''
-
-        #rint('dbg points move',self.gr_cont_pts)
-
-        self.Bd_Points = App.ActiveDocument.addObject('PartDesign::Body','Bd_Points')
-        ''' self.Bd_Points.Placement.Base = self.v_gr_base
-        self.Bd_Points.Placement.Rotation = (0,0,0,1) '''       # ponts body mar benne lesz a modellben
-        ''' tobbi Bd a geometriakhoz: '''
-        self.Bd_Wires = App.ActiveDocument.addObject('PartDesign::Body','Bd_Wires')
-        self.Bd_InsLay = App.ActiveDocument.addObject('PartDesign::Body','Bd_InsLay')
-        self.Bd_InsComp = App.ActiveDocument.addObject('PartDesign::Body','Bd_InsComp')
+            self.Bd_InsComp_Gr = []
+            self.Bd_InsComp_Dwo = []
 
 
 
-        self.wloc_in_groove()
+            ''' >>> for obj in App.ActiveDocument.getObject('C_BdWires').OutList:
+            #rint(obj.Name)
+            >>> for obj in App.ActiveDocument.getObject('C_BdWires').OutList:
+            App.ActiveDocument.removeObject(obj.Name)
+            >>> for obj in App.ActiveDocument.getObject('C_BdWires').OutList:
+            if App.ActiveDocument.getObject(obj.Name).TypeId == 'Part::Part2DObjectPython':
+            #rint(obj.Name)
+            '''
 
-        #a vegen a gombok beallitasa
-        self.obj_MainWidget.ui.Cb_4_CreatArrang.setStyleSheet("background:rgb(144,238,144);font: bold 12px")
-        self.obj_MainWidget.ui.Cb_4_CreatGeom.setEnabled(True)
+            ''' try: '''
+            if not self.clearGroove():
+                return 'clearGroove False'
+            #sketch kontur bekerese         App.ActiveDocument.getObjectsByLabel("Sketch006")[0]
+            """ 
+            Egy masik bodyba pontokat a körök közepére. 
+            """
+            if self.obj_MainWidget.GeomInput['groove'] == 'Gr1':
+                self.gr_cont_pts = self.groove_contour(App.ActiveDocument.getObjectsByLabel("Sketch006")[0])
+                #rint('dbg',gr_cont_pts_)
+                #rint('dbg Gr1 Sketch points',self.gr_cont_pts_)
 
-        App.ActiveDocument.getObject('DatumPlane').Placement.Base.z = self.plane_h
-        App.ActiveDocument.getObject('DatumPlane001').Placement.Base.z = (self.tab1['values'])['L']
+            elif self.obj_MainWidget.GeomInput['groove'] == 'Gr2':
+                self.gr_cont_pts = self.groove_contour(App.ActiveDocument.getObjectsByLabel("Sketch006")[0])
+                #rint('dbg Gr2 Sketch points',self.gr_cont_pts_)
 
-        App.ActiveDocument.recompute()        
 
-        return 'arrange vege'
-        ''' except:
-            return False '''
+            elif self.obj_MainWidget.GeomInput['groove'] == 'Gr3':
+                #rint('Gr3 not implemented yet')
+                raise Exception("not implemented...")             
+
+            #rint('self.gr_cont_pts_',self.gr_cont_pts_)
+
+            ''' self.gr_cont_pts = []               #nem kell atfejteni, mert helyben marad
+            for pt in self.gr_cont_pts_:    
+                #self.vec1 = (App.Vector(self.v_gr_base[0],self.v_gr_base[1])).sub(App.Vector(pts[0],pts[1])) # amikor a kr meg el volt tolva...
+                #self.gr_cont_pts.append((self.vec1[0],-self.vec1[1]))               #x-re tukrozes------------------------------
+                self.gr_cont_pts.append(pt[0],pt[1],pt[2])               #eltolas nelkul, ott, ahol van '''
+
+            #rint('dbg points move',self.gr_cont_pts)
+
+            self.Bd_Points = App.ActiveDocument.addObject('PartDesign::Body','Bd_Points')
+            self.Bd_Points.Placement.Base = self.v_gr_base
+            ''' self.Bd_Points.Placement.Rotation = (0,0,0,1)        # ponts body mar benne lesz a modellben
+            tobbi Bd a geometriakhoz: ''' 
+            self.Bd_Wires = App.ActiveDocument.addObject('PartDesign::Body','Bd_Wires')
+            self.Bd_InsLay = App.ActiveDocument.addObject('PartDesign::Body','Bd_InsLay')
+            self.Bd_InsComp = App.ActiveDocument.addObject('PartDesign::Body','Bd_InsComp')
+
+
+
+            self.wloc_in_groove()
+
+            #a vegen a gombok beallitasa
+            App.ActiveDocument.getObject('DatumPlane').Placement.Base.z = self.plane_h
+            App.ActiveDocument.getObject('DatumPlane001').Placement.Base.z = (self.tab1['values'])['L']
+
+            App.ActiveDocument.recompute()        
+
+            return True
+        except:
+            return False
     
         #datum plane Placement
 
@@ -276,7 +276,9 @@ class CreateGeom():
 
 
     def createGeom(self):
-        pass
+
+        #time.sleep(5)
+        return True
         #2 vezeto gorbe
         #App.Vector(0,App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymid"),0)
         #App.Vector(0,App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymax"),0)
@@ -418,8 +420,10 @@ class CreateGeom():
             self.Bd_InsLay_Dw.append(circ)
             self.Bd_InsLay.addObject(self.Bd_InsLay_Dw[-1])
 
+            pl.Base.y -= self.v_gr_base[1]
             self.point_collection.append(self.Bd_Points.newObject('PartDesign::Point','point'))
             self.point_collection[-1].Placement = pl
+            pl.Base.y += self.v_gr_base[1]
 
             if x_circ != 0:
             #a tukrozottek hozzatetele
@@ -458,6 +462,7 @@ class CreateGeom():
                 self.Bd_InsLay_Dw.append(circ)
                 self.Bd_InsLay.addObject(self.Bd_InsLay_Dw[-1])
 
+                pl.Base.y -= self.v_gr_base[1]
                 self.point_collection.append(self.Bd_Points.newObject('PartDesign::Point','point'))
                 self.point_collection[-1].Placement = pl
 

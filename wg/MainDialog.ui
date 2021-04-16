@@ -910,9 +910,9 @@
      <property name="geometry">
       <rect>
        <x>390</x>
-       <y>230</y>
+       <y>220</y>
        <width>331</width>
-       <height>231</height>
+       <height>191</height>
       </rect>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
@@ -1159,13 +1159,38 @@
      <property name="geometry">
       <rect>
        <x>360</x>
-       <y>475</y>
+       <y>425</y>
        <width>401</width>
        <height>24</height>
       </rect>
      </property>
      <property name="text">
       <string>create / check groove geometry (2D)</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="L2_Message">
+     <property name="geometry">
+      <rect>
+       <x>360</x>
+       <y>460</y>
+       <width>401</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>75</weight>
+       <italic>false</italic>
+       <bold>true</bold>
+       <kerning>true</kerning>
+      </font>
+     </property>
+     <property name="text">
+      <string>Message:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
      </property>
     </widget>
    </widget>
@@ -1603,6 +1628,47 @@
      <property name="wordWrap">
       <bool>true</bool>
      </property>
+    </widget>
+    <widget class="QFrame" name="frame_11">
+     <property name="geometry">
+      <rect>
+       <x>360</x>
+       <y>120</y>
+       <width>391</width>
+       <height>121</height>
+      </rect>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <widget class="QLabel" name="L4_Message">
+      <property name="geometry">
+       <rect>
+        <x>6</x>
+        <y>12</y>
+        <width>371</width>
+        <height>101</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>11</pointsize>
+        <weight>75</weight>
+        <italic>false</italic>
+        <bold>true</bold>
+        <kerning>true</kerning>
+       </font>
+      </property>
+      <property name="text">
+       <string>Message:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+      </property>
+     </widget>
     </widget>
    </widget>
   </widget>

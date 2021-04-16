@@ -1,8 +1,15 @@
+import FreeCAD as App
+g_UserMacroDir = (App.getUserMacroDir()).replace('\\','/')
+g_wg_dir = g_UserMacroDir+"wg"
+
 from pyquaternion import Quaternion
 from pyquaternion.quaternion import np
 from math import sqrt
 from copy import deepcopy	#copy, 
 import Draft
+from PySide import QtGui #QWidget
+from PySide import QtUiTools #QUiLoader
+from PySide import QtCore #QFile, Q
 
 """ 
 Quaternion, matrix transzformacios gyakorlat.
@@ -15,6 +22,25 @@ egyenlonek kell lenniuk
 
 
  """
+
+#reply = QtGui.QMessageBox.critical(App, 'WINDING GEOM', 'Geometry will be calculated and generated...\nPlease wait!')
+class Progress(QtGui.QWidget):
+    def __init__(self):
+       #rint('dbg','BackToMain init')
+        super(Progress, self).__init__()
+        self.loader = QtUiTools.QUiLoader()
+        self.file = QtCore.QFile(g_wg_dir+"/Progress.ui")
+        self.file.open(QtCore.QFile.ReadOnly)
+        self.Widget = self.loader.load(self.file)
+        self.file.close()
+        #self.obj_MainWidget = None
+
+My_Progress = Progress()
+My_Progress.show()
+
+
+
+raise Exception ('end')
 
 
 def quat_rot(quat):		#pyquaternion.quaternion.Quaternion

@@ -14,7 +14,7 @@ try:
     from PySide import QtGui #QWidget
     from PySide import QtUiTools #QUiLoader
     from PySide import QtCore #QFile, Qt
-    import time
+    from threading import Timer
 
 except:
     os.system(g_wg_dir+'\import-error.vbs')
@@ -59,71 +59,17 @@ class Progress(QtGui.QWidget):
         self.Widget = self.loader.load(self.file)
         self.file.close()
         self.obj_MainWidget = None
-        #self.actionQuit.triggered.connect(self.close)
-        #self.Widget.CB_Back.clicked.connect(self.BackOnClick)
-        #self.Widget.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint) #QtCore.Qt.WindowTitleHint | 
-        #print(g_wg_dir+"/tab1.jpg")
-        # label LProgress
-        ''' self.pixmap = QtGui.QPixmap(g_wg_dir+"/tab1.jpg")
-        self.Widget.LProgress.Pixmap =self.pixmap '''
-        #self.setCentralWidget(self.Widget.LProgress)
-        #QtGui.Qmovie
-        ''' self.movie = QtGui.QMovie(g_wg_dir+"/progress.gif")
-        self.Widget.LProgress.setMovie(self.movie) '''
+        self.Widget.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowStaysOnTopHint) # 
 
-        ''' lista = dir(self.Widget.LProgress)
-        for elem in lista: 
-            print(elem) '''
-    ''' def BackOnClick(self):
-       #rint('dbg','BackOnClick')
-        self.obj_MainWidget.Show_() '''
-
-    
-    
-    
-    
     def Show_(self):
-        if self.obj_MainWidget.isVisible():
-            self.obj_MainWidget.hide()
-        self.pixmap = QtGui.QPixmap(g_wg_dir+"/tab1.jpg")
-        self.Widget.LProgress.Pixmap =self.pixmap
+        ''' if self.obj_MainWidget.isVisible():
+            self.obj_MainWidget.hide() '''
         self.Widget.show()
-        #self.movie.start()
-        #time.sleep(5)
-        #self.wait()
-        #self.movie.stop()
-        #self.close_()
-        #rint('dbg','BackToMain Show_')
-    
-    def wait(self):
-        time.sleep(5)
+        #self.Widget.update()
 
     def close_(self):
-        print('progress close')
         self.Widget.hide()
-        #event.accept()
-        self.obj_MainWidget.Show_()
-
-
-
-
-''' class Progress(QtGui.QWidget):
-
-    def __init__(self):
-        #ez csak a main widget alatt fog mukodni. nincs idom tovabb szarakodni vele.
-
-        self.loader = QtUiTools.QUiLoader()
-        self.file = QtCore.QFile(g_wg_dir+"/Progress.ui")
-        self.file.open(QtCore.QFile.ReadOnly)
-
-        self.Widget = self.loader.load(self.file)
-
-        #self.Widget = self.loader.load(self.file)
-        self.file.close()
-        #self.Widget.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowStaysOnTopHint)
-
-        self.show() '''
-
+        #self.obj_MainWidget.Show_()
 
 class CheckResults(QtGui.QWidget):
     def __init__(self):
@@ -546,14 +492,17 @@ class MainWidget(QtGui.QMainWindow):
                                         
 
     def __init__(self):
-        #super(MainWidget, self).__init__()
+        super(MainWidget, self).__init__()
        #rint('dbg','mainwidget init')
-        QtGui.QMainWindow.__init__(self, None, QtCore.Qt.WindowStaysOnTopHint)
+        #QtGui.QMainWindow.__init__(self, None, QtCore.Qt.WindowStaysOnTopHint)
         self.file = QtCore.QFile(g_wg_dir+"/MainDialog.ui")
         self.file.open(QtCore.QFile.ReadOnly)
         self.ui=QtUiTools.QUiLoader().load(self.file)
         self.file.close()        
         self.setCentralWidget(self.ui)
+        #print(self.WindowFlags & QtCore.Qt.WindowStaysOnTopHint)
+        #self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+        #print(self.WindowFlags())
         self.setWindowModality(QtCore.Qt.ApplicationModal)
         self.MyDataTabs = self.DataTabs()
         self.MyDataTabs.parent = self
@@ -564,6 +513,14 @@ class MainWidget(QtGui.QMainWindow):
         self.obj_CheckResults = None
         self.obj_WiresInGroove = None
         self.obj_Progress = None
+
+        self.msgBox = QtGui.QMessageBox()
+        self.msgBox.setWindowTitle("WINDING GEOM")
+        self.msgBox.setText('...')
+        #self.msgBox.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+        self.msgBox.setIcon(QtGui.QMessageBox.Critical)
+        #msgBox.setWindowModality(QtCore.Qt.NonModal)
+        #QtGui.QApplication.processEvents()
 
         tabname = ''        
         _dict = {}
@@ -821,8 +778,8 @@ class MainWidget(QtGui.QMainWindow):
         self.ui.Gr2.clicked.connect(self.Rb_Groove_onClick)
         self.ui.Gr3.clicked.connect(self.Rb_Groove_onClick)
 
-        #self.ui.Cb_1_exitWg.clicked.connect(self.closeEvent)
-        self.ui.Cb_1_exitWg.clicked.connect(self.createGeom)  #test Progress
+        self.ui.Cb_1_exitWg.clicked.connect(self.closeEvent)
+        #self.ui.Cb_1_exitWg.clicked.connect(self.createGeom)  #test Progress
 
         self.ui.Cb_2_exitWg.clicked.connect(self.closeEvent)
         self.ui.Cb_3_exitWg.clicked.connect(self.closeEvent)
@@ -869,24 +826,87 @@ class MainWidget(QtGui.QMainWindow):
     def createGroove(self):
         '''  '''
         ''' if self.obj_CreateGeom.createGroove(): '''
-        print(self.obj_CreateGeom.createGroove())                                                      #--------------------meghivast meg tisztazni
-        self.ui.Cb_2_CreatGroove.setStyleSheet("background:rgb(153, 204, 255);font: bold 12px")
-        (self.GeomInput['tab2'])['checkGr'] = True
-        self.ui.Cb_2_AccNext.setEnabled(True)
-        #rint('dbg',self.GeomInput)
-        #print('return True')
-        ''' else: '''
-        #print('return False')
+        if self.obj_CreateGeom.createGroove():                                                      #--------------------meghivast meg tisztazni
+            self.ui.Cb_2_CreatGroove.setStyleSheet("background:rgb(153, 204, 255);font: bold 12px")
+            (self.GeomInput['tab2'])['checkGr'] = True
+            self.ui.Cb_2_AccNext.setEnabled(True)
+            #rint('dbg',self.GeomInput)
+            #print('return True')
+
+        else:
+            self.error_msg()
+            ''' reply = QtGui.QMessageBox.critical(self, 'WINDING GEOM', 'An error occured...\nPlease try another dimensions!',
+            QtGui.QMessageBox.Ok)
+            #print('return False') '''
 
     def createArrang(self): #createGeom
-
-        print('dbg crArrang',self.obj_CreateGeom.createArrang())
-    
-    def createGeom(self): #createGeom
-
+        t = Timer(0.5,self.start_createArrang)
+        t.start()
         self.obj_Progress.Show_()
-        #print('dbg crGeom',self.obj_CreateGeom.createGeom())
+        #self.hide()
+        #self.start_createArrang()
     
+    def start_createArrang(self):
+        self.hide()
+        if self.obj_CreateGeom.createArrang():
+            self.ui.Cb_4_CreatArrang.setStyleSheet("background:rgb(144,238,144);font: bold 12px")
+            self.ui.Cb_4_CreatGeom.setEnabled(True)
+            self.obj_Progress.close_()
+            #QtGui.QApplication.processEvents()
+
+            #QtGui.QApplication.processEvents()
+            #self.setWindowFlags(self.windowFlags() & ~QtCore.Qt.WindowStaysOnTopHint)
+            self.show()            
+            ''' t = Timer(1,self.generating_msg)
+            t.start() '''
+            #self.success_msg()
+            #self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+        else:
+            #QtGui.QApplication.processEvents()
+            self.obj_Progress.close_()
+            #QtGui.QApplication.processEvents()
+
+            #self.setWindowFlags(self.windowFlags() & ~QtCore.Qt.WindowStaysOnTopHint)
+            self.show()            
+            #QtGui.QApplication.processEvents()
+            #self.error_msg()
+            #self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+
+    def createGeom(self): #createGeom
+        ''' t = Timer(2,self.start_createGeom)
+        t.start() '''
+        self.call_Progress()
+        self.start_createGeom
+        #self.obj_Progress.Widget.repaint()
+
+    def start_createGeom(self):
+        if self.obj_CreateGeom.createGeom():
+            self.obj_Progress.close_()
+            self.generating_msg()
+        else:
+            pass
+            ''' reply = QtGui.QMessageBox.critical(self, 'WINDING GEOM', 'An error occured...\nPlease try another dimensions!',
+            QtGui.QMessageBox.Ok) '''
+
+    def error_msg(self):
+            self.msgBox.setText('An error occured...\nPlease try another dimensions!')
+            self.msgBox.setIcon(QtGui.QMessageBox.Critical)
+            #msgBox.setWindowModality(QtCore.Qt.NonModal)       window.setWindowFlags(window.windowFlags() & ~QtCore.Qt.WindowStaysOnTopHint)
+            #QtGui.QApplication.processEvents()
+            self.msgBox.show()
+
+    def success_msg(self):
+            self.msgBox.setText('Generating successful...')
+            self.msgBox.setIcon(QtGui.QMessageBox.Information)
+            #msgBox.setWindowModality(QtCore.Qt.NonModal)
+            #QtGui.QApplication.processEvents()
+            self.msgBox.show()            
+
+    ''' def call_Progress(self):
+        self.obj_Progress.Show_() '''
+
+
+
     def test(self):
         pass
         #self.obj_CreateGeom.create2D()

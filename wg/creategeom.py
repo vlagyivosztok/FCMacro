@@ -146,7 +146,7 @@ class CreateGeom():
 
             #Body a sketch origojaba: Sketch006 Ymid, Ydir
             #App.Vector(App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymid"),0)
-            self.v_gr_base = App.Vector(0,App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymid"),0)
+            self.v_gr_base = App.Vector(0,float(App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymid")),0)
             """ nem forditjuk el, csak pozicioba helyezzuk ??? nem a kr-t toljuk el, hanem a koroket """
             #self.v_gr_dir = App.Vector(0,App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ydir"),0)
             #self.v_dir = self.v_gr_dir.sub(self.v_gr_base).normalize()
@@ -168,9 +168,9 @@ class CreateGeom():
 
     def clearGroove(self):
         ''' try: '''
-        for obj in App.ActiveDocument.getObject('C_BdWires').OutList:
+        ''' for obj in App.ActiveDocument.getObject('C_BdWires').OutList:
             if App.ActiveDocument.getObject(obj.Name).TypeId == 'Part::Part2DObjectPython':
-                App.ActiveDocument.removeObject(obj.Name)
+                App.ActiveDocument.removeObject(obj.Name) '''
         #rint('groove cleared')
         return True
         ''' except:
@@ -288,21 +288,30 @@ class CreateGeom():
             return False
 
     def createGeom(self):   #'Bd_Points','Bd_Wires','Bd_InsLay','Bd_InsComp'
-        try:
+        #try:
             guide1 = [] 
             guide2 = []
             spline1_pts = []
             spline2_pts = []
+            pl = App.Placement()
+            Bd_Wires_spl = [] 
+            Bd_InsLay_spl = []
+
+            
             """ spline1_pts_ = []
             spline2_pts_ = [] """
             coreL = App.ActiveDocument.getObject('DatumPlane001').Placement.Base.z
             test1 = App.ActiveDocument.getObject('Bd_Guide')
 
+            self.Ymax = float(App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymax"))
+            self.Ymid = float(App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymid"))
+
             print('step1')
             for step in [0,0.1,0.5,0.9,0.92,0.94,0.96,0.98,0.99,1,1.02]:
-                guide1.append(App.Vector(0,App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymid"),coreL * step))
-                guide2.append(App.Vector(0,App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymax"),coreL * step))
+                guide1.append(App.Vector(0,self.Ymid,coreL * step))
+                guide2.append(App.Vector(0,self.Ymax,coreL * step))
 
+            App.ActiveDocument.recompute()
             pts = App.ActiveDocument.getObjectsByLabel("Sketch010")[0].Shape.discretize(int(App.ActiveDocument.getObjectsByLabel("Sketch010")[0].Shape.Length))
             for pt in pts:
                     guide1.append(pt)
@@ -312,11 +321,12 @@ class CreateGeom():
             print('step2')
             spline1 = Draft.makeBSpline(guide1,closed=False,face=False,support=None)
             spline2 = Draft.makeBSpline(guide2,closed=False,face=False,support=None)
-
+            App.ActiveDocument.recompute()
             spline1_pts = spline1.Shape.discretize(int(spline1.Shape.Length )) 
             spline2_pts = spline2.Shape.discretize(int(spline2.Shape.Length /0.5))
             App.ActiveDocument.removeObject(spline1.Name)
             App.ActiveDocument.removeObject(spline2.Name)
+            App.ActiveDocument.recompute()            
             print('step3')
             '''ez csak disz volt... 
             Draft.makeWire(spline1_pts)
@@ -400,7 +410,7 @@ class CreateGeom():
 
                         BD_points.Placement.Base = pt_data[0]
                         BD_points.Placement.Rotation = self.quat_rot(quat1*quat2)
-
+                        App.ActiveDocument.recompute()
                         for index, point in enumerate(Ls_points):
                             if firstLoop:
                                 #rint(index,'first')
@@ -416,20 +426,90 @@ class CreateGeom():
             ''' for vect in Ls_curves[0]:
                 pt2 = BD_curvePoints.newObject('PartDesign::Point','pt')
                 pt2.Placement.Base = vect '''
+                #'Bd_Wires','Bd_InsLay','Bd_InsComp'
             for curvepoints in Ls_curves:
-                spline1 = Draft.makeBSpline(curvepoints,closed=False,face=False,support=None)
-                App.ActiveDocument.getObject('C_BdWires').addObject(spline1)
+                spl_Wires = Draft.makeBSpline(curvepoints,closed=False,face=False,support=None)
+                Bd_Wires_spl.append(spl_Wires)
+                self.Bd_Wires.addObject(spl_Wires)
+
+                spl_Insul = Draft.makeBSpline(curvepoints,closed=False,face=False,support=None)
+                Bd_InsLay_spl.append(spl_Insul)
+                self.Bd_InsLay.addObject(spl_Insul)
+                App.ActiveDocument.recompute()            
+                ''' 
+                Bd_Wires_spl = [] 
+                Bd_InsLay_spl = []
+                 '''
+
+            pl.Base = self.v_gr_base
+            pl.Rotation=(0,0,0,1)
+            rmax = (self.Ymax-self.v_gr_base[1])*1.2    # 
+            circ_Wires = Draft.makeCircle(radius=rmax,placement=pl,face=False,support=None)
+            self.Bd_Wires.addObject(circ_Wires)
+
+            pl = BD_points.Placement
+            circ_Insul = Draft.makeCircle(radius=rmax,placement=pl,face=False,support=None)
+            self.Bd_InsLay.addObject(circ_Insul)
+            App.ActiveDocument.recompute()
+
+            pad1 = self.Bd_Wires.newObject("PartDesign::Pad","Pad")
+            pad1.Profile = circ_Wires
+            pad1.Length = 2
+            pad1.Reversed = 1
+            App.ActiveDocument.recompute()
+
+            ''' 
+            self.Bd_Wires_Dw korok, spl_Wires
+            .newObject("PartDesign::AdditivePipe","AdditivePipe")
+            .Profile = kor
+            .Spine (spline, ['Edge1'])
+             '''
+            #print(Bd_Wires_spl)
+            #for index, item in enumerate(Bd_Wires_spl):
+                #rint(index)
+            print(self.Bd_Wires_Dw[0].Name,Bd_Wires_spl[0].Name)
+
+
+            adPipeWire = self.Bd_Wires.newObject("PartDesign::AdditivePipe","AdditivePipe")
+            adPipeWire.Profile = self.Bd_Wires_Dw[0]    #index
+            adPipeWire.Spine =Bd_Wires_spl[0], ['Edge1']   #item
+            #Binormal Vector (0.0, 0.0, 0.0)
+            App.ActiveDocument.recompute()
 
 
 
+            pad2 = self.Bd_InsLay.newObject("PartDesign::Pad","Pad")
+            pad2.Profile = circ_Insul
+            pad2.Length = 2
+            pad2.Reversed = 0
+            App.ActiveDocument.recompute()
+
+
+            #Gui.getDocument("Gr2").getObject("Pocket001").Visibility=True      #core visible 
             return True
-        except:
+        #except:
             return False
 
 
     def dummy(self):
         pass
      #rint('dbg','WiresInGroove dummy',self.obj_MainWidget.GeomInput)
+
+    def stepExport(self):
+        pass
+        ''' >>> __objs__=[]             #seledtion
+        >>> __objs__.append(FreeCAD.getDocument("Gr2").getObject("A_BdCore"))
+        >>> import ImportGui
+        >>> ImportGui.export(__objs__,u"C:/Users/papa/AppData/Roaming/FreeCAD/Macro/TEMP/test.step")
+        >>> 
+        >>> del __objs__ '''
+
+    def igsExport(self):
+        pass
+        #Part.export(__objs__,u"C:/Users/papa/AppData/Roaming/FreeCAD/Macro/TEMP/test.iges")
+    def export(self):
+        pass
+
 
     def def_quaternion(self,v1_, v2_, quat = False):
         v1 = deepcopy(v1_)

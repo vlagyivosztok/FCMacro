@@ -874,12 +874,15 @@ class MainWidget(QtGui.QMainWindow):
     def start_createGeom(self):
         self.hide()
         if self.obj_CreateGeom.createGeom():
+            print('createGeom True')
             self.obj_Progress.close_()
-
+            self.ui.L4_Message2.setText('Message: Generating successful...')
+            self.show()
         else:
-            pass
-            ''' reply = QtGui.QMessageBox.critical(self, 'WINDING GEOM', 'An error occured...\nPlease try another dimensions!',
-            QtGui.QMessageBox.Ok) '''
+            print('createGeom False')
+            self.obj_Progress.close_()
+            self.ui.L4_Message2.setText('Message: An error occured...\nPlease try another dimensions!')
+            self.show()
 
     ''' def error_msg(self):
             self.msgBox.setText('An error occured...\nPlease try another dimensions!')

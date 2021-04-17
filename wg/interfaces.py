@@ -975,10 +975,10 @@ class MainWidget(QtGui.QMainWindow):
             self.ui.Sp_2_D8.setValue(7)     #R     B4
             self.ui.Sp_2_D9.setValue(2)     #D      R """
 
-            self.ui.Sp_3_D1.setValue(0.05)
-            self.ui.Sp_3_D2.setValue(1)
-            self.ui.Sp_3_D3.setValue(1.1)
-            self.ui.Sp_3_D4.setValue(0.05)
+            self.ui.Sp_3_D1.setValue(0.2)
+            self.ui.Sp_3_D2.setValue(1.7)
+            self.ui.Sp_3_D3.setValue(2.1)
+            self.ui.Sp_3_D4.setValue(0.4)
 
         ''' self.GeomInput
 

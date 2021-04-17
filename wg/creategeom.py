@@ -306,7 +306,7 @@ class CreateGeom():
             self.Ymax = float(App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymax"))
             self.Ymid = float(App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymid"))
 
-            print('step1')
+            #rint('step1')
             for step in [0,0.1,0.5,0.9,0.92,0.94,0.96,0.98,0.99,1,1.02]:
                 guide1.append(App.Vector(0,self.Ymid,coreL * step))
                 guide2.append(App.Vector(0,self.Ymax,coreL * step))
@@ -318,7 +318,7 @@ class CreateGeom():
             pts = App.ActiveDocument.getObjectsByLabel("Sketch011")[0].Shape.discretize(int(App.ActiveDocument.getObjectsByLabel("Sketch011")[0].Shape.Length))
             for pt in pts:
                     guide2.append(pt)
-            print('step2')
+            #rint('step2')
             spline1 = Draft.makeBSpline(guide1,closed=False,face=False,support=None)
             spline2 = Draft.makeBSpline(guide2,closed=False,face=False,support=None)
             App.ActiveDocument.recompute()
@@ -327,7 +327,7 @@ class CreateGeom():
             App.ActiveDocument.removeObject(spline1.Name)
             App.ActiveDocument.removeObject(spline2.Name)
             App.ActiveDocument.recompute()            
-            print('step3')
+            #rint('step3')
             '''ez csak disz volt... 
             Draft.makeWire(spline1_pts)
             Draft.makeWire(spline2_pts) '''
@@ -337,7 +337,7 @@ class CreateGeom():
             sp2_counter = 0
             counter_act = 0
             dist = 0.0
-            divider = int(0.1*coreL)
+            divider = 3     #int(0.1*coreL) A mag hosszatol fuggo divider               lejjebb a kikommentelt resszel egyutt
             Ls_points = []	#az alap ponthalmaz az arrangementbol
             Ls_curves = []
             tmp = []
@@ -348,11 +348,11 @@ class CreateGeom():
             Rotation (0.0, 0.0, 0.0, 1.0) """
 
 
-            BD_points = App.ActiveDocument.getObject('Bd_Points')
-            BD_points.Placement.Base = App.Vector(0.0, 49.75, 0.0)
-            BD_points.Placement.Rotation = (0.0, 0.0, 0.0, 1.0)
+            BD_points = App.ActiveDocument.getObject('Bd_Points')       #itt veszi le a pontokat a bodybol
+            '''BD_points.Placement.Base = App.Vector(0.0, 49.75, 0.0)     #teszthelyzet volt, ugyis minden lepes elott pozicioba lesz rakva
+            BD_points.Placement.Rotation = (0.0, 0.0, 0.0, 1.0) '''
 
-            #BD_curves1 = App.ActiveDocument.addObject('PartDesign::Body','BD_curves1')
+            Bd_curvesPoints = App.ActiveDocument.addObject('PartDesign::Body','Bd_curvesPoints')
 
 
             for item in BD_points.OutList:
@@ -365,7 +365,7 @@ class CreateGeom():
             #for step in [0,0.1,0.5,0.9,0.92,0.94,0.96,0.98,0.99,1,1.02]:
             #coreL	#App.ActiveDocument.getObject('DatumPlane001').Placement.Base.z * step
             #self.plane_h = (self.tab1['values'])['L'] + self.Bmax
-            print('step4')
+            #rint('step4')
             for index, item in enumerate(spline1_pts):
                 pt_data=[]	
                 if index +1 < len(spline1_pts):
@@ -380,22 +380,25 @@ class CreateGeom():
                         else:
                             pass
                         sp2_counter += 1
+                   
 
-                    if item.z > 0.1*coreL:
+                    ''' if item.z > 0.1*coreL:
                         divider = int(0.49*coreL)
                     if item.z > 0.5*coreL:
                         divider = int(0.89*coreL)
                     if item.z > 0.95*coreL:
-                        divider = int(0.02*coreL)
+                        divider = int(0.01*coreL)
                     if item.z > 1.02*coreL:
                         divider = 5
-                    ''' if self.plane_h - item.z < 0.02*self.plane_h:
-                            divider = 10 '''
-                    if 80- item.z < 0.02*80:
-                            divider = 6	
+                    if self.plane_h - item.z < 0.02*self.plane_h:
+                            divider = 5 '''
+
+
+                    ''' if 80- item.z < 0.02*80:
+                            divider = 4 '''	
                     #rint(index%divider,index == len(spline1_pts)-2)
                     if not index%divider or index == len(spline1_pts)-2:
-                        print(index)
+                        #rint(index)
                         pt_data.append(item)
                         pt_data.append(spline2_pts[counter_act])
                         pt_data.append(spline1_pts[index+1].sub(item))
@@ -411,7 +414,17 @@ class CreateGeom():
                         BD_points.Placement.Base = pt_data[0]
                         BD_points.Placement.Rotation = self.quat_rot(quat1*quat2)
                         App.ActiveDocument.recompute()
-                        for index, point in enumerate(Ls_points):
+                        
+                        
+                        #pontok helyett korok es blend
+                        #pl.Base = self.v_gr_base
+                        #pl.Rotation=(0,0,0,1)
+                        #r = (self.Ymax-self.v_gr_base[1])*1.2    # 
+                        ''' circ_Wires = Draft.makeCircle(radius=self.Dw/2,placement=BD_points.Placement,face=False,support=None)
+                        self.Bd_Wires.addObject(circ_Wires) '''
+
+
+                        for index, point in enumerate(Ls_points):           #az osszes curve
                             if firstLoop:
                                 #rint(index,'first')
                                 tmp = []
@@ -422,12 +435,36 @@ class CreateGeom():
                             if not firstLoop:
                                 #rint(index,'nem first')
                                 Ls_curves[index].append(point.getGlobalPlacement().Base)
+
+                        #for index, point in enumerate(Ls_points):           #csak a kozepponti, tesztcelokra
+                        ''' if firstLoop:
+                            #rint(index,'first')
+                            tmp = []
+                            tmp.append(Ls_points[0].getGlobalPlacement().Base)
+                            Ls_curves.append(tmp)
+                            tmp = []
+                            tmp.append(Ls_points[1].getGlobalPlacement().Base)
+                            Ls_curves.append(tmp)
+                        #print(type(point),point.Placement)
+
+                        if not firstLoop:
+                            #rint(index,'nem first')
+                            Ls_curves[0].append(Ls_points[0].getGlobalPlacement().Base)
+                            Ls_curves[1].append(Ls_points[1].getGlobalPlacement().Base) '''
+
+
+
+
                         firstLoop = False
-            ''' for vect in Ls_curves[0]:
-                pt2 = BD_curvePoints.newObject('PartDesign::Point','pt')
-                pt2.Placement.Base = vect '''
-                #'Bd_Wires','Bd_InsLay','Bd_InsComp'
-            for curvepoints in Ls_curves:
+
+            #Ls_curves,            
+            for curve in Ls_curves:                                                       #pontok megjelenitese
+                for pt in curve: 
+                    pt2 = Bd_curvesPoints.newObject('PartDesign::Point','pt')
+                    pt2.Placement.Base = pt
+                #'Bd_Wires','Bd_InsLay','Bd_InsComp'        Bd_curvesPoints teszt a curve pontok
+
+            for curvepoints in Ls_curves:               #vegleges curveok
                 spl_Wires = Draft.makeBSpline(curvepoints,closed=False,face=False,support=None)
                 Bd_Wires_spl.append(spl_Wires)
                 self.Bd_Wires.addObject(spl_Wires)
@@ -436,12 +473,9 @@ class CreateGeom():
                 Bd_InsLay_spl.append(spl_Insul)
                 self.Bd_InsLay.addObject(spl_Insul)
                 App.ActiveDocument.recompute()            
-                ''' 
-                Bd_Wires_spl = [] 
-                Bd_InsLay_spl = []
-                 '''
 
-            pl.Base = self.v_gr_base
+
+            pl.Base = self.v_gr_base            #vegleges, padok elejen, vegen
             pl.Rotation=(0,0,0,1)
             rmax = (self.Ymax-self.v_gr_base[1])*1.2    # 
             circ_Wires = Draft.makeCircle(radius=rmax,placement=pl,face=False,support=None)
@@ -462,19 +496,33 @@ class CreateGeom():
             self.Bd_Wires_Dw korok, spl_Wires
             .newObject("PartDesign::AdditivePipe","AdditivePipe")
             .Profile = kor
-            .Spine (spline, ['Edge1'])
+            .Spine =  (spline, ['Edge1'])
+            .pip1.AuxillerySpine =  (spline, ['Edge1'])
+            .pip1.AuxilleryCurvelinear =True
+            .pip1.Mode= 'Auxiliary'
+             pip1.AuxillerySpineTangent = True
              '''
             #print(Bd_Wires_spl)
-            #for index, item in enumerate(Bd_Wires_spl):
+
+
+            for index, item in enumerate(Bd_Wires_spl):                 #vegso allapot
                 #rint(index)
-            print(self.Bd_Wires_Dw[0].Name,Bd_Wires_spl[0].Name)
+                #print(self.Bd_Wires_Dw[0].Name,Bd_Wires_spl[0].Name)
 
+                adPipeWire = self.Bd_Wires.newObject("PartDesign::AdditivePipe","AdditivePipe")
+                adPipeWire.Profile = self.Bd_Wires_Dw[index]    #index
 
-            adPipeWire = self.Bd_Wires.newObject("PartDesign::AdditivePipe","AdditivePipe")
-            adPipeWire.Profile = self.Bd_Wires_Dw[0]    #index
-            adPipeWire.Spine =Bd_Wires_spl[0], ['Edge1']   #item
-            #Binormal Vector (0.0, 0.0, 0.0)
-            App.ActiveDocument.recompute()
+                adPipeWire.Spine =item, ['Edge1']   #item Bd_Wires_spl[0]
+                adPipeWire.Mode= 'Auxiliary'
+                adPipeWire.AuxilleryCurvelinear =True
+                adPipeWire.AuxillerySpineTangent = True
+
+                if not index:                                           #csak auxilliary hoz
+                    adPipeWire.AuxillerySpine =  (Bd_Wires_spl[1], ['Edge1'])
+                else:
+                    adPipeWire.AuxillerySpine =  (Bd_Wires_spl[index-1], ['Edge1'])
+                #Binormal Vector (0.0, 0.0, 0.0)
+                App.ActiveDocument.recompute()
 
 
 

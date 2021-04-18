@@ -1,5 +1,6 @@
 #region globals
 import FreeCAD as App
+import FreeCADGui as Gui
 g_UserMacroDir = (App.getUserMacroDir()).replace('\\','/')
 g_wg_dir = g_UserMacroDir+"wg"
 #endregion globals
@@ -88,8 +89,8 @@ class CreateGeom():
             self.tab2 = self.obj_MainWidget.GeomInput['tab2'] 
             #rint('dbg App.open(self.FcSTD)')
             ''' try: '''
-            if not self.clearGroove():
-                return False
+            ''' if not self.clearGroove():
+                return False '''
             #rint('dbg self.clearGroove')
             #rint(self.tab1['values'])
             #rint('core')
@@ -105,11 +106,12 @@ class CreateGeom():
 
             if self.obj_MainWidget.GeomInput['groove'] == 'Gr1':
                 #rint('Gr1 Sketch005')
-                for key in ['B1','B2','H1','H2','H3', 'D']:
+                for key in ['B1','B2','H1','H2','H3', 'D']:             #H4 = H3 + d/2, sketch meret!!!!!!!!!!!!!
                     #rint('dbg', key, (self.tab2['values'])[key])
                     App.ActiveDocument.getObjectsByLabel("Sketch005")[0].setDatum(key,(self.tab2['values'])[key])
                 App.ActiveDocument.getObjectsByLabel("Sketch005")[0].solve()
                 App.ActiveDocument.getObjectsByLabel("Sketch006")[0].solve()
+                App.ActiveDocument.getObjectsByLabel("Sketch009")[0].solve()
                 App.ActiveDocument.recompute()
                 self.Bmax = max((self.tab2['values'])['B2'],(self.tab2['values'])['D'])
                 #rint('Sketch005 ready')            
@@ -178,7 +180,7 @@ class CreateGeom():
 
     def createArrang(self):     
         
-        try:
+        #try:
             #ha van mar body, torolni mindenestul
             list_ = App.ActiveDocument.Objects
             del_item = ['Bd_Points','Bd_Wires','Bd_InsLay','Bd_InsComp']
@@ -192,13 +194,13 @@ class CreateGeom():
                             if elem3.TypeId != 'App::Origin':
                                 feature_list.append(elem3)
             for elem in feature_list:
-                #print(elem.Name)	
+                #rint(elem.Name)	
                 App.ActiveDocument.removeObject(elem.Name)
 
             for elem in body_list:
-                #print(elem.Name)	
+                #rint(elem.Name)	
                 App.ActiveDocument.removeObject(elem.Name)
-
+            #rint('step1')
 
             #meretek atadasa
             self.tab3 = self.obj_MainWidget.GeomInput['tab3']
@@ -207,8 +209,9 @@ class CreateGeom():
             self.Dk = ((self.obj_MainWidget.GeomInput['tab3'])['values'])['Wdo']  #Dk = Dh + 2*Hsz
             self.Dw = ((self.obj_MainWidget.GeomInput['tab3'])['values'])['Wd']
             #rint(self.tab1)
-            self.plane_h = (self.tab1['values'])['L'] + self.Bmax 
-            
+            self.plane_h = (self.tab1['values'])['L'] + self.Bmax
+            print((self.tab1['values'])['L'],self.Bmax) 
+            #rint('step2')
             #ezeket majt torolni
             self.wire_collection = []   
             self.insul_collection = []
@@ -235,8 +238,8 @@ class CreateGeom():
             '''
 
             ''' try: '''
-            if not self.clearGroove():
-                return 'clearGroove False'
+            ''' if not self.clearGroove():
+                return 'clearGroove False' '''
             #sketch kontur bekerese         App.ActiveDocument.getObjectsByLabel("Sketch006")[0]
             """ 
             Egy masik bodyba pontokat a körök közepére. 
@@ -264,7 +267,7 @@ class CreateGeom():
                 self.gr_cont_pts.append(pt[0],pt[1],pt[2])               #eltolas nelkul, ott, ahol van '''
 
             #rint('dbg points move',self.gr_cont_pts)
-
+            #rint('step3')
             self.Bd_Points = App.ActiveDocument.addObject('PartDesign::Body','Bd_Points')
             self.Bd_Points.Placement.Base = self.v_gr_base
             ''' self.Bd_Points.Placement.Rotation = (0,0,0,1)        # ponts body mar benne lesz a modellben
@@ -272,19 +275,19 @@ class CreateGeom():
             self.Bd_Wires = App.ActiveDocument.addObject('PartDesign::Body','Bd_Wires')
             self.Bd_InsLay = App.ActiveDocument.addObject('PartDesign::Body','Bd_InsLay')
             self.Bd_InsComp = App.ActiveDocument.addObject('PartDesign::Body','Bd_InsComp')
-
+            #rint('step4')
 
 
             self.wloc_in_groove()
-
+            #rint('step5')
             #a vegen a gombok beallitasa
-            App.ActiveDocument.getObject('DatumPlane').Placement.Base.z = self.plane_h
-            App.ActiveDocument.getObject('DatumPlane001').Placement.Base.z = (self.tab1['values'])['L']
+            App.ActiveDocument.getObjectsByLabel('DatumPlane')[0].Placement.Base.z = self.plane_h
+            App.ActiveDocument.getObjectsByLabel('DatumPlane001')[0].Placement.Base.z = (self.tab1['values'])['L']
 
             App.ActiveDocument.recompute()        
 
             return True
-        except:
+        #except:
             return False
 
     def createGeom(self):   #'Bd_Points','Bd_Wires','Bd_InsLay','Bd_InsComp'
@@ -337,7 +340,7 @@ class CreateGeom():
             sp2_counter = 0
             counter_act = 0
             dist = 0.0
-            divider = 3     #int(0.1*coreL) A mag hosszatol fuggo divider               lejjebb a kikommentelt resszel egyutt
+            divider = int(0.1*coreL) #3     # A mag hosszatol fuggo divider               lejjebb a kikommentelt resszel egyutt
             Ls_points = []	#az alap ponthalmaz az arrangementbol
             Ls_curves = []
             tmp = []
@@ -352,7 +355,7 @@ class CreateGeom():
             '''BD_points.Placement.Base = App.Vector(0.0, 49.75, 0.0)     #teszthelyzet volt, ugyis minden lepes elott pozicioba lesz rakva
             BD_points.Placement.Rotation = (0.0, 0.0, 0.0, 1.0) '''
 
-            Bd_curvesPoints = App.ActiveDocument.addObject('PartDesign::Body','Bd_curvesPoints')
+            #Bd_curvesPoints = App.ActiveDocument.addObject('PartDesign::Body','Bd_curvesPoints')
 
 
             for item in BD_points.OutList:
@@ -382,7 +385,7 @@ class CreateGeom():
                         sp2_counter += 1
                    
 
-                    ''' if item.z > 0.1*coreL:
+                    if item.z > 0.1*coreL:
                         divider = int(0.49*coreL)
                     if item.z > 0.5*coreL:
                         divider = int(0.89*coreL)
@@ -391,7 +394,7 @@ class CreateGeom():
                     if item.z > 1.02*coreL:
                         divider = 5
                     if self.plane_h - item.z < 0.02*self.plane_h:
-                            divider = 5 '''
+                            divider = 5
 
 
                     ''' if 80- item.z < 0.02*80:
@@ -430,7 +433,7 @@ class CreateGeom():
                                 tmp = []
                                 tmp.append(point.getGlobalPlacement().Base)
                                 Ls_curves.append(tmp)
-                            #print(type(point),point.Placement)
+                            #rint(type(point),point.Placement)
 
                             if not firstLoop:
                                 #rint(index,'nem first')
@@ -445,7 +448,7 @@ class CreateGeom():
                             tmp = []
                             tmp.append(Ls_points[1].getGlobalPlacement().Base)
                             Ls_curves.append(tmp)
-                        #print(type(point),point.Placement)
+                        #rint(type(point),point.Placement)
 
                         if not firstLoop:
                             #rint(index,'nem first')
@@ -458,10 +461,10 @@ class CreateGeom():
                         firstLoop = False
 
             #Ls_curves,            
-            for curve in Ls_curves:                                                       #pontok megjelenitese
+            ''' for curve in Ls_curves:                                                       #pontok megjelenitese, Bd-t is bekapcsolni
                 for pt in curve: 
                     pt2 = Bd_curvesPoints.newObject('PartDesign::Point','pt')
-                    pt2.Placement.Base = pt
+                    pt2.Placement.Base = pt '''
                 #'Bd_Wires','Bd_InsLay','Bd_InsComp'        Bd_curvesPoints teszt a curve pontok
 
             for curvepoints in Ls_curves:               #vegleges curveok
@@ -492,7 +495,7 @@ class CreateGeom():
             pad1.Reversed = 1
             App.ActiveDocument.recompute()
 
-            ''' 
+            '''                                                         #pelda
             self.Bd_Wires_Dw korok, spl_Wires
             .newObject("PartDesign::AdditivePipe","AdditivePipe")
             .Profile = kor
@@ -502,20 +505,20 @@ class CreateGeom():
             .pip1.Mode= 'Auxiliary'
              pip1.AuxillerySpineTangent = True
              '''
-            #print(Bd_Wires_spl)
+            #rint(Bd_Wires_spl) 
 
 
-            for index, item in enumerate(Bd_Wires_spl):                 #vegso allapot
-                #rint(index)
-                #print(self.Bd_Wires_Dw[0].Name,Bd_Wires_spl[0].Name)
+            for index, item in enumerate(Bd_Wires_spl):                 #huzal additive
+                print(index+1, ' form ',len(Bd_Wires_spl), ' wires' )
+                #rint(self.Bd_Wires_Dw[0].Name,Bd_Wires_spl[0].Name)
 
                 adPipeWire = self.Bd_Wires.newObject("PartDesign::AdditivePipe","AdditivePipe")
                 adPipeWire.Profile = self.Bd_Wires_Dw[index]    #index
 
                 adPipeWire.Spine =item, ['Edge1']   #item Bd_Wires_spl[0]
                 adPipeWire.Mode= 'Auxiliary'
-                adPipeWire.AuxilleryCurvelinear =True
-                adPipeWire.AuxillerySpineTangent = True
+                adPipeWire.AuxilleryCurvelinear = False
+                adPipeWire.AuxillerySpineTangent = False
 
                 if not index:                                           #csak auxilliary hoz
                     adPipeWire.AuxillerySpine =  (Bd_Wires_spl[1], ['Edge1'])
@@ -523,17 +526,110 @@ class CreateGeom():
                     adPipeWire.AuxillerySpine =  (Bd_Wires_spl[index-1], ['Edge1'])
                 #Binormal Vector (0.0, 0.0, 0.0)
                 App.ActiveDocument.recompute()
-
-
+            
+            Gui.ActiveDocument.getObject(self.Bd_Wires.Name).Visibility=False
 
             pad2 = self.Bd_InsLay.newObject("PartDesign::Pad","Pad")
             pad2.Profile = circ_Insul
             pad2.Length = 2
             pad2.Reversed = 0
             App.ActiveDocument.recompute()
+            
 
 
-            #Gui.getDocument("Gr2").getObject("Pocket001").Visibility=True      #core visible 
+            for index, item in enumerate(Bd_InsLay_spl):                 #szigeteles additive Bd_InsLay
+                print(index+1, ' form ',len(Bd_InsLay_spl), ' insulation layers 1/2' )
+                #rint(self.Bd_Wires_Dw[0].Name,Bd_Wires_spl[0].Name)
+
+                adPipeWire = self.Bd_InsLay.newObject("PartDesign::AdditivePipe","AdditivePipe")
+                adPipeWire.Profile = self.Bd_InsLay_Dwo[index]    #index
+
+                adPipeWire.Spine =item, ['Edge1']   #item Bd_Wires_spl[0]
+                
+                #adPipeWire.Mode= 'Binormal'
+                #Binormal Vector (1.0, 0.0, 1.0)
+                
+                adPipeWire.Mode= 'Auxiliary'
+                adPipeWire.AuxilleryCurvelinear =False
+                adPipeWire.AuxillerySpineTangent = False
+                if not index:                                           #csak auxilliary hoz
+                    adPipeWire.AuxillerySpine =  (Bd_InsLay_spl[1], ['Edge1'])
+                else:
+                    adPipeWire.AuxillerySpine =  (Bd_InsLay_spl[index-1], ['Edge1'])
+                
+                App.ActiveDocument.recompute()
+
+            #raise Exception('END')
+
+            for index, item in enumerate(Bd_InsLay_spl):                 #szigeteles subtractive Bd_InsLay
+                print(index+1, ' form ',len(Bd_InsLay_spl), ' insulation layers 2/2' )
+                #rint(self.Bd_Wires_Dw[0].Name,Bd_Wires_spl[0].Name)
+
+                adPipeWire = self.Bd_InsLay.newObject("PartDesign::SubtractivePipe","SubtractivePipe")
+                adPipeWire.Profile = self.Bd_InsLay_Dw[index]    #index
+
+                adPipeWire.Spine =item, ['Edge1']   #item Bd_Wires_spl[0]   AuxilleryCurvelinear True
+                
+                #adPipeWire.Mode= 'Binormal'
+                #Binormal Vector (1.0, 0.0, 1.0)                
+                
+                adPipeWire.Mode= 'Auxiliary'
+                adPipeWire.AuxilleryCurvelinear = False
+                adPipeWire.AuxillerySpineTangent = False
+                if not index:                                           #csak auxilliary hoz
+                    adPipeWire.AuxillerySpine =  (Bd_InsLay_spl[1], ['Edge1'])
+                else:
+                    adPipeWire.AuxillerySpine =  (Bd_InsLay_spl[index-1], ['Edge1'])
+
+                App.ActiveDocument.recompute()
+
+            Gui.ActiveDocument.getObject(self.Bd_InsLay.Name).Visibility=False
+
+
+            ''' 
+            itt jon meg az ontott szigeteles
+            App.ActiveDocument.getObjectsByLabel("Sketch006")[0] sketch
+            sk1 = App.ActiveDocument.getObject('Sketch006')
+            pts1 = sk1.Shape.discretize(int(sk1.Shape.Length/0.5))
+            Draft.makeWire(pts1,face=False)
+            utana add a bodyhoz
+            App.ActiveDocument.Bd_InsComp.addObject(App.ActiveDocument.ActiveDocument.getObject('Wire002'))
+            self.Bd_InsComp_Dwo
+            >>> pad.Profile = App.ActiveDocument.getObject('Wire002')
+            >>> pad.Length = 20 
+             '''
+            sk1 = App.ActiveDocument.getObjectsByLabel('grooveFull')[0]            #ontott szigeteles additive
+            pts1 = sk1.Shape.discretize(int(sk1.Shape.Length/0.04))
+            wire = Draft.makeWire(pts1,face=False)
+            App.ActiveDocument.getObject('Bd_InsComp').addObject(wire)
+            pad = App.ActiveDocument.getObject('Bd_InsComp').newObject('PartDesign::Pad','Pad')
+            pad.Profile = App.ActiveDocument.getObject(wire.Name)
+            pad.Length = (self.tab1['values'])['L']
+            
+            App.ActiveDocument.recompute()
+
+
+            for item in self.Bd_InsComp_Dwo:                         #ontott szigeteles subtractive
+                pad = App.ActiveDocument.getObject('Bd_InsComp').newObject('PartDesign::Pocket','Pocket')
+                pad.Profile = App.ActiveDocument.getObject(item.Name)
+                pad.Length = (self.tab1['values'])['L']
+                pad.Reversed = 1
+            
+            App.ActiveDocument.recompute()
+
+            #raise Exception('end')
+
+            #ez a vege
+            Gui.ActiveDocument.getObject("Pocket001").Visibility=True      #core visible
+            App.ActiveDocument.getObjectsByLabel('Sketch006')[0]
+            Gui.ActiveDocument.getObject(App.ActiveDocument.getObjectsByLabel('Sketch006')[0].Name).Visibility=False
+            Gui.ActiveDocument.getObject(App.ActiveDocument.getObjectsByLabel('StatCore0')[0].Name).Visibility=False
+            
+            Gui.ActiveDocument.getObject(self.Bd_Wires.Name).Visibility=True
+            Gui.ActiveDocument.getObject(self.Bd_InsLay.Name).Visibility=True
+            Gui.ActiveDocument.getObject(self.Bd_InsComp.Name).Visibility=True
+
+            #sketch: StatCore0, Sketch006 invisible
             return True
         #except:
             return False
@@ -615,7 +711,9 @@ class CreateGeom():
         y_sign = 1
         condition1 = True
         condition2 = True
-        
+
+        #rint('step11')
+
         while condition1:    #level1: first pos. y, then neg. y
             condition1 = (y>=0)
             while condition2:#level 2 counting y
@@ -644,15 +742,16 @@ class CreateGeom():
 
         #circ_cont_ = self.circ_contour(x_circ,y_circ,self.Dk/2)    #a kor konturpontjait adja vissza
         
-
+        #rint('step21')
         pl = App.Placement()
         pl.Rotation=(0,0,0,1)
         #rint('teszt_kor',x,y+self.v_gr_base[1])
         pl.Base=App.Vector(x_circ,y_circ+self.v_gr_base[1],0)
         circ = Draft.makeCircle(radius=self.Dk/2,placement=pl,face=False,support=None)
         #self.Bd_InsLay_Dwo[-1].Shape.discretize(int(self.Bd_InsLay_Dwo[-1].Shape.Length/0.1))
+        App.ActiveDocument.recompute()
         circ_cont = circ.Shape.discretize(int(circ.Shape.Length/0.1))
-
+        #rint('step22')
         for pnt_ in circ_cont:
             pnts.append((pnt_[0],pnt_[1],pnt_[2]))
         
@@ -661,13 +760,13 @@ class CreateGeom():
         raise Exception ('temp end') '''
 
         App.ActiveDocument.recompute()
-
+        #rint('step23')
         if Polygon(self.gr_cont_pts).contains(Polygon(pnts)): # a legutobb keletkezett kor a gr-ban van
             #A legutobb keletkezett kor Dwo, kell mindegyikbe
             #Adatszerkezet is kell hozza
 
             #Dwo:
-            #print(self.Bd_InsLay_Dwo,self.Bd_InsLay_Dwo[-1])
+            #rint(self.Bd_InsLay_Dwo,self.Bd_InsLay_Dwo[-1])
             #_obj = self.Bd_InsLay_Dwo[-1]
             #copy_obj = copy(circ_cont_)
             self.Bd_InsLay_Dwo.append(circ)

@@ -842,9 +842,13 @@ class MainWidget(QtGui.QMainWindow):
 
 
     def createArrang(self): #createGeom
-        t = Timer(0.5,self.start_createArrang)
+        ''' t = Timer(0.5,self.start_createArrang)
         t.start()
-        self.obj_Progress.Show_()
+        self.obj_Progress.Show_() '''
+        ''' t = Timer(0.5,self.obj_Progress.Show_)
+        t.start() '''
+        #self.obj_Progress.Show_()
+        self.start_createArrang()
         #self.hide()
         #self.start_createArrang()
     
@@ -866,15 +870,19 @@ class MainWidget(QtGui.QMainWindow):
 
 
     def createGeom(self): #createGeom
-        t = Timer(0.5,self.start_createGeom)
+        ''' t = Timer(0.5,self.start_createGeom)
         t.start()
-        self.obj_Progress.Show_()
+        self.obj_Progress.Show_() '''
+        ''' t = Timer(0.5,self.obj_Progress.Show_)
+        t.start() '''
+        #self.obj_Progress.Show_()
+        self.start_createGeom()
         #self.obj_Progress.Widget.repaint()
 
     def start_createGeom(self):
         self.hide()
         if self.obj_CreateGeom.createGeom():
-            print('createGeom True')
+            #print('createGeom True')
             self.obj_Progress.close_()
             self.ui.L4_Message2.setText('Message: Generating successful...')
             self.show()
@@ -915,14 +923,17 @@ class MainWidget(QtGui.QMainWindow):
 
         if reply == QtGui.QMessageBox.Yes:
             if event != None:
-                event.accept()
+                #event.accept()
+                #self.close()
+                self.hide()
             #rint('Window closed')
             else:
                 self.hide()
 
         else:
             if event != None:
-                event.ignore()
+                #event.ignore()
+                pass
 
     def eventFilter(self, obj, event):
         ###rint('dbg','MainWidget eventfliter')
@@ -959,10 +970,10 @@ class MainWidget(QtGui.QMainWindow):
             self.ui.Sp_2_D3.setValue(11.5)     #H3
             self.ui.Sp_2_D4.setValue(13.5)     #H4        
             self.ui.Sp_2_D5.setValue(2)     #--     B1
-            self.ui.Sp_2_D6.setValue(4)     #B1     B2
-            self.ui.Sp_2_D7.setValue(3)     #B2     B3
-            self.ui.Sp_2_D8.setValue(7)     #R     B4
-            self.ui.Sp_2_D9.setValue(2)     #D      R
+            self.ui.Sp_2_D6.setValue(2)     #B1     B2
+            self.ui.Sp_2_D7.setValue(4)     #B2     B3
+            self.ui.Sp_2_D8.setValue(3.5)     #R     B4
+            self.ui.Sp_2_D9.setValue(7)     #D      R
 
             #Gr2:
             """ self.ui.Sp_2_D1.setValue(1)     #H1

@@ -1,26 +1,14 @@
-#region globals
 g_UserMacroDir = (App.getUserMacroDir()).replace('\\','/')
 g_WG_dir = g_UserMacroDir+"wg"
 
-#endregion globals
-
-#region imports
 import os
+
 try:
-    import sys    
-    #from PySide import QtGui #QWidget
-    #from PySide import QtUiTools #QUiLoader
-    #from PySide import QtCore #QFile
-    from wg.interfaces import MainWidget, BackToMain, CheckResults, Progress
+    from wg.interfaces import MainWidget, BackToMain, CheckResults
     from wg.creategeom import CreateGeom
 except:
     os.system(g_WG_dir+'\import-error.vbs')
     raise Exception("Quit winding-geom.FCMacro")
-#endregion imports
-
-#print(dir(WG.interfaces))
-#raise Exception("Macro success")
-
 
 MyMainWidget = MainWidget()
 
@@ -32,10 +20,6 @@ MyCheckResults = CheckResults()
 MyMainWidget.obj_CheckResults = MyCheckResults
 MyCheckResults.obj_MainWidget = MyMainWidget
 
-MyProgress = Progress()
-MyMainWidget.obj_Progress = MyProgress
-MyProgress.obj_MainWidget = MyMainWidget
-
 MyCheckResults.GeomInput = MyMainWidget.GeomInput
 
 MyCreateGeom = CreateGeom()
@@ -43,13 +27,4 @@ MyCreateGeom.obj_MainWidget = MyMainWidget
 MyMainWidget.obj_CreateGeom = MyCreateGeom
 
 
-
 MyMainWidget.Show_()
-
-
-
-#MyProgress.Show_()
-#print('main end')
-#MyMainWidget.installEventFilter(MyMainWidget)
-
-

@@ -1,1 +1,1 @@
-msgbox "Error during imports." & chr(13) & chr(13) & "Execution interrupted..."
+msgbox "Error during imports." & chr(13) & chr(13) & "Execution interrupted...", 0 , "WINDING GEOM"

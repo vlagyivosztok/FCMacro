@@ -13,6 +13,12 @@
     <height>600</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="minimumSize">
    <size>
     <width>800</width>
@@ -770,101 +776,6 @@
           </widget>
          </widget>
         </item>
-        <item>
-         <widget class="QFrame" name="frame_5">
-          <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
-          <widget class="QWidget" name="verticalLayoutWidget_4">
-           <property name="geometry">
-            <rect>
-             <x>50</x>
-             <y>0</y>
-             <width>141</width>
-             <height>112</height>
-            </rect>
-           </property>
-           <layout class="QVBoxLayout" name="verticalLayout_6">
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_8">
-              <item>
-               <widget class="QLabel" name="L_Groove3">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>80</width>
-                  <height>80</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>80</width>
-                  <height>80</height>
-                 </size>
-                </property>
-                <property name="baseSize">
-                 <size>
-                  <width>0</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="inputMethodHints">
-                 <set>Qt::ImhPreferUppercase</set>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="textFormat">
-                 <enum>Qt::RichText</enum>
-                </property>
-                <property name="pixmap">
-                 <pixmap>groove-1_prev.jpg</pixmap>
-                </property>
-                <property name="scaledContents">
-                 <bool>true</bool>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_9">
-              <item>
-               <widget class="QRadioButton" name="Gr3">
-                <property name="minimumSize">
-                 <size>
-                  <width>110</width>
-                  <height>20</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>110</width>
-                  <height>20</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>Grooveform 3</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </widget>
-         </widget>
-        </item>
        </layout>
       </item>
      </layout>
@@ -1559,7 +1470,7 @@
        <x>10</x>
        <y>120</y>
        <width>331</width>
-       <height>121</height>
+       <height>171</height>
       </rect>
      </property>
      <property name="frameShape">
@@ -1574,14 +1485,14 @@
         <x>10</x>
         <y>10</y>
         <width>311</width>
-        <height>101</height>
+        <height>151</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
         <widget class="QPushButton" name="Cb_4_CreatArrang">
          <property name="text">
-          <string>create wire / bar arrangement (2D)</string>
+          <string>create wire arrangement (2D)</string>
          </property>
         </widget>
        </item>
@@ -1635,7 +1546,7 @@
        <x>360</x>
        <y>130</y>
        <width>401</width>
-       <height>111</height>
+       <height>151</height>
       </rect>
      </property>
      <property name="frameShape">
@@ -1699,7 +1610,6 @@
   <tabstop>tabWidget</tabstop>
   <tabstop>Gr1</tabstop>
   <tabstop>Gr2</tabstop>
-  <tabstop>Gr3</tabstop>
   <tabstop>Sp_2_D1</tabstop>
   <tabstop>Sp_2_D2</tabstop>
   <tabstop>Sp_2_D3</tabstop>

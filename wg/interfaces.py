@@ -618,6 +618,9 @@ class MainWidget(QtGui.QMainWindow):
 
         self.MyDataTabs.CurrTab = self.ui.tabWidget.currentWidget().objectName()  
         self.MyDataTabs.CurrGr = 'Gr0'
+
+        self.testvalues()           ##############################################  TESTVALUES
+        #rint('dbg',self.GeomInput)        
                       
     def createGroove(self):
         ''' CreateGeom, fajl betoltes, meretek alkalmazasa magra, horonyra
@@ -695,6 +698,86 @@ class MainWidget(QtGui.QMainWindow):
         self.MyDataTabs.resetEnabled()
         self.MyDataTabs.corr_tabs(obj)
         self.MyDataTabs.AccNextEnable(self.MyDataTabs.CurrTab, obj)
+
+    def testvalues(self):
+        #rint('dbg','MainWidget testvalues')
+
+        if True:
+            self.ui.Sp_1_Di.setValue(120)    #----------------------####################### testvalues
+            self.ui.Sp_1_T.setValue(30)
+            self.ui.Sp_1_Do.setValue(120+2*30)
+            self.ui.Sp_1_L.setValue(110)
+
+            """ self.ui.Sp_2_D1.setValue(1)     #H1
+            self.ui.Sp_2_D2.setValue(1)     #H2
+            self.ui.Sp_2_D3.setValue(11.5)     #H3
+            self.ui.Sp_2_D4.setValue(13.5)     #H4        
+            self.ui.Sp_2_D5.setValue(2)     #--     B1
+            self.ui.Sp_2_D6.setValue(2)     #B1     B2
+            self.ui.Sp_2_D7.setValue(4)     #B2     B3
+            self.ui.Sp_2_D8.setValue(3.5)     #R     B4
+            self.ui.Sp_2_D9.setValue(7)     #D      R """
+
+            #Gr2:
+            self.ui.Sp_2_D1.setValue(1)     #H1
+            self.ui.Sp_2_D2.setValue(1)     #H2
+            self.ui.Sp_2_D3.setValue(11.5)     #H3
+            self.ui.Sp_2_D4.setValue(13.5)     #H4        
+            self.ui.Sp_2_D5.setValue(2)     #--     B1
+            self.ui.Sp_2_D6.setValue(4)     #B1     B2
+            self.ui.Sp_2_D7.setValue(3)     #B2     B3
+            self.ui.Sp_2_D8.setValue(7)     #R     B4
+            self.ui.Sp_2_D9.setValue(2)     #D      R
+
+            self.ui.Sp_3_D1.setValue(0.1)
+            self.ui.Sp_3_D2.setValue(1.2)
+            self.ui.Sp_3_D3.setValue(1.4)
+            self.ui.Sp_3_D4.setValue(0.1)
+
+        ''' self.GeomInput
+
+        #tab2Gr1: {'H1': D1, 'H2': D2, 'H3': D3, 'H4': D4, 'B1': D6, 'B2': D7, 'R': D8, 'D': D9}
+        #tab2Gr2: ['H1' D1,'H2' D2, 'H3' D3 ,'H4' D4 ,'B1' D5 ,'B2' D6 ,'B3' D7 ,'B4' D8 ,'R' D9]
+
+        dbg {'accepted': False, 'groove': '', 'tab1': {'values': {'Di': 10.0, 'T': 10.0, 'Do': 30.0, 'L': 10.0}, 'accepted': False},
+        'tab2': {'values': {'H1': 10.0, 'H2': 10.0, 'H3': 10.0, 'H4': 15.0, 'B1': 10.0, 'B2': 10.0, 'R': 5.0, 'D': 10.0}, 'accepted': False},
+        'tab3': {'values': {'It': 1.0, 'Wd': 1.0, 'Wdo': 1.0, 'G': 0.1}, 'accepted': True},
+        'tab4': {'values': {}, 'accepted': False}} '''
+        
+        if True:
+            self.GeomInput['accepted'] = True
+            self.GeomInput['groove'] = 'Gr1'
+
+            self.GeomInput['tab1'] = {'values':{}}
+            (self.GeomInput['tab1'])['values'] = {'Di': self.ui.Sp_1_Di.value(),
+                                                'T': self.ui.Sp_1_T.value(),
+                                                'Do': self.ui.Sp_1_Do.value(),
+                                                'L': self.ui.Sp_1_L.value()}
+            (self.GeomInput['tab1'])['accepted'] = True
+
+            self.GeomInput['tab2'] = {'values':{}}
+            (self.GeomInput['tab2'])['values'] = {'H1': self.ui.Sp_2_D1.value(),
+                                                'H2': self.ui.Sp_2_D2.value(),
+                                                'H3': self.ui.Sp_2_D3.value(),
+                                                'H4': self.ui.Sp_2_D4.value(),
+                                                'B1': self.ui.Sp_2_D6.value(),
+                                                'B2': self.ui.Sp_2_D7.value(),
+                                                'R': self.ui.Sp_2_D8.value(),
+                                                'D': self.ui.Sp_2_D9.value()}
+            (self.GeomInput['tab2'])['accepted'] = True
+
+            self.GeomInput['tab3'] = {'values':{}}
+            (self.GeomInput['tab3'])['values'] = {'It': self.ui.Sp_3_D1.value(),
+                                                'Wd': self.ui.Sp_3_D2.value(),
+                                                'Wdo': self.ui.Sp_3_D3.value(),
+                                                'G': self.ui.Sp_3_D4.value()}
+            (self.GeomInput['tab3'])['accepted'] = True
+            #self.ui.tabWidget.setCurrentIndex(3)       #Show_ ban van
+            self.ui.tabWidget.setTabEnabled(3, True)
+            (self.GeomInput['tab2'])['checkGr'] = True                        
+
+
+
 
     def Show_(self):
         if self.obj_BackToMain.Widget.isVisible():

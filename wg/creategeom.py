@@ -153,8 +153,6 @@ class CreateGeom():
         pl = App.Placement()
         Bd_InsLay_spl = []
 
-        print('1')
-
         coreL = App.ActiveDocument.getObject('DatumPlane001').Placement.Base.z
         test1 = App.ActiveDocument.getObject('Bd_Guide')
         items = []	
@@ -166,14 +164,14 @@ class CreateGeom():
         Ls_points = []	
         Ls_curves = []
         tmp = []
-        print('2')
+
         self.Ymax = float(App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymax"))
         self.Ymid = float(App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymid"))
 
         for step in [0,0.1,0.5,0.9,0.92,0.94,0.96,0.98,0.99,1,1.02]:
             guide1.append(App.Vector(0,self.Ymid,coreL * step))
             guide2.append(App.Vector(0,self.Ymax,coreL * step))
-        print('3')
+
         App.ActiveDocument.recompute()
         pts = App.ActiveDocument.getObjectsByLabel("Sketch010")[0].Shape.discretize(int(App.ActiveDocument.getObjectsByLabel("Sketch010")[0].Shape.Length))
         for pt in pts:
@@ -181,7 +179,7 @@ class CreateGeom():
         pts = App.ActiveDocument.getObjectsByLabel("Sketch011")[0].Shape.discretize(int(App.ActiveDocument.getObjectsByLabel("Sketch011")[0].Shape.Length))
         for pt in pts:
                 guide2.append(pt)
-        print('4')
+
         spline1 = Draft.makeBSpline(guide1,closed=False,face=False,support=None)
         spline2 = Draft.makeBSpline(guide2,closed=False,face=False,support=None)
         App.ActiveDocument.recompute()
@@ -270,7 +268,6 @@ class CreateGeom():
             spl_Wires = Draft.makeBSpline(curvepoints,closed=False,face=False,support=None)
             self.Bd_Wires_spl.append(spl_Wires)
             self.Bd_Wires.addObject(spl_Wires)
-        raise Exception ("---")
         App.ActiveDocument.recompute()
         
         spl_Insul = Draft.makeBSpline(curvepoints,closed=False,face=False,support=None)
@@ -393,7 +390,7 @@ class CreateGeom():
 
     def def_quaternion(self,v1_, v2_, quat = False):
         ''' v1_, v2_ App.Vector, egyikbol a masikba forgato quaterniont allitja elo,
-        quat True-ra quaternionba, Flase-ra FreeCAD Rotation-ban '''
+        quat: True-ra quaternionban, Flase-ra FreeCAD Rotation-ban '''
         v1 = deepcopy(v1_)
         v2 = deepcopy(v2_)
         v1.normalize(), v2.normalize()
@@ -536,15 +533,7 @@ class CreateGeom():
 
         else:
             App.ActiveDocument.removeObject(circ.Name)
+            # Ha nincs a hornyon belul, eltavolitjuk
             return False
         App.ActiveDocument.recompute()
         return True
-
-
-'''     def circ_contour(self,x,y,r):
-        Megrajzol egy kort az adott pontban es sugarral
-        pl = App.Placement()
-        pl.Rotation.Q=(0,0,0,1)
-        pl.Base=App.Vector(x,y+self.v_gr_base[1],0)
-        
-        return Draft.makeCircle(radius=r,placement=pl,face=False,support=None) '''

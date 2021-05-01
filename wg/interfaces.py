@@ -643,14 +643,16 @@ class MainWidget(QtGui.QMainWindow):
         ''' CreateGeom-bol eljaras meghivasa, eredmenny alapjan tovabbengedi a vezerlest
         vagy hibauzenet '''
         self.hide()
-        if self.obj_CreateGeom.createArrang():
-            self.ui.Cb_4_CreatArrang.setStyleSheet("background:rgb(144,238,144);font: bold 12px")
-            self.ui.Cb_4_CreatGeom.setEnabled(True)
-            self.ui.L4_Message1.setText('Message: Generating successful... \nCount of wires: '+str(self.countOfWires+1))
-            self.show()            
-        else:
-            self.ui.L4_Message1.setText('Message: An error occured...\nPlease try another dimensions!')
-            self.show()            
+        resp = self.obj_CreateGeom.createArrang()
+        if type(resp) != str:
+            if resp:
+                self.ui.Cb_4_CreatArrang.setStyleSheet("background:rgb(144,238,144);font: bold 12px")
+                self.ui.Cb_4_CreatGeom.setEnabled(True)
+                self.ui.L4_Message1.setText('Message: Generating successful... \nCount of wires: '+str(self.countOfWires+1))
+            
+            else:
+                self.ui.L4_Message1.setText('Message: An error occured...\nPlease try another dimensions!')
+        self.show()            
 
 
     def createGeom(self):
@@ -660,26 +662,23 @@ class MainWidget(QtGui.QMainWindow):
 
     def start_createGeom(self):
         self.hide()
-        if self.obj_CreateGeom.createGeom():
-            self.ui.Cb_4_CreatGeom.setStyleSheet("background:rgb(144,238,144);font: bold 12px")
-            self.ui.L4_Message2.setText('Message: Generating successful...\nGeometry could be exported in FreeCAD menu'\
-                '\n->File->Export')
-            self.show()
-        else:
-            self.ui.L4_Message2.setText('Message: An error occured...\nPlease try another dimensions!')
-            self.show()
+        resp = self.obj_CreateGeom.createGeom()
+        if type(resp) != str:
+            if resp:
+                self.ui.Cb_4_CreatGeom.setStyleSheet("background:rgb(144,238,144);font: bold 12px")
+                self.ui.L4_Message2.setText('Message: Generating successful...\nGeometry could be exported in FreeCAD menu'\
+                    '\n->File->Export')
+
+            else:
+                self.ui.L4_Message2.setText('Message: An error occured...\nPlease try another dimensions!')
+        self.show()
 
     def closeEvent(self, event = None):
         ''' kilepesi szandek kezelese '''
         reply = QtGui.QMessageBox.question(self, 'WINDING GEOM', 'Are you sure you want to close WINDING GEOM?',
             QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No)
-
         if reply == QtGui.QMessageBox.Yes:
-            if event != None:
-                self.hide()
-            else:
-                self.hide()
-
+            event.accept()
         else:
             if event != None:
                 event.ignore()

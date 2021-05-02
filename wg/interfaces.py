@@ -673,14 +673,17 @@ class MainWidget(QtGui.QMainWindow):
                 self.ui.L4_Message2.setText('Message: An error occured...\nPlease try another dimensions!')
         self.show()
 
-    def closeEvent(self, event = None):
+    def closeEvent(self, event):
         ''' kilepesi szandek kezelese '''
         reply = QtGui.QMessageBox.question(self, 'WINDING GEOM', 'Are you sure you want to close WINDING GEOM?',
             QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No)
         if reply == QtGui.QMessageBox.Yes:
-            event.accept()
+            if type(event) != bool:
+                event.accept()
+            else:
+                self.hide()
         else:
-            if event != None:
+            if type(event) != bool:
                 event.ignore()
 
     def eventFilter(self, obj, event):
@@ -707,7 +710,7 @@ class MainWidget(QtGui.QMainWindow):
             self.ui.Sp_1_Do.setValue(120+2*30)
             self.ui.Sp_1_L.setValue(110)
 
-            """ self.ui.Sp_2_D1.setValue(1)     #H1
+            ''' self.ui.Sp_2_D1.setValue(1)     #H1
             self.ui.Sp_2_D2.setValue(1)     #H2
             self.ui.Sp_2_D3.setValue(11.5)     #H3
             self.ui.Sp_2_D4.setValue(13.5)     #H4        
@@ -715,7 +718,7 @@ class MainWidget(QtGui.QMainWindow):
             self.ui.Sp_2_D6.setValue(2)     #B1     B2
             self.ui.Sp_2_D7.setValue(4)     #B2     B3
             self.ui.Sp_2_D8.setValue(3.5)     #R     B4
-            self.ui.Sp_2_D9.setValue(7)     #D      R """
+            self.ui.Sp_2_D9.setValue(7) '''     #D      R """ 
 
             #Gr2:
             self.ui.Sp_2_D1.setValue(1)     #H1
@@ -726,7 +729,7 @@ class MainWidget(QtGui.QMainWindow):
             self.ui.Sp_2_D6.setValue(4)     #B1     B2
             self.ui.Sp_2_D7.setValue(3)     #B2     B3
             self.ui.Sp_2_D8.setValue(7)     #R     B4
-            self.ui.Sp_2_D9.setValue(2)     #D      R
+            self.ui.Sp_2_D9.setValue(2)     #D      R '''
 
             self.ui.Sp_3_D1.setValue(0.1)
             self.ui.Sp_3_D2.setValue(1.2)

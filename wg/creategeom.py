@@ -56,10 +56,13 @@ class CreateGeom():
             App.ActiveDocument.recompute()
 
             if self.obj_MainWidget.GeomInput['groove'] == 'Gr1':
-                for key in ['B1','B2','H1','H2','H3', 'D']:
+                for key in ['B1','B2','H1','H2', 'H3','H4']:
                     App.ActiveDocument.getObjectsByLabel("Sketch005")[0].setDatum(key,(self.tab2['values'])[key])
                 App.ActiveDocument.getObjectsByLabel("Sketch005")[0].solve()
+                App.ActiveDocument.getObjectsByLabel("Sketch")[0].solve()
                 App.ActiveDocument.getObjectsByLabel("Sketch006")[0].solve()
+                App.ActiveDocument.getObjectsByLabel("Sketch007")[0].solve()
+                App.ActiveDocument.getObjectsByLabel("grooveFull")[0].solve()
                 App.ActiveDocument.getObjectsByLabel("Sketch009")[0].solve()
                 App.ActiveDocument.recompute()
                 self.Bmax = max((self.tab2['values'])['B2'],(self.tab2['values'])['D'])
@@ -79,7 +82,7 @@ class CreateGeom():
                 App.ActiveDocument.getObjectsByLabel("Sketch006")[0].solve()         
                 App.ActiveDocument.recompute()
             
-            self.plane_h = (self.tab1['values'])['L'] + self.Bmax
+            self.plane_h = (self.tab1['values'])['L'] + self.Bmax*1.1
             self.v_gr_base = App.Vector(0,float(App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymid")),0)
 
             App.ActiveDocument.getObjectsByLabel('DatumPlane001')[0].Placement.Base.z = (self.tab1['values'])['L']
@@ -187,11 +190,12 @@ class CreateGeom():
             self.Ymax = float(App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymax"))
             self.Ymid = float(App.ActiveDocument.getObjectsByLabel("Sketch006")[0].getDatum("Ymid"))
 
-            for step in [0,0.1,0.5,0.9,0.92,0.94,0.96,0.98,0.99,1,1.02]:
+            for step in [0,0.1,0.5,0.9,0.92,0.94,0.96,0.98,0.99,1,1.01]:
                 guide1.append(App.Vector(0,self.Ymid,coreL * step))
                 guide2.append(App.Vector(0,self.Ymax,coreL * step))
-
             App.ActiveDocument.recompute()
+
+            
             pts = App.ActiveDocument.getObjectsByLabel("Sketch010")[0].Shape.discretize(int(App.ActiveDocument.getObjectsByLabel("Sketch010")[0].Shape.Length))
             for pt in pts:
                     guide1.append(pt)
@@ -201,24 +205,21 @@ class CreateGeom():
 
             spline1 = Draft.makeBSpline(guide1,closed=False,face=False,support=None)
             spline2 = Draft.makeBSpline(guide2,closed=False,face=False,support=None)
+
             App.ActiveDocument.recompute()
+          
             spline1_pts = spline1.Shape.discretize(int(spline1.Shape.Length )) 
             spline2_pts = spline2.Shape.discretize(int(spline2.Shape.Length /0.5))
+
             App.ActiveDocument.removeObject(spline1.Name)
             App.ActiveDocument.removeObject(spline2.Name)
             App.ActiveDocument.recompute()
-
-            """ Draft.makeWire(spline1_pts)         #-----------------------------------------bemutatohoz
-            Draft.makeWire(spline2_pts)
-            App.ActiveDocument.recompute()
-            raise Exception ("---")  """                       
 
             BD_points = App.ActiveDocument.getObject('Bd_Points')
 
             for item in BD_points.OutList:
                 if (item.Name).find('point') >= 0:
                     Ls_points.append(item)
-            #Bd_curvesPoints = App.ActiveDocument.addObject('PartDesign::Body','Bd_curvesPoints')        #---------------------bemutatohoz
 
             firstLoop = True
 
@@ -276,10 +277,7 @@ class CreateGeom():
 
                         firstLoop = False
 
-            """ for curve in Ls_curves:          #  #pontok megjelenitese, Bd-t is bekapcsolni   #---------------------bemutatohoz    
-                for pt in curve: 
-                    pt2 = Bd_curvesPoints.newObject('PartDesign::Point','pt')
-                    pt2.Placement.Base = pt """
+
             App.ActiveDocument.recompute()
 
 
@@ -316,7 +314,6 @@ class CreateGeom():
             for index, item in enumerate(self.Bd_Wires_spl):
                 print(str(index+1),' from ',len(self.Bd_Wires_spl), ' wires')
                 Gui.updateGui()
-                #App.Console.PrintMessage('\n'+str(index+1)+' form '+str(len(self.Bd_Wires_spl))+ ' wires' )
 
                 adPipeWire = self.Bd_Wires.newObject("PartDesign::AdditivePipe","AdditivePipe")
                 adPipeWire.Profile = self.Bd_Wires_Dw[index]
@@ -331,7 +328,6 @@ class CreateGeom():
                 else:
                     adPipeWire.AuxillerySpine =  (self.Bd_Wires_spl[index-1], ['Edge1'])
                 App.ActiveDocument.recompute()
-            #raise Exception ("---")        
             Gui.ActiveDocument.getObject(self.Bd_Wires.Name).Visibility=False
 
             pad2 = self.Bd_InsLay.newObject("PartDesign::Pad","Pad")
@@ -343,7 +339,6 @@ class CreateGeom():
             for index, item in enumerate(Bd_InsLay_spl):
                 print(index+1, ' from ',len(Bd_InsLay_spl), ' insulation layers 1/2' )
                 Gui.updateGui()
-                #App.Console.PrintMessage('\n'+str(index+1)+' form '+str(len(Bd_InsLay_spl))+ ' insulation layers 1/2' )
 
                 adPipeWire = self.Bd_InsLay.newObject("PartDesign::AdditivePipe","AdditivePipe")
                 adPipeWire.Profile = self.Bd_InsLay_Dwo[index] 
@@ -363,7 +358,7 @@ class CreateGeom():
             for index, item in enumerate(Bd_InsLay_spl):
                 print(index+1, ' from ',len(Bd_InsLay_spl), ' insulation layers 2/2' )
                 Gui.updateGui()
-                #App.Console.PrintMessage('\n'+str(index+1)+' form '+str(len(Bd_InsLay_spl))+ ' insulation layers 2/2')
+
                 adPipeWire = self.Bd_InsLay.newObject("PartDesign::SubtractivePipe","SubtractivePipe")
                 adPipeWire.Profile = self.Bd_InsLay_Dw[index]
 
@@ -410,7 +405,7 @@ class CreateGeom():
             Gui.ActiveDocument.getObject(self.Bd_InsComp.Name).Visibility=True
 
             return True
-        except:
+        except: 
             return False
 
     def def_quaternion(self,v1_, v2_, quat = False):

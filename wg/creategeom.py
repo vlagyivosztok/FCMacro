@@ -33,20 +33,25 @@ class CreateGeom():
         self.gr_cont_pts = []
         self.Bd_Wires_spl = []
         self.obj_MainWidget = None
-        self.timestamp = 'ts'+ datetime.now().strftime("%Y%m%d%H%M%S")
+
 
     def createGroove(self):
         ''' A megfelelo file betoltese, meretek alkalmazasa magra, horonyra '''
+        self.timestamp = 'ts'+ datetime.now().strftime("%Y%m%d%H%M%S")
+        self.FcSTD = g_wg_dir+'/'+self.obj_MainWidget.GeomInput['groove']+'.FCSTD'
         try:
-            self.FcSTD = g_wg_dir+'/'+self.obj_MainWidget.GeomInput['groove']+'.FCSTD'
             for doc in App.listDocuments():
                 if App.listDocuments()[doc].FileName != self.FcSTD:
                     App.closeDocument(doc)
-            
             if App.ActiveDocument == None:
                 App.open(self.FcSTD)
             if App.ActiveDocument.FileName != self.FcSTD:
                 return False
+            elif App.ActiveDocument.getObject(self.timestamp) == None:
+                App.ActiveDocument.getObject('A_BdCore').newObject('PartDesign::Point',self.timestamp)
+                Gui.ActiveDocument.getObject(self.timestamp).Visibility=False
+            App.ActiveDocument.recompute()
+            
             self.tab1 = self.obj_MainWidget.GeomInput['tab1']
             self.tab2 = self.obj_MainWidget.GeomInput['tab2'] 
 
@@ -89,9 +94,7 @@ class CreateGeom():
             App.ActiveDocument.getObjectsByLabel('DatumPlane')[0].Placement.Base.z = self.plane_h
 
             App.ActiveDocument.recompute()
-            App.ActiveDocument.getObject('A_BdCore').newObject('PartDesign::Point',self.timestamp)
-            Gui.ActiveDocument.getObject(self.timestamp).Visibility=False
-            App.ActiveDocument.recompute()
+
             #self.Bd_Points.newObject('PartDesign::Point','point')
             #A_BdCore
             #datetime.now().strftime("%Y%m%d%H%M%S")
